@@ -13,6 +13,14 @@ export default class Editor extends React.Component<IEditorProps, {}> {
     super(props);
   }
 
+  /** Remove all user drawn objects */
+  clear = () => {
+    const el = this.featureGroupRef.leafletElement;
+    el.eachLayer(function (layer) {
+        el.removeLayer(layer);
+    });
+  }
+
   _onEditPath = (e: any) => {
     this.props.onChange(this.featureGroupRef.leafletElement.toGeoJSON());
   };
@@ -24,6 +32,7 @@ export default class Editor extends React.Component<IEditorProps, {}> {
   _onDeleted = (e: any) => {
     this.props.onChange(this.featureGroupRef.leafletElement.toGeoJSON());
   };
+
 
   render() {
     return (

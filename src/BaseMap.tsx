@@ -1,27 +1,24 @@
 import * as React from "react";
 import { Map, TileLayer } from "react-leaflet";
-import { RouteComponentProps } from "react-router-dom";
-import { BBox } from 'geojson';
+import { FeatureCollection } from "geojson";
 
-interface IMapStateType {
-  lat: number;
-  lng: number;
-  zoom: number;
+import * as GeoHelper from "./GeoHelper";
+
+interface IMapStateType {}
+
+interface IMapPropsType {
+  data: FeatureCollection;
 }
 
-interface IMapPropsType extends RouteComponentProps {
-    bbox?: BBox
-}
-
-export default class MyMap extends React.Component<
+export default class BaseMap extends React.Component<
   IMapPropsType,
   IMapStateType
 > {
   constructor(props: IMapPropsType) {
     super(props);
-    this.state = {
-      ...MyMap.parseParams(props.match.params)
-    };
+    // this.state = {
+    //   ...MyMap.parseParams(props.match.params)
+    // };
   }
 
   static parseParams = (params: any): IMapStateType => {
@@ -32,10 +29,16 @@ export default class MyMap extends React.Component<
   };
 
   render() {
-    const position =  [this.state.lat, this.state.lng] as [number, number];
     // const bbox = bbox(this.state.geojson)};
+    // bounds={this.props.bbox}
+    // center={[45.5428, -122.6544]} zoom={12}
+    const bounds = GeoHelper.bboxFromGeoJson(this.props.data);
     return (
-      <Map annimated={true} {...(this.props.bbox ? {bound: this.props.bbox} : {center:position})} zoom={this.state.zoom}>
+      <Map
+        annimated={true}
+        bounds={bounds}
+        boundsOptions={{ padding: [100, 100] }}
+      >
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
