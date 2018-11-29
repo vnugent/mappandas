@@ -2,7 +2,7 @@ import axios from "axios";
 import {FeatureCollection} from "geojson";
 
 export const client = axios.create({
-  baseURL: "http://localhost:8000"
+  baseURL: "https://api.mappandas.com"
   /* other custom settings */
 });
 
