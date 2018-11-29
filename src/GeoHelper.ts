@@ -7,7 +7,7 @@ export const getLatLngFromIP = async (): Promise<
 > => {
   try {
     const response = await axios.get(
-      "http://api.ipstack.com/check?access_key=0cd52c4d1a7b2e5edb3b17f203a8913e&format=2"
+      "https://api.ipgeolocation.io/ipgeo?apiKey=95f145109e96461794291b908055398d&fields=latitude,longitude"
     );
     return await { lat: response.data.latitude, lng: response.data.longitude };
   } catch (error) {
