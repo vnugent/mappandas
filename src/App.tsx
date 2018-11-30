@@ -58,16 +58,16 @@ class App extends React.Component<IAppProps, IAppState> {
     this.editorRef = React.createRef();
   }
 
-//   shouldComponentUpdate(nextProps: IAppProps, nextState: IAppState) {
-//     console.log(
-//       `# Location: ${this.props.location.pathname} -> ${
-//         nextProps.location.pathname
-//       }`
-//     );
-//     if (this.props.location.pathname != nextProps.location.pathname)
-//       return true;
-//     return false;
-//   }
+  //   shouldComponentUpdate(nextProps: IAppProps, nextState: IAppState) {
+  //     console.log(
+  //       `# Location: ${this.props.location.pathname} -> ${
+  //         nextProps.location.pathname
+  //       }`
+  //     );
+  //     if (this.props.location.pathname != nextProps.location.pathname)
+  //       return true;
+  //     return false;
+  //   }
 
   onShareButtonClick = e => {
     console.log("## onShareButtonClick()");
@@ -108,11 +108,8 @@ class App extends React.Component<IAppProps, IAppState> {
 
   private isSharable = () => {
     const geojson = this.state.geojson;
-    const flag = geojson &&
-      geojson.features &&
-      geojson.features.length > 0
-      ? true
-      : false;
+    const flag =
+      geojson && geojson.features && geojson.features.length > 0 ? true : false;
     console.log("isSharable(): ", flag);
     return flag;
   };
@@ -154,7 +151,8 @@ class App extends React.Component<IAppProps, IAppState> {
               </MyMap>
             )}
           />
-          <Route path="/p/:uuid" component={ShowPandaURLHandler} />} />
+          <Route path="/p/:uuid" render={props => (<ShowPandaURLHandler {...props} />)} />}
+          />
           <Route
             render={props => (
               <DefaultURLHandler

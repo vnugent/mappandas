@@ -62,7 +62,7 @@ class LastN extends React.Component<ILastNProps, ILastNState> {
     return (
       <div className="feed-container">
         <p>Panda Feed</p>
-        {this.list()}
+        {this.state.data.length > 0 ? this.list() : <div>Loading...</div>}
       </div>
     );
   }
