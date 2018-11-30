@@ -42,7 +42,7 @@ export default class Editor extends React.Component<IEditorProps, {}> {
         }}
       >
         <EditControl
-          position="topright"
+          position="topleft"
           onEdited={this._onEditPath}
           onCreated={this._onCreate}
           onDeleted={this._onDeleted}

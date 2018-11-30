@@ -2,7 +2,8 @@ import axios from "axios";
 import {FeatureCollection} from "geojson";
 
 export const client = axios.create({
-  baseURL: "https://api.mappandas.com"
+  // baseURL: "https://api.mappandas.com"
+  baseURL: "http://localhost:5000"
   /* other custom settings */
 });
 
@@ -21,3 +22,12 @@ export const get = async (uuid: string): Promise<FeatureCollection> => {
     };
   }
 };
+
+export const getLastN = async (limit: number): Promise<Array<Object>> => {
+    const response = await client.get<Array<Object>>(`/lastn/${limit}`);
+    if (response) {
+        return response.data;
+    } 
+    console.log("getLastN() error");
+    return [{}];
+}

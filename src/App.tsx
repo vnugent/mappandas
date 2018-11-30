@@ -17,7 +17,7 @@ import DefaultURLHandler from "./DefaultURLHandler";
 import Editor from "./Editor";
 import * as restClient from "./RestClient";
 import ShowPandaURLHandler from "./ShowPandaURLHandler";
-import ShowPanda from "./ShowPanda";
+import LastN from "./Filters/LastN";
 
 const uuidv1 = require("uuid/v1");
 
@@ -58,11 +58,24 @@ class App extends React.Component<IAppProps, IAppState> {
     this.editorRef = React.createRef();
   }
 
+//   shouldComponentUpdate(nextProps: IAppProps, nextState: IAppState) {
+//     console.log(
+//       `# Location: ${this.props.location.pathname} -> ${
+//         nextProps.location.pathname
+//       }`
+//     );
+//     if (this.props.location.pathname != nextProps.location.pathname)
+//       return true;
+//     return false;
+//   }
+
   onShareButtonClick = e => {
     console.log("## onShareButtonClick()");
     const uri = `/p/${this.state.uuid}`;
     restClient.create(this.state.uuid, this.state.geojson);
-    this.setState({ mode: "sharing" }, () => this.props.history.push(uri));
+    localStorage.setItem(this.state.uuid, JSON.stringify(this.state.geojson));
+
+    this.props.history.push(uri);
   };
 
   onNewButtonClick = e => {
@@ -93,14 +106,15 @@ class App extends React.Component<IAppProps, IAppState> {
     );
   };
 
-  private shouldDisableShareButton = () => {
+  private isSharable = () => {
     const geojson = this.state.geojson;
-    return this.state.mode === "edit" &&
-      geojson &&
+    const flag = geojson &&
       geojson.features &&
       geojson.features.length > 0
       ? true
       : false;
+    console.log("isSharable(): ", flag);
+    return flag;
   };
 
   public render() {
@@ -118,18 +132,16 @@ class App extends React.Component<IAppProps, IAppState> {
               color="secondary"
               className={classes.button}
               onClick={this.onShareButtonClick}
-              disabled={!this.shouldDisableShareButton()}
+              disabled={!this.isSharable()}
             >
               Share
             </Button>
-            <Button
-              color="inherit"
-              onClick={this.onNewButtonClick}
-            >
+            <Button color="inherit" onClick={this.onNewButtonClick}>
               New
             </Button>
           </Toolbar>
         </AppBar>
+        <LastN />
         <Switch>
           <Route
             path="/@:lat?/:lng?/:zoom?"
@@ -142,16 +154,7 @@ class App extends React.Component<IAppProps, IAppState> {
               </MyMap>
             )}
           />
-          <Route
-            path="/p/:uuid"
-            render={props =>
-              this.state.mode === "sharing" ? (
-                <ShowPanda geojson={this.state.geojson} />
-              ) : (
-                <ShowPandaURLHandler {...props} />
-              )
-            }
-          />
+          <Route path="/p/:uuid" component={ShowPandaURLHandler} />} />
           <Route
             render={props => (
               <DefaultURLHandler

@@ -3,7 +3,6 @@ import { GeoJSON } from "react-leaflet";
 
 import BaseMap from "./BaseMap";
 import * as GeoHelper from "./GeoHelper";
-// import { FeatureCollection } from "geojson";
 
 interface IShowPandaProps {
   geojson: any;
