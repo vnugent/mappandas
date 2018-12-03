@@ -1,14 +1,15 @@
 import axios from "axios";
 import { FeatureCollection } from "geojson";
+import { IPanda } from './types/CustomMapTypes';
 
 export const client = axios.create({
-  baseURL: "https://api.mappandas.com"
-  //baseURL: "http://localhost:5000"
+  //baseURL: "https://api.mappandas.com"
+  baseURL: "http://localhost:5000"
   /* other custom settings */
 });
 
-export const create = (uuid: string, geojson: object): void => {
-  client.post(`/p/${uuid}`, geojson);
+export const create = (panda: IPanda): void => {
+  client.post(`/p/${panda.uuid}`, panda.geojson);
 };
 
 export const get = async (uuid: string): Promise<FeatureCollection> => {

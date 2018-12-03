@@ -11,15 +11,21 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import { Toolbar } from "@material-ui/core";
+import { LatLngBounds } from "leaflet";
+import { GeoJSON } from "react-leaflet";
 
-import MyMap from "./MyMap";
 import DefaultURLHandler from "./DefaultURLHandler";
-import Editor from "./Editor";
-import * as restClient from "./RestClient";
+import LatLngURLHandler from "./LatLngURLHandler";
 import ShowPandaURLHandler from "./ShowPandaURLHandler";
-import LastN from "./Filters/LastN";
 
-const uuidv1 = require("uuid/v1");
+import * as GeoHelper from "./GeoHelper";
+import Editor from "./Editor";
+
+import * as restClient from "./RestClient";
+import BaseMap from "./BaseMap";
+import LastN from "./Filters/LastN";
+import { IViewport, IPanda } from "./types/CustomMapTypes";
+import { FeatureCollection } from "geojson";
 
 const styles = {
   root: {
@@ -39,84 +45,106 @@ interface IAppProps extends RouteComponentProps {
 }
 
 interface IAppState {
-  geojson: any;
-  uuid: string;
+  panda: IPanda;
   mode: string;
-  latlng?: { lat: number; lng: number };
+  viewport?: IViewport;
+  bbox?: LatLngBounds;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
   private editorRef;
+
   constructor(props: IAppProps) {
     super(props);
     this.state = {
-      geojson: undefined,
-      uuid: uuidv1(),
+      panda: GeoHelper.NEW_PANDA(),
       mode: "edit",
-      latlng: undefined
+      viewport: undefined,
+      bbox: undefined
     };
     this.editorRef = React.createRef();
   }
 
-  //   shouldComponentUpdate(nextProps: IAppProps, nextState: IAppState) {
-  //     console.log(
-  //       `# Location: ${this.props.location.pathname} -> ${
-  //         nextProps.location.pathname
-  //       }`
-  //     );
-  //     if (this.props.location.pathname != nextProps.location.pathname)
-  //       return true;
-  //     return false;
-  //   }
-
   onShareButtonClick = e => {
     console.log("## onShareButtonClick()");
-    const uri = `/p/${this.state.uuid}`;
-    restClient.create(this.state.uuid, this.state.geojson);
-    localStorage.setItem(this.state.uuid, JSON.stringify(this.state.geojson));
+    const uri = `/p/${this.state.panda.uuid}`;
+    restClient.create(this.state.panda);
+    localStorage.setItem(
+      this.state.panda.uuid,
+      GeoHelper.stringify(this.state.panda)
+    );
+    this.setState({ mode: "sharing" });
 
     this.props.history.push(uri);
   };
 
   onNewButtonClick = e => {
-    if (this.state.geojson && this.editorRef) this.editorRef.clear();
+    if (
+      this.state.panda.geojson &&
+      this.editorRef &&
+      typeof this.editorRef.clear === "function"
+    ) {
+      this.editorRef.clear();
+    }
+
     this.setState(
       {
-        uuid: uuidv1(),
         mode: "edit",
-        geojson: undefined
+        panda: GeoHelper.NEW_PANDA()
       },
       () => {
-        const latlng = this.state.latlng;
-        if (latlng) {
-          this.props.history.replace(`/@${latlng.lat}/${latlng.lng}/12`);
-        } else this.props.history.push("/");
+        this.props.history.push("/", {dontMoveMap: true});
       }
     );
   };
 
-  onChange = newGeojson => {
-    this.setState({ geojson: newGeojson });
+  onDataLoaded = (data: IPanda): void => {
+    console.log("load new data", data.geojson);
+    this.setState({
+      panda: data,
+      viewport: undefined,
+      bbox: data.bbox,
+      mode: "sharing"
+    });
   };
 
-  onInitialized = (_latlng: { lat; lng: number }) => {
-    console.log("setting initial URL", _latlng);
-    this.setState({ latlng: _latlng }, () =>
-      this.props.history.push(`/@${_latlng.lat}/${_latlng.lng}/12`)
-    );
+  onEditUpdated = (geojson: FeatureCollection) => {
+    const newPanda = GeoHelper.NEW_PANDA();
+    newPanda.geojson = geojson;
+    newPanda.bbox = GeoHelper.bboxFromGeoJson(geojson);
+    this.setState({ panda: newPanda });
+  };
+
+  onInitialized = (_viewport: IViewport) => {
+    console.log("setting initial URL", _viewport);
+    this.setState({ viewport: _viewport }, () => {
+      this.props.history.replace("/edit");
+    });
+  };
+
+  onViewportChanged = (_viewport: IViewport) => {
+    this.setState({ viewport: _viewport, bbox: undefined });
   };
 
   private isSharable = () => {
-    const geojson = this.state.geojson;
+    const geojson = this.state.panda.geojson;
     const flag =
-      geojson && geojson.features && geojson.features.length > 0 ? true : false;
-    console.log("isSharable(): ", flag);
+      this.state.mode !== "sharing" &&
+      geojson &&
+      geojson.features &&
+      geojson.features.length > 0
+        ? true
+        : false;
     return flag;
   };
 
   public render() {
     const { classes } = this.props;
-
+    // const currentBBox =
+    //   this.mapRef && this.mapRef.current
+    //     ? this.mapRef.current.getCurrentBbox()
+    //     : undefined;
+    // console.log(">> current BBox ", this.mapRef, currentBBox);
     return (
       <div className={classes.root}>
         <AppBar position="static">
@@ -138,21 +166,48 @@ class App extends React.Component<IAppProps, IAppState> {
             </Button>
           </Toolbar>
         </AppBar>
+        {(this.state.viewport || this.state.bbox) && (
+          <BaseMap
+            viewport={this.state.viewport}
+            bbox={this.state.bbox}
+            onViewportChanged={this.onViewportChanged}
+          >
+            {this.state.mode === "edit" && (
+              <Editor
+                ref={ref => (this.editorRef = ref)}
+                onChange={this.onEditUpdated}
+              />
+            )}
+            {this.state.panda.geojson && this.state.mode == "sharing" && (
+              <GeoJSON
+                key={this.state.panda.uuid}
+                data={this.state.panda.geojson}
+              />
+            )}
+          </BaseMap>
+        )}
         <LastN />
         <Switch>
           <Route
             path="/@:lat?/:lng?/:zoom?"
             render={props => (
-              <MyMap {...props}>
-                <Editor
-                  ref={ref => (this.editorRef = ref)}
-                  onChange={this.onChange}
-                />
-              </MyMap>
+              <LatLngURLHandler
+                {...props}
+                onLatLngChanged={this.onViewportChanged}
+              />
             )}
           />
-          <Route path="/p/:uuid" render={props => (<ShowPandaURLHandler {...props} />)} />}
+          <Route
+            path="/p/:uuid"
+            render={props => (
+              <ShowPandaURLHandler
+                key={props.location.key}
+                {...props}
+                onDataLoaded={this.onDataLoaded}
+              />
+            )}
           />
+          } />
           <Route
             render={props => (
               <DefaultURLHandler

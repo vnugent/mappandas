@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Map, TileLayer } from "react-leaflet";
 import { RouteComponentProps } from "react-router-dom";
-import { BBox } from 'geojson';
+import { LatLngBounds } from "leaflet";
 
 interface IMapStateType {
   lat: number;
@@ -10,7 +10,7 @@ interface IMapStateType {
 }
 
 interface IMapPropsType extends RouteComponentProps {
-    bbox?: BBox
+  bbox?: LatLngBounds;
 }
 
 export default class MyMap extends React.Component<
@@ -32,10 +32,16 @@ export default class MyMap extends React.Component<
   };
 
   render() {
-    const position =  [this.state.lat, this.state.lng] as [number, number];
+    const position = [this.state.lat, this.state.lng] as [number, number];
+    console.log("MyMap bbox", this.props.bbox);
     // const bbox = bbox(this.state.geojson)};
     return (
-      <Map annimated={true} {...(this.props.bbox ? {bound: this.props.bbox} : {center:position})} zoom={this.state.zoom}>
+      <Map
+        annimated={true}
+        {...(this.props.bbox
+          ? { bounds: this.props.bbox }
+          : { center: position, zoom: this.state.zoom })}
+      >
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

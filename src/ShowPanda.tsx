@@ -1,12 +1,9 @@
 import * as React from "react";
-import { GeoJSON } from "react-leaflet";
+import { RouteComponentProps } from "react-router-dom";
 
-import BaseMap from "./BaseMap";
-import * as GeoHelper from "./GeoHelper";
+import { Context } from "./ShowPandaURLHandler";
 
-interface IShowPandaProps {
-  geojson: any;
-}
+interface IShowPandaProps extends RouteComponentProps {}
 
 interface IShowPandaState {}
 
@@ -14,17 +11,15 @@ export default class ShowPanda extends React.Component<
   IShowPandaProps,
   IShowPandaState
 > {
+  static contextType = Context;
+
   constructor(props: IShowPandaProps) {
     super(props);
   }
 
   render() {
-    const bounds = GeoHelper.bboxFromGeoJson(this.props.geojson);
-    console.log("bound", bounds);
-    return (
-      <BaseMap data={this.props.geojson}>
-        <GeoJSON data={this.props.geojson} />
-      </BaseMap>
-    );
+    //    const value = this.context;
+
+    return null;
   }
 }

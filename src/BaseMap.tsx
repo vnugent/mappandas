@@ -1,14 +1,23 @@
 import * as React from "react";
-import { Map, TileLayer } from "react-leaflet";
-import { FeatureCollection } from "geojson";
+import { Map, TileLayer, LayersControl } from "react-leaflet";
 
-import * as GeoHelper from "./GeoHelper";
+import { IViewport } from "./types/CustomMapTypes";
+import { LatLngBounds } from "leaflet";
 
 interface IMapStateType {}
 
 interface IMapPropsType {
-  data: FeatureCollection;
+  viewport?: IViewport;
+  bbox?: LatLngBounds;
+  onViewportChanged: Function;
 }
+
+const mapboxAttribution =
+  'Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+  'Imagery © <a href="http://mapbox.com">Mapbox</a>';
+
+const mapboxUrl =
+  "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwcGFuZGFzIiwiYSI6ImNqcDdzbW12aTBvOHAzcW82MGg0ZTRrd3MifQ.MYiNJHklgMkRzapAKuTQNg";
 
 export default class BaseMap extends React.Component<
   IMapPropsType,
@@ -16,33 +25,71 @@ export default class BaseMap extends React.Component<
 > {
   constructor(props: IMapPropsType) {
     super(props);
-    // this.state = {
-    //   ...MyMap.parseParams(props.match.params)
-    // };
   }
 
-  static parseParams = (params: any): IMapStateType => {
-    const lat = params["lat"] ? params["lat"] : 45.5428; // need to get default Lat
-    const lng = params["lng"] ? params["lng"] : -122.6544;
-    const zoom = params["zoom"] ? params["zoom"] : 12;
-    return { lat, lng, zoom };
-  };
-
   render() {
-    // const bbox = bbox(this.state.geojson)};
-    // bounds={this.props.bbox}
-    // center={[45.5428, -122.6544]} zoom={12}
-    const bounds = GeoHelper.bboxFromGeoJson(this.props.data);
+    console.log(
+      ">> BaseMap bounds, viewport ",
+      this.props.bbox,
+      this.props.viewport
+    );
     return (
       <Map
+        onViewportChanged={this.props.onViewportChanged}
         annimated={true}
-        bounds={bounds}
+        {...(this.props.bbox
+          ? { bounds: this.props.bbox }
+          : { viewport: this.props.viewport })}
         boundsOptions={{ padding: [100, 100] }}
       >
-        <TileLayer
-          attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        <LayersControl position="topright">
+          <LayersControl.BaseLayer name="Street" checked>
+            <TileLayer
+              attribution={mapboxAttribution}
+              url={mapboxUrl}
+              id="mapbox.streets"
+              maxZoom={25}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="Satellite">
+            <TileLayer
+              attribution={mapboxAttribution}
+              url={mapboxUrl}
+              id="mapbox.satellite"
+              maxZoom={25}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="Outdoors">
+            <TileLayer
+              attribution={mapboxAttribution}
+              url={mapboxUrl}
+              id="mapbox.outdoors"
+              maxZoom={25}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="Night">
+            <TileLayer
+              attribution={mapboxAttribution}
+              url={mapboxUrl}
+              id="mapbox.dark"
+              maxZoom={25}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="Light">
+            <TileLayer
+              attribution={mapboxAttribution}
+              url={mapboxUrl}
+              id="mapbox.light"
+              maxZoom={25}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="OSM">
+            <TileLayer
+              attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </LayersControl.BaseLayer>
+        </LayersControl>
         {this.props.children}
       </Map>
     );

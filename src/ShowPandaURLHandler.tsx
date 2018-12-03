@@ -1,15 +1,23 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router-dom";
 
-import ShowPanda from "./ShowPanda";
 import * as restClient from "./RestClient";
+import * as GeoHelper from "./GeoHelper";
+// import { LatLngBounds } from "leaflet";
 
-interface IShowPandaProps extends RouteComponentProps {}
+interface IShowPandaProps extends RouteComponentProps {
+  onDataLoaded: Function;
+}
 
 interface IShowPandaState {
-  uuid: string;
-  geojson?: any;
+  //   uuid: string;
+  //   geojson?: any;
 }
+
+export const Context = React.createContext<IShowPandaState>({
+  uuid: "",
+  geojson: undefined
+});
 
 export default class ShowPandaURLHandler extends React.Component<
   IShowPandaProps,
@@ -17,62 +25,72 @@ export default class ShowPandaURLHandler extends React.Component<
 > {
   constructor(props: IShowPandaProps) {
     super(props);
-    this.state = {
-      uuid: "",
-      geojson: undefined
-    };
   }
 
   componentDidMount() {
-    console.log("##ShowPandaURHLHandler.componentDidmount()");
     const uuid = this.props.match.params["uuid"];
+    console.log("##ShowPandaURHLHandler.componentDidmount() ", uuid);
     this.getGeojsonFromCacheOrRemote(uuid);
   }
 
-
-  componentDidUpdate(prevProps, prevState) {
-    console.log("#ComponentDidUpdate()", this.state);
-    if (!this.state.geojson) {
-      this.getGeojsonFromCacheOrRemote(this.state.uuid);
-    }
+  componentWillUnmount() {
+    console.log("ShowPandaURLHandlr().willUnmount()");
   }
-
-  static getDerivedStateFromProps(
+  shouldComponentUpdate(
     nextProps: IShowPandaProps,
-    prevState: IShowPandaState
+    nextState: IShowPandaState
   ) {
-    console.log("getDerivedStateFromProps()", nextProps, prevState);
-    if (nextProps.match.params["uuid"] !== prevState.uuid) {
-      const nextUuid = nextProps.match.params["uuid"];
-      console.log("uuid has changed");
-      return {
-        uuid: nextUuid,
-        geojson: undefined
-      };
-    }
-    return null;
+    const current = this.props.match["uuid"];
+    const next = nextProps.match.params["uuid"];
+    console.log(
+      `ShowPandaURLHandler.shouldComponentUpdate()? ${current} -> ${next}`
+    );
+    return current !== next;
   }
+  // componentDidUpdate(prevProps: IShowPandaProps, prevState) {
+  //     const current = this.props.match["uuid"];
+  //     const prev = prevProps.match.params["uuid"];
+  //   console.log("#ComponentDidUpdate()", prev, current);
+  //   if ( prev && prev !== current ) {
+  //     this.getGeojsonFromCacheOrRemote(prev);
+  //   }
+  // }
+
+  // static getDerivedStateFromProps(
+  //   nextProps: IShowPandaProps,
+  //   prevState: IShowPandaState
+  // ) {
+  //   console.log("PandaURLHandler.getDerivedStateFromProps()", nextProps, prevState);
+  //   if (nextProps.match.params["uuid"] !== this.props.match.params["uuid"]) {
+  //     const nextUuid = nextProps.match.params["uuid"];
+  //     console.log("uuid has changed");
+  //     return {
+  //       uuid: nextUuid,
+  //       geojson: undefined
+  //     };
+  //   }
+  //   return null;
+  // }
 
   getGeojsonFromCacheOrRemote = (uuid: string) => {
     const cache = localStorage.getItem(uuid);
     if (!cache) {
       console.log("Not found in cache");
       restClient.get(uuid).then(data => {
-        this.setState({
+        this.props.onDataLoaded({
           uuid: uuid,
+          bbox: GeoHelper.bboxFromGeoJson(data),
           geojson: data
         });
       });
     } else {
-      console.log("## found in cache");
-      this.setState({ uuid: uuid, geojson: JSON.parse(cache) });
+      const data = GeoHelper.parse(cache);
+      console.log("## found in cache", data);
+      this.props.onDataLoaded(data);
     }
   };
 
   render() {
-    console.log("##ShowPandaURLHandler.render()", this.state.geojson);
-    return this.state.geojson ? (
-      <ShowPanda key={this.state.uuid} geojson={this.state.geojson} />
-    ) : null;
+    return null;
   }
 }
