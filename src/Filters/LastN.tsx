@@ -46,7 +46,7 @@ class LastN extends React.Component<ILastNProps, ILastNState> {
       return (
         <Chip
           key={entry._id}
-          color="inherit"
+          color="default"
           avatar={
             <Avatar>
               <FaceIcon />

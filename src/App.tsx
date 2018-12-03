@@ -148,10 +148,11 @@ class App extends React.Component<IAppProps, IAppState> {
     return (
       <div className={classes.root}>
         <AppBar position="static">
-          <Toolbar color="">
+          <Toolbar color="" variant="dense">
             <Typography variant="h6" color="inherit">
               MapPandas
             </Typography>
+            &nbsp;&nbsp;
             <Button
               variant="contained"
               color="secondary"
