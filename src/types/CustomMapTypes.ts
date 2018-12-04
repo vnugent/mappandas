@@ -9,5 +9,6 @@ export interface IViewport {
 export interface IPanda {
     uuid: string,
     geojson?: FeatureCollection,
-    bbox: LatLngBounds
+    bbox: LatLngBounds,
+    description: string;
 }

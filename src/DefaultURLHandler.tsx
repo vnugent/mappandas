@@ -22,6 +22,11 @@ export default class DefaultUrLHandler extends React.Component<IProps, IState> {
       const state = this.props.location.state;
     if (state && state.dontMoveMap) {
         console.log("Don't move map");
+        // reset the state flag
+        this.props.history.replace({
+            pathname: this.props.location.pathname,
+            state: {}
+        });
         return;
     }
     GeoHelper.getLatLngFromIP().then(data => {

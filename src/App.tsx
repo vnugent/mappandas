@@ -26,6 +26,7 @@ import BaseMap from "./BaseMap";
 import LastN from "./Filters/LastN";
 import { IViewport, IPanda } from "./types/CustomMapTypes";
 import { FeatureCollection } from "geojson";
+import PandaMetaEditor from "./PandaMetaEditor";
 
 const styles = {
   root: {
@@ -93,7 +94,7 @@ class App extends React.Component<IAppProps, IAppState> {
         panda: GeoHelper.NEW_PANDA()
       },
       () => {
-        this.props.history.push("/", {dontMoveMap: true});
+        this.props.history.push("/", { dontMoveMap: true });
       }
     );
   };
@@ -109,7 +110,7 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onEditUpdated = (geojson: FeatureCollection) => {
-    const newPanda = GeoHelper.NEW_PANDA();
+    const newPanda = this.state.panda;
     newPanda.geojson = geojson;
     newPanda.bbox = GeoHelper.bboxFromGeoJson(geojson);
     this.setState({ panda: newPanda });
@@ -117,22 +118,26 @@ class App extends React.Component<IAppProps, IAppState> {
 
   onInitialized = (_viewport: IViewport) => {
     console.log("setting initial URL", _viewport);
-    this.setState({ viewport: _viewport }, () => {
-      this.props.history.replace("/edit");
-    });
+    this.setState({ viewport: _viewport });
   };
 
   onViewportChanged = (_viewport: IViewport) => {
     this.setState({ viewport: _viewport, bbox: undefined });
   };
 
+  onDescriptionUpdate = (event: any) => {
+    const currentPanda = this.state.panda;
+    currentPanda.description = event.target.value;
+    this.setState({ panda: currentPanda });
+  };
   private isSharable = () => {
     const geojson = this.state.panda.geojson;
     const flag =
       this.state.mode !== "sharing" &&
       geojson &&
       geojson.features &&
-      geojson.features.length > 0
+      geojson.features.length > 0 &&
+      this.state.panda.description
         ? true
         : false;
     return flag;
@@ -140,11 +145,6 @@ class App extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { classes } = this.props;
-    // const currentBBox =
-    //   this.mapRef && this.mapRef.current
-    //     ? this.mapRef.current.getCurrentBbox()
-    //     : undefined;
-    // console.log(">> current BBox ", this.mapRef, currentBBox);
     return (
       <div className={classes.root}>
         <AppBar position="static">
@@ -165,6 +165,11 @@ class App extends React.Component<IAppProps, IAppState> {
             <Button color="inherit" onClick={this.onNewButtonClick}>
               New
             </Button>
+            <PandaMetaEditor
+              mode={this.state.mode}
+              description={this.state.panda.description}
+              onDescriptionUpdate={this.onDescriptionUpdate}
+            />
           </Toolbar>
         </AppBar>
         {(this.state.viewport || this.state.bbox) && (

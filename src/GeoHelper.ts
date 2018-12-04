@@ -12,7 +12,8 @@ export const NEW_PANDA = (): IPanda => ({
     type: "FeatureCollection",
     features: []
   },
-  bbox: new LatLngBounds([[0, 0], [0, 0]])
+  bbox: new LatLngBounds([[0, 0], [0, 0]]),
+  description: ""
 });
 
 export const getLatLngFromIP = async (): Promise<LatLng | undefined> => {
@@ -56,15 +57,17 @@ export const stringify = (panda: IPanda) => {
   return JSON.stringify({
     uuid: panda.uuid,
     bbox: bboxArray,
+    description: panda.description,
     geojson: panda.geojson
   });
 };
 
-export const parse = (s: string): IPanda => {
-  const data = JSON.parse(s);
+export const parse = (s: string, options?: any): IPanda => {
+  const data = options && options.json ? s : JSON.parse(s);
   return {
     uuid: data.uuid,
     bbox: new LatLngBounds(data.bbox),
+    description: data.description,
     geojson: data.geojson
   };
 };

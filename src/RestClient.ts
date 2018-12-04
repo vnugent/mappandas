@@ -1,6 +1,6 @@
 import axios from "axios";
-import { FeatureCollection } from "geojson";
-import { IPanda } from './types/CustomMapTypes';
+import { IPanda } from "./types/CustomMapTypes";
+import * as GeoHelper from "./GeoHelper";
 
 export const client = axios.create({
   baseURL: "https://api.mappandas.com"
@@ -9,18 +9,19 @@ export const client = axios.create({
 });
 
 export const create = (panda: IPanda): void => {
-  client.post(`/p/${panda.uuid}`, panda.geojson);
+  const headers = {
+    "Content-Type": "application/json"
+  };
+  const payload = GeoHelper.stringify(panda);
+  client.post(`/p/${panda.uuid}`, payload, { headers: headers });
 };
 
-export const get = async (uuid: string): Promise<FeatureCollection> => {
-  const response = await client.get<FeatureCollection>(`/p/${uuid}`);
+export const get = async (uuid: string): Promise<string | undefined> => {
+  const response = await client.get<string>(`/p/${uuid}`);
   if (response) {
     return response.data;
   } else {
-    return {
-      type: "FeatureCollection",
-      features: []
-    };
+    return undefined;
   }
 };
 
