@@ -1,10 +1,9 @@
 import * as React from "react";
-import DeckGL, { MapController, GeoJsonLayer, IconLayer } from "deck.gl";
+import DeckGL, { MapController, GeoJsonLayer } from "deck.gl";
 import { StaticMap } from "react-map-gl";
-import MAP_STYLE from "./MapStyles/street-v10";
 
 import { IPanda } from "./types/CustomMapTypes";
-//import * as GeoHelper from "./GeoHelper";
+import PandaGL from "./PandaGL";
 
 interface IProps {
   panda: IPanda;
@@ -12,23 +11,11 @@ interface IProps {
   onViewStateChanged: (any) => void;
 }
 
-interface IState {
-  //   viewport: any;
-  //   geojson: any;
-}
+interface IState {}
 
 class MapNG extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-
-    // this.state = {
-    //   viewport: { ...this.INITIAL_VIEWSTATE },
-    //   geojson: {}
-    // };
-  }
-
-  componentDidMount() {
-    //    this.setState({ geojson: this.props.panda.geojson });
   }
 
   INITIAL_VIEWSTATE = {
@@ -38,52 +25,6 @@ class MapNG extends React.Component<IProps, IState> {
     longitude: -122.4376,
     zoom: 8,
     pitch: 45
-  };
-
-  ICON_MAPPING = {
-    marker: { x: -122.472324, y: 37.806802, width: 32, height: 32, mask: true }
-  };
-
-  ICONS = [{ name: "foo", coordinates: [-122.472324, 37.806802] }];
-  GEOJSON = {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        properties: {},
-        geometry: { type: "Point", coordinates: [-122.472324, 37.806802] }
-      }
-    ]
-  };
-
-  GEOJSON2 = {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        properties: {},
-        geometry: {
-          type: "Polygon",
-          coordinates: [
-            [
-              [-122.467475, 37.804834],
-              [-122.466531, 37.804834],
-              [-122.466424, 37.804173],
-              [-122.467453, 37.803987],
-              [-122.467475, 37.804834]
-            ]
-          ]
-        }
-      },
-      {
-        type: "Feature",
-        properties: {},
-        geometry: {
-          type: "Point",
-          coordinates: [-122.46648788452148, 37.7933719729637]
-        }
-      }
-    ]
   };
 
   LIGHT_SETTINGS = {
@@ -124,7 +65,7 @@ class MapNG extends React.Component<IProps, IState> {
       extruded: true,
       lineWidthScale: 20,
       lineWidthMinPixels: 2,
-      getFillColor: [255, 128, 10],
+      getFillColor: [255, 128, 0],
       // getLineColor: d => colorToRGBArray(d.properties.color),
       lightSettings: this.LIGHT_SETTINGS,
       getRadius: 400,
@@ -133,57 +74,21 @@ class MapNG extends React.Component<IProps, IState> {
     });
   };
 
-  iconLayer = new IconLayer({
-    id: "icon-layer",
-    data: this.ICONS,
-    pickable: true,
-    iconAtlas: "./icon-atlas.png",
-    iconMapping: {
-      marker: {
-        x: 0,
-        y: 0,
-        width: 128,
-        height: 128,
-        anchorY: 128,
-        mask: true
-      }
-    },
-    sizeScale: 10,
-    getPosition: d => d.coordinates,
-    getIcon: d => "marker",
-    getSize: 10,
-    getColor: d => [255, 128, 0],
-    onHover: ({ object, x, y }) => {
-      // const tooltip = `${object.name}\n${object.address}`;
-    }
-  });
-
   componentDidUpdate(prevProps, prevState) {
     console.debug("MapNG.componentDidUpdate() ", prevProps, prevState);
   }
 
   render() {
-    // if (!this.state.geojson) {
-    //   null;
-    // }
-    console.debug(MAP_STYLE);
-    // const layers = [
-    //   new LineLayer({ id: "line-layer", data: this.data }),
-    //   this.layer,
-    //   this.iconLayer
-    // ];
-    const { geojson, bbox } = this.props.panda;
-    console.log(">> deckGL.render() ", geojson, bbox, this.props.viewstate);
-    const layers = [this.makeGeoJSONLayer(geojson)];
-    // const viewstate =
-    //   geojson.features.length > 0
-        // ? Object.assign(this.props.viewstate, GeoHelper.bounds2Viewport(bbox))
-        // : this.props.viewstate;
+    const { geojson } = this.props.panda;
+    //const layers = [this.makeGeoJSONLayer(geojson)];
+    const pandaLayer = new PandaGL({ data: geojson.features });
+    console.log("PandaGL ", pandaLayer);
     return (
       <DeckGL
         initialViewState={this.INITIAL_VIEWSTATE}
         {...this.props.viewstate}
-        {...(geojson ? { layers: layers } : null)}
+        // {...(geojson ? { layers: layers } : null)}
+        layers={pandaLayer}
         controller={{ type: MapController, dragRotate: false }}
         onViewStateChange={this.props.onViewStateChanged}
       >
