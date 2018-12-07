@@ -12,6 +12,15 @@ interface IState {}
 
 export const DEFAULT_VIEWPORT = {center: new LatLng(40.730610, -73.935242), zoom: 12};
 
+export const INITIAL_VIEWPORT= {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    latitude: 40.730610,
+    longitude: -73.935242,
+    zoom: 12,
+    pitch: 45
+  };
+
 export default class DefaultUrLHandler extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
@@ -31,9 +40,11 @@ export default class DefaultUrLHandler extends React.Component<IProps, IState> {
     }
     GeoHelper.getLatLngFromIP().then(data => {
       if (data) {
-          this.props.onInitialized( { center: data, zoom: 12});
+          INITIAL_VIEWPORT.latitude = data.lat;
+          INITIAL_VIEWPORT.longitude = data.lng;
+          this.props.onInitialized(INITIAL_VIEWPORT);
       } else {
-          this.props.onInitialized(DEFAULT_VIEWPORT);
+          this.props.onInitialized(INITIAL_VIEWPORT);
       } 
 
     });

@@ -11,22 +11,21 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import { Toolbar } from "@material-ui/core";
-import { LatLngBounds } from "leaflet";
-import { GeoJSON } from "react-leaflet";
 
 import DefaultURLHandler from "./DefaultURLHandler";
 import LatLngURLHandler from "./LatLngURLHandler";
 import ShowPandaURLHandler from "./ShowPandaURLHandler";
 
 import * as GeoHelper from "./GeoHelper";
-import Editor from "./Editor";
+// import Editor from "./Editor";
 
 import * as restClient from "./RestClient";
-import BaseMap from "./BaseMap";
+// import BaseMap from "./BaseMap";
 import LastN from "./Filters/LastN";
-import { IViewport, IPanda } from "./types/CustomMapTypes";
+import { IPanda } from "./types/CustomMapTypes";
 import { FeatureCollection } from "geojson";
 import PandaMetaEditor from "./PandaMetaEditor";
+import MapNG from "./MapNG";
 
 const styles = {
   root: {
@@ -48,8 +47,7 @@ interface IAppProps extends RouteComponentProps {
 interface IAppState {
   panda: IPanda;
   mode: string;
-  viewport?: IViewport;
-  bbox?: LatLngBounds;
+  viewstate: any;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -60,8 +58,7 @@ class App extends React.Component<IAppProps, IAppState> {
     this.state = {
       panda: GeoHelper.NEW_PANDA(),
       mode: "edit",
-      viewport: undefined,
-      bbox: undefined
+      viewstate: GeoHelper.INITIAL_VIEWSTATE
     };
     this.editorRef = React.createRef();
   }
@@ -100,11 +97,17 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onDataLoaded = (data: IPanda): void => {
-    console.log("load new data", data.geojson);
+    console.log("App.onDataLoaded()", data.geojson);
+    console.log("  viewport: ", this.state.viewstate);
+    const newViewstate = Object.assign(
+      this.state.viewstate,
+      GeoHelper.bounds2Viewport(data.bbox)
+    );
+    console.log("  new viewport: ", newViewstate);
+
     this.setState({
       panda: data,
-      viewport: undefined,
-      bbox: data.bbox,
+      viewstate: newViewstate,
       mode: "sharing"
     });
   };
@@ -113,16 +116,20 @@ class App extends React.Component<IAppProps, IAppState> {
     const newPanda = this.state.panda;
     newPanda.geojson = geojson;
     newPanda.bbox = GeoHelper.bboxFromGeoJson(geojson);
-    this.setState({ panda: newPanda });
+    console.log("App.onEditUpdate() ", newPanda);
+    this.setState({
+      panda: newPanda,
+      viewstate: GeoHelper.bounds2Viewport(newPanda.bbox)
+    });
   };
 
-  onInitialized = (_viewport: IViewport) => {
-    console.log("setting initial URL", _viewport);
-    this.setState({ viewport: _viewport });
+  onInitialized = (_viewstate: any) => {
+    console.log("setting initial URL", _viewstate);
+    this.setState({ viewstate: _viewstate });
   };
 
-  onViewportChanged = (_viewport: IViewport) => {
-    this.setState({ viewport: _viewport, bbox: undefined });
+  onViewstateChanged = _viewstate => {
+    this.setState({ viewstate: _viewstate.viewState });
   };
 
   onDescriptionUpdate = (event: any) => {
@@ -147,6 +154,11 @@ class App extends React.Component<IAppProps, IAppState> {
     const { classes } = this.props;
     return (
       <div className={classes.root}>
+        <MapNG
+          panda={this.state.panda}
+          viewstate={this.state.viewstate}
+          onViewStateChanged={this.onViewstateChanged}
+        />
         <AppBar position="static">
           <Toolbar color="" variant="dense">
             <Typography variant="h6" color="inherit">
@@ -172,7 +184,8 @@ class App extends React.Component<IAppProps, IAppState> {
             />
           </Toolbar>
         </AppBar>
-        {(this.state.viewport || this.state.bbox) && (
+
+        {/* {(this.state.viewport || this.state.bbox) && (
           <BaseMap
             viewport={this.state.viewport}
             bbox={this.state.bbox}
@@ -184,14 +197,14 @@ class App extends React.Component<IAppProps, IAppState> {
                 onChange={this.onEditUpdated}
               />
             )}
-            {this.state.panda.geojson && this.state.mode == "sharing" && (
+            {this.state.panda.geojson && this.state.mode === "sharing" && (
               <GeoJSON
                 key={this.state.panda.uuid}
                 data={this.state.panda.geojson}
               />
             )}
           </BaseMap>
-        )}
+        )} */}
         <LastN />
         <Switch>
           <Route
@@ -199,7 +212,7 @@ class App extends React.Component<IAppProps, IAppState> {
             render={props => (
               <LatLngURLHandler
                 {...props}
-                onLatLngChanged={this.onViewportChanged}
+                onLatLngChanged={this.onViewstateChanged}
               />
             )}
           />
