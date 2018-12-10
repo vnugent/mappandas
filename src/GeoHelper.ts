@@ -50,8 +50,8 @@ export const bboxFromGeoJson = (
   ) {
     // turn a single point into a buffered box
     const point = geojson.features[0].geometry.coordinates;
-    const sw: [number, number] = [point[0] - 0.5, point[1] - 0.5];
-    const ne: [number, number] = [point[0] + 0.5, point[1] + 0.5];
+    const sw: [number, number] = [point[0] - 0.005, point[1] - 0.005];
+    const ne: [number, number] = [point[0] + 0.005, point[1] + 0.005];
     return [sw, ne];
   }
 
@@ -92,6 +92,7 @@ export const bounds2Viewport = (bounds: [number, number][]) => {
   return ViewportUtils.fitBounds({
     width: width,
     height: height,
-    bounds: bounds
+    bounds: bounds,
+    padding: 100
   });
 };

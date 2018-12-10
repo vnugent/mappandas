@@ -25,8 +25,10 @@ export default class ShowPandaURLHandler extends React.Component<
 
   componentDidMount() {
     const uuid = this.props.match.params["uuid"];
-    console.log("##ShowPandaURHLHandler.componentDidmount() ", uuid);
-    this.getGeojsonFromCacheOrRemote(uuid);
+    const editable: boolean =
+      this.props.match.params["edit"] === "edit" ? true : false;
+    console.log("##ShowPandaURHLHandler.componentDidmount() ", uuid, editable);
+    this.getGeojsonFromCacheOrRemote(uuid, editable);
   }
 
   componentWillUnmount() {
@@ -44,7 +46,7 @@ export default class ShowPandaURLHandler extends React.Component<
     return current !== next;
   }
 
-  getGeojsonFromCacheOrRemote = (uuid: string) => {
+  getGeojsonFromCacheOrRemote = (uuid: string, editable: boolean) => {
     const cache = localStorage.getItem(uuid);
     if (!cache) {
       console.log("Not found in cache");
@@ -52,12 +54,16 @@ export default class ShowPandaURLHandler extends React.Component<
         .get(uuid)
         .then(
           payload =>
-            payload && this.props.onDataLoaded(GeoHelper.parse(payload, {json: true}))
+            payload &&
+            this.props.onDataLoaded(
+              GeoHelper.parse(payload, { json: true }),
+              editable
+            )
         );
     } else {
       const data = GeoHelper.parse(cache);
       console.log("## found in cache", data);
-      this.props.onDataLoaded(data);
+      this.props.onDataLoaded(data, editable);
     }
   };
 

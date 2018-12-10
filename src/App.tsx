@@ -45,7 +45,9 @@ interface IAppProps extends RouteComponentProps {
 }
 
 interface IAppState {
+  editable: boolean;
   panda: IPanda;
+  editableJSON?: FeatureCollection;
   mode: string;
   viewstate: any;
 }
@@ -56,7 +58,9 @@ class App extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
     this.state = {
+      editable: false,
       panda: GeoHelper.NEW_PANDA(),
+      editableJSON: undefined,
       mode: "edit",
       viewstate: GeoHelper.INITIAL_VIEWSTATE
     };
@@ -96,7 +100,7 @@ class App extends React.Component<IAppProps, IAppState> {
     );
   };
 
-  onDataLoaded = (data: IPanda): void => {
+  onDataLoaded = (data: IPanda, editable: boolean): void => {
     console.log("App.onDataLoaded()", data.geojson);
     console.log("  viewport: ", this.state.viewstate);
     const newViewstate = Object.assign(
@@ -106,6 +110,7 @@ class App extends React.Component<IAppProps, IAppState> {
     console.log("  new viewport: ", newViewstate);
 
     this.setState({
+      editable: editable,
       panda: data,
       viewstate: newViewstate,
       mode: "sharing"
@@ -113,13 +118,13 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onEditUpdated = (geojson: FeatureCollection) => {
-    const newPanda = this.state.panda;
-    newPanda.geojson = geojson;
-    newPanda.bbox = GeoHelper.bboxFromGeoJson(geojson);
-    console.log("App.onEditUpdate() ", newPanda);
+    //     const newPanda = this.state.panda;
+    //     newPanda.geojson = geojson;
+    //     newPanda.bbox = GeoHelper.bboxFromGeoJson(geojson);
+    console.log("App.onEditUpdate() ", geojson);
     this.setState({
-      panda: newPanda,
-      viewstate: GeoHelper.bounds2Viewport(newPanda.bbox)
+      editableJSON: geojson
+      //viewstate: GeoHelper.bounds2Viewport(newPanda.bbox)
     });
   };
 
@@ -154,11 +159,6 @@ class App extends React.Component<IAppProps, IAppState> {
     const { classes } = this.props;
     return (
       <div className={classes.root}>
-        <MapNG
-          panda={this.state.panda}
-          viewstate={this.state.viewstate}
-          onViewStateChanged={this.onViewstateChanged}
-        />
         <AppBar position="static">
           <Toolbar color="" variant="dense">
             <Typography variant="h6" color="inherit">
@@ -184,7 +184,16 @@ class App extends React.Component<IAppProps, IAppState> {
             />
           </Toolbar>
         </AppBar>
-
+        <div className="mapng-container">
+          <MapNG
+            editable={this.state.editable}
+            editableJson={this.state.editableJSON}
+            panda={this.state.panda}
+            viewstate={this.state.viewstate}
+            onViewStateChanged={this.onViewstateChanged}
+            onEditUpdated={this.onEditUpdated}
+          />
+        </div>
         {/* {(this.state.viewport || this.state.bbox) && (
           <BaseMap
             viewport={this.state.viewport}
@@ -217,7 +226,7 @@ class App extends React.Component<IAppProps, IAppState> {
             )}
           />
           <Route
-            path="/p/:uuid"
+            path="/p/:uuid/:edit?"
             render={props => (
               <ShowPandaURLHandler
                 key={props.location.key}
