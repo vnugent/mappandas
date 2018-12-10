@@ -8,12 +8,14 @@ import { IPanda } from "./types/CustomMapTypes";
 
 const uuidv1 = require("uuid/v1");
 
+export const NEW_FC = (): FeatureCollection => ({
+  type: "FeatureCollection",
+  features: []
+});
+
 export const NEW_PANDA = (): IPanda => ({
   uuid: uuidv1(),
-  geojson: {
-    type: "FeatureCollection",
-    features: []
-  },
+  geojson: NEW_FC(),
   bbox: [[0, 0], [0, 0]],
   description: ""
 });

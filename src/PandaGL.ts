@@ -1,5 +1,4 @@
 import { CompositeLayer, GeoJsonLayer, IconLayer } from "deck.gl";
-import { EditableGeoJsonLayer } from "nebula.gl";
 import { Feature, FeatureCollection } from "geojson";
 import { featureCollection } from "@turf/helpers";
 
@@ -26,29 +25,11 @@ export default class PandaGL extends CompositeLayer implements IProps {
 
   constructor(props: any) {
     super(props);
-    // this.state = {
-    //     mode: 'modify',
-    //     selectedFeatureIndexes: [0],
-    //     data: myFeatureCollection
-    //   };
-  }
-
-  makeEditableLayer(fc: FeatureCollection) {
-    return new EditableGeoJsonLayer({
-      id: "geojson-layer",
-      data: fc,
-      mode: "modify",
-      selectedFeatureIndexes: [0],
-
-      onEdit: ({ updatedData }) => {
-        console.log("Editing data ", updatedData);
-      }
-    });
   }
 
   makeGeoJSONLayer(fc: FeatureCollection) {
     return new GeoJsonLayer({
-      id: "geojson-layer",
+      id: "panda-geojson-layer",
       data: fc,
       pickable: true,
       stroked: false,
@@ -68,7 +49,7 @@ export default class PandaGL extends CompositeLayer implements IProps {
 
   makePointLayer(points: Feature[]) {
     return new IconLayer({
-      id: "icon-layer",
+      id: "panda-icon-layer",
       data: points,
       pickable: true,
       iconAtlas: "/icon-atlas.png",

@@ -17,10 +17,7 @@ import LatLngURLHandler from "./LatLngURLHandler";
 import ShowPandaURLHandler from "./ShowPandaURLHandler";
 
 import * as GeoHelper from "./GeoHelper";
-// import Editor from "./Editor";
-
 import * as restClient from "./RestClient";
-// import BaseMap from "./BaseMap";
 import LastN from "./Filters/LastN";
 import { IPanda } from "./types/CustomMapTypes";
 import { FeatureCollection } from "geojson";
@@ -47,7 +44,7 @@ interface IAppProps extends RouteComponentProps {
 interface IAppState {
   editable: boolean;
   panda: IPanda;
-  editableJSON?: FeatureCollection;
+  editableJSON: FeatureCollection;
   mode: string;
   viewstate: any;
 }
@@ -60,7 +57,10 @@ class App extends React.Component<IAppProps, IAppState> {
     this.state = {
       editable: false,
       panda: GeoHelper.NEW_PANDA(),
-      editableJSON: undefined,
+      editableJSON: {
+        type: "FeatureCollection",
+        features: []
+      },
       mode: "edit",
       viewstate: GeoHelper.INITIAL_VIEWSTATE
     };
@@ -91,8 +91,9 @@ class App extends React.Component<IAppProps, IAppState> {
 
     this.setState(
       {
-        mode: "edit",
-        panda: GeoHelper.NEW_PANDA()
+        editable: true,
+        panda: GeoHelper.NEW_PANDA(),
+        editableJSON: GeoHelper.NEW_FC()
       },
       () => {
         this.props.history.push("/", { dontMoveMap: true });
@@ -112,6 +113,7 @@ class App extends React.Component<IAppProps, IAppState> {
     this.setState({
       editable: editable,
       panda: data,
+      editableJSON: data.geojson,
       viewstate: newViewstate,
       mode: "sharing"
     });
@@ -187,8 +189,7 @@ class App extends React.Component<IAppProps, IAppState> {
         <div className="mapng-container">
           <MapNG
             editable={this.state.editable}
-            editableJson={this.state.editableJSON}
-            panda={this.state.panda}
+            geojson={this.state.editableJSON}
             viewstate={this.state.viewstate}
             onViewStateChanged={this.onViewstateChanged}
             onEditUpdated={this.onEditUpdated}

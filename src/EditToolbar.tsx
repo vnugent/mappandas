@@ -18,6 +18,7 @@ const styles: any = theme => ({
 
 interface IProps {
   classes: any;
+  mode: string;
   onModeChange: (any) => void;
 }
 
@@ -42,34 +43,24 @@ class EditToolbar extends React.Component<IProps, IState> {
     };
   }
 
-  _onDrawPointClick = () =>
-    this.setState({ mode: "drawPoint" }, () =>
-      this.props.onModeChange({
-        prevMode: this.state.mode,
-        currentMode: "drawPoint"
-      })
-    );
-  _onEditButtonClick = () =>
-    this.setState({ mode: "modify" }, () =>
-      this.props.onModeChange({
-        prevMode: this.state.mode,
-        currentMode: "modify"
-      })
-    );
-
   render() {
     const { classes } = this.props;
 
     return (
       <div className="edittoolbar">
         <Button
-          {...(this.state.mode === "drawPoint"
+          {...(this.props.mode === "drawPoint"
             ? { variant: "contained" }
             : { variant: "outlined" })}
           size="small"
           color="secondary"
           className={classes.margin}
-          onClick={this._onDrawPointClick}
+          onClick={() =>
+            this.props.onModeChange({
+              prevMode: this.state.mode,
+              currentMode: "drawPoint"
+            })
+          }
         >
           Point
         </Button>
@@ -83,21 +74,34 @@ class EditToolbar extends React.Component<IProps, IState> {
           Polygon
         </Button>
         <Button
-          {...(this.state.mode === "modify"
+          {...(this.props.mode === "move"
             ? { variant: "contained" }
             : { variant: "outlined" })}
           size="small"
           color="secondary"
           className={classes.margin}
-          onClick={this._onEditButtonClick}
+          onClick={() =>
+            this.props.onModeChange({
+              prevMode: this.state.mode,
+              currentMode: "move"
+            })
+          }
         >
-          Edit
+          Move
         </Button>
         <Button
-          variant="outlined"
+          {...(this.props.mode === "deletePoint"
+            ? { variant: "contained" }
+            : { variant: "outlined" })}
           size="small"
-          color="primary"
+          color="secondary"
           className={classes.margin}
+          onClick={() =>
+            this.props.onModeChange({
+              prevMode: this.props.mode,
+              currentMode: "deletePoint"
+            })
+          }
         >
           Delete
         </Button>
