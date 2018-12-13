@@ -6,11 +6,7 @@ import {
   withRouter,
   RouteComponentProps
 } from "react-router-dom";
-import AppBar from "@material-ui/core/AppBar";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import { withStyles } from "@material-ui/core/styles";
-import { Toolbar } from "@material-ui/core";
+import { AppBar, Button, Typography, Toolbar, withStyles } from "@material-ui/core";
 import { FeatureCollection } from "geojson";
 import * as _ from "underscore";
 
@@ -171,7 +167,7 @@ class App extends React.Component<IAppProps, IAppState> {
     const height = window.innerHeight;
     const newViewport = Object.assign({}, this.state.viewstate);
     newViewport.width = width;
-    newViewport.height = height-50;
+    newViewport.height = height - 50;
     this.setState({ viewstate: newViewport });
   }, 400);
 
@@ -228,26 +224,6 @@ class App extends React.Component<IAppProps, IAppState> {
             onEditUpdated={this.onEditUpdated}
           />
         </div>
-        {/* {(this.state.viewport || this.state.bbox) && (
-          <BaseMap
-            viewport={this.state.viewport}
-            bbox={this.state.bbox}
-            onViewportChanged={this.onViewportChanged}
-          >
-            {this.state.mode === "edit" && (
-              <Editor
-                ref={ref => (this.editorRef = ref)}
-                onChange={this.onEditUpdated}
-              />
-            )}
-            {this.state.panda.geojson && this.state.mode === "sharing" && (
-              <GeoJSON
-                key={this.state.panda.uuid}
-                data={this.state.panda.geojson}
-              />
-            )}
-          </BaseMap>
-        )} */}
         <LastN />
         <Switch>
           <Route

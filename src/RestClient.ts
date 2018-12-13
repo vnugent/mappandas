@@ -25,8 +25,8 @@ export const get = async (uuid: string): Promise<string | undefined> => {
   }
 };
 
-export const getLastN = async (limit: number): Promise<Array<Object>> => {
-  const response = await client.get<Array<Object>>(`/lastn/${limit}`);
+export const getLastN = async (limit: number): Promise<Array<any>> => {
+  const response = await client.get<Array<any>>(`/lastn/${limit}`);
   if (response) {
     return response.data;
   }

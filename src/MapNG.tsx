@@ -1,12 +1,13 @@
 import * as React from "react";
 import DeckGL, { MapController } from "deck.gl";
 import { StaticMap } from "react-map-gl";
-import { FeatureCollection } from "geojson";
 import { EditableGeoJsonLayer } from "nebula.gl";
+import { FeatureCollection } from "geojson";
 
 import EditToolbar from "./EditToolbar";
 import PandaGL from "./PandaGL";
 import MyDrawPointHandler from "./MyDrawPointHandler";
+import * as GeoHelper from "./GeoHelper";
 
 const CUSTOM_MODEHANDLERS = {
   ...EditableGeoJsonLayer.defaultProps.modeHandlers,
@@ -41,15 +42,6 @@ class MapNG extends React.Component<IProps, IState> {
       mode: "drawPoint"
     };
   }
-
-  INITIAL_VIEWSTATE = {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    latitude: 37.7577,
-    longitude: -122.4376,
-    zoom: 8,
-    pitch: 45
-  };
 
   makeEditableLayer = (fc: FeatureCollection) => {
     return new EditableGeoJsonLayer({
@@ -148,7 +140,12 @@ class MapNG extends React.Component<IProps, IState> {
   render() {
     const { editable, geojson } = this.props;
     const layers = editable
-      ? [this.makeEditableLayer(geojson), this.state.mode!=="move" ? new PandaGL({ data: geojson.features }):null]
+      ? [
+          this.makeEditableLayer(geojson),
+          this.state.mode !== "move"
+            ? new PandaGL({ data: geojson.features })
+            : null
+        ]
       : new PandaGL({ data: geojson.features });
 
     console.log("MapNG layers ", layers);
@@ -161,7 +158,7 @@ class MapNG extends React.Component<IProps, IState> {
           />
         )}
         <DeckGL
-          initialViewState={this.INITIAL_VIEWSTATE}
+          initialViewState={GeoHelper.INITIAL_VIEWSTATE}
           {...this.props.viewstate}
           layers={layers}
           controller={{

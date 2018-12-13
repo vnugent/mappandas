@@ -1,14 +1,18 @@
-import { LatLng } from "leaflet";
 import { FeatureCollection } from "geojson";
 
-export interface IViewport {
-  center: LatLng;
-  zoom: number;
-}
+/**
+ * [Latitude, Longitude] 
+ */
+export type LatL0ng = [number, number];
+
+/**
+ * Bounding box
+ */
+export type Bbox0 = [LatL0ng, LatL0ng];
 
 export interface IPanda {
   uuid: string;
   geojson: FeatureCollection;
-  bbox: [number, number][];
+  bbox: Bbox0;
   description: string;
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 import bbox from "@turf/bbox";
 import { FeatureCollection } from "geojson";
-import { LatLng } from "leaflet";
+import { LatL0ng, Bbox0 } from "./types/CustomMapTypes";
 import * as ViewportUtils from "viewport-mercator-project";
 
 import { IPanda } from "./types/CustomMapTypes";
@@ -29,23 +29,25 @@ export const INITIAL_VIEWSTATE = {
   pitch: 40
 };
 
-export const getLatLngFromIP = async (): Promise<LatLng | undefined> => {
+export const getLatLngFromIP = async (): Promise<LatL0ng | undefined> => {
   try {
     const response = await axios.get(
       "https://api.ipgeolocation.io/ipgeo?apiKey=95f145109e96461794291b908055398d&fields=latitude,longitude"
     );
-    return new LatLng(response.data.latitude, response.data.longitude);
+    if (isNaN(response.data.latitude) || isNaN(response.data.longitude)) {
+        return undefined;
+    }
+    return [Number(response.data.latitude), Number(response.data.longitude)];
   } catch (error) {
     console.error("getLatLngFromIP() error ", error);
     return undefined;
   }
 };
 
-export const bboxFlip = bbox => [[bbox[1], bbox[0]], [bbox[3], bbox[2]]];
 
 export const bboxFromGeoJson = (
   geojson: FeatureCollection
-): [number, number][] => {
+): Bbox0 => {
   if (
     geojson.features.length === 1 &&
     geojson.features[0].geometry.type === "Point"
@@ -64,11 +66,6 @@ export const bboxFromGeoJson = (
 };
 
 export const stringify = (panda: IPanda) => {
-  //   const bbox = panda.bbox;
-  //   const bboxArray = [
-  //     [bbox.getSouth(), bbox.getWest()],
-  //     [bbox.getNorth(), bbox.getEast()]
-  //   ];
   return JSON.stringify({
     uuid: panda.uuid,
     bbox: panda.bbox,
@@ -82,7 +79,7 @@ export const parse = (s: string, options?: any): IPanda => {
   return {
     uuid: data.uuid,
     //bbox: new LatLngBounds(data.bbox),
-    bbox: bboxFromGeoJson(data.geojson),
+    bbox: bboxFromGeoJson(data.geojson), // re-calculating bbox each time
     description: data.description,
     geojson: data.geojson
   };

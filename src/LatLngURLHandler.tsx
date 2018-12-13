@@ -1,31 +1,33 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router-dom";
-
-import { IViewport } from "./types/CustomMapTypes";
-import { LatLng } from "leaflet";
-import { DEFAULT_VIEWPORT } from "./DefaultURLHandler";
+import * as GeoHelper from "./GeoHelper";
 
 interface IProps extends RouteComponentProps {
   onLatLngChanged: Function;
 }
 
-interface IState {
-  viewport?: IViewport;
-  onViewportChanged: Function;
-}
-
-export default class LatLngURLHandler extends React.Component<IProps, IState> {
+export default class LatLngURLHandler extends React.Component<IProps, {}> {
   constructor(props: IProps) {
     super(props);
   }
 
-  parseParams = (): IViewport => {
+  parseParams = () => {
     const params = this.props.match.params;
     if (params["lat"] && params["lng"]) {
       const zoom = params["zoom"] ? params["zoom"] : 12;
-      return { center: new LatLng(params["lat"], params["lng"]), zoom: zoom };
+      if (isNaN(params["lat"]) || isNaN(params["lng"])) {
+          return GeoHelper.INITIAL_VIEWSTATE;
+      }
+
+      return {
+        ...GeoHelper.INITIAL_VIEWSTATE,
+        latitude: Number(params["lat"]),
+        longitude: Number(params["lng"]),
+        zoom: zoom
+      };
     }
-    return DEFAULT_VIEWPORT;
+
+    return GeoHelper.INITIAL_VIEWSTATE;
   };
 
   componentDidMount() {
