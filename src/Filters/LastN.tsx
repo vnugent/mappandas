@@ -26,7 +26,7 @@ class LastN extends React.Component<ILastNProps, ILastNState> {
   componentDidMount() {
     this.interval = setInterval(() => {
       this.getAsyncData();
-    }, 5000);
+    }, 25000);
   }
 
   componentWillUnmount() {

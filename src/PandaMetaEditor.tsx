@@ -5,7 +5,7 @@ import TextField from "@material-ui/core/TextField";
 interface IProps {
   classes: any;
   description: string;
-  mode: string;
+  editable: boolean;
   onDescriptionUpdate: (event: any) => void;
 }
 
@@ -45,7 +45,7 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
           className={classes.textField}
           error={!this.props.description}
           value={this.props.description}
-          disabled={this.props.mode === "edit" ? false : true}
+          disabled={!this.props.editable}
           onChange={this.props.onDescriptionUpdate}
           required={true}
           inputProps={{

@@ -10,7 +10,6 @@ import MyDrawPointHandler from "./MyDrawPointHandler";
 
 const CUSTOM_MODEHANDLERS = {
   ...EditableGeoJsonLayer.defaultProps.modeHandlers,
-  //deletePoint: new DeleteHandler(),
   drawPoint: new MyDrawPointHandler()
 };
 
