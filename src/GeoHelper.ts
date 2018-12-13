@@ -1,20 +1,33 @@
 import axios from "axios";
 import bbox from "@turf/bbox";
 import { FeatureCollection } from "geojson";
-import { LatLngBounds, LatLng } from "leaflet";
+import { LatLng } from "leaflet";
+import * as ViewportUtils from "viewport-mercator-project";
+
 import { IPanda } from "./types/CustomMapTypes";
 
 const uuidv1 = require("uuid/v1");
 
+export const NEW_FC = (): FeatureCollection => ({
+  type: "FeatureCollection",
+  features: []
+});
+
 export const NEW_PANDA = (): IPanda => ({
   uuid: uuidv1(),
-  geojson: {
-    type: "FeatureCollection",
-    features: []
-  },
-  bbox: new LatLngBounds([[0, 0], [0, 0]]),
+  geojson: NEW_FC(),
+  bbox: [[0, 0], [0, 0]],
   description: ""
 });
+
+export const INITIAL_VIEWSTATE = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+  latitude: 37.7577,
+  longitude: -122.4376,
+  zoom: 12,
+  pitch: 40
+};
 
 export const getLatLngFromIP = async (): Promise<LatLng | undefined> => {
   try {
@@ -30,33 +43,35 @@ export const getLatLngFromIP = async (): Promise<LatLng | undefined> => {
 
 export const bboxFlip = bbox => [[bbox[1], bbox[0]], [bbox[3], bbox[2]]];
 
-export const bboxFromGeoJson = (geojson: FeatureCollection): LatLngBounds => {
+export const bboxFromGeoJson = (
+  geojson: FeatureCollection
+): [number, number][] => {
   if (
     geojson.features.length === 1 &&
     geojson.features[0].geometry.type === "Point"
   ) {
-    // turn a single point into a box
+    // turn a single point into a buffered box
     const point = geojson.features[0].geometry.coordinates;
-    const sw = new LatLng(point[1] - 0.5, point[0] - 0.5);
-    const ne = new LatLng(point[1] + 0.5, point[0] + 0.5);
-    return new LatLngBounds(sw, ne);
+    const sw: [number, number] = [point[0] - 0.005, point[1] - 0.005];
+    const ne: [number, number] = [point[0] + 0.005, point[1] + 0.005];
+    return [sw, ne];
   }
 
   const _bbox = bbox(geojson);
-  const sw = new LatLng(_bbox[1], _bbox[0]);
-  const ne = new LatLng(_bbox[3], _bbox[2]);
-  return new LatLngBounds(sw, ne);
+  const sw: [number, number] = [_bbox[0], _bbox[1]];
+  const ne: [number, number] = [_bbox[2], _bbox[3]];
+  return [sw, ne];
 };
 
 export const stringify = (panda: IPanda) => {
-  const bbox = panda.bbox;
-  const bboxArray = [
-    [bbox.getSouth(), bbox.getWest()],
-    [bbox.getNorth(), bbox.getEast()]
-  ];
+  //   const bbox = panda.bbox;
+  //   const bboxArray = [
+  //     [bbox.getSouth(), bbox.getWest()],
+  //     [bbox.getNorth(), bbox.getEast()]
+  //   ];
   return JSON.stringify({
     uuid: panda.uuid,
-    bbox: bboxArray,
+    bbox: panda.bbox,
     description: panda.description,
     geojson: panda.geojson
   });
@@ -66,8 +81,20 @@ export const parse = (s: string, options?: any): IPanda => {
   const data = options && options.json ? s : JSON.parse(s);
   return {
     uuid: data.uuid,
-    bbox: new LatLngBounds(data.bbox),
+    //bbox: new LatLngBounds(data.bbox),
+    bbox: bboxFromGeoJson(data.geojson),
     description: data.description,
     geojson: data.geojson
   };
+};
+
+export const bounds2Viewport = (bounds: [number, number][]) => {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  return ViewportUtils.fitBounds({
+    width: width,
+    height: height,
+    bounds: bounds,
+    padding: 100
+  });
 };
