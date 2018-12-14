@@ -8,7 +8,7 @@ export type LatL0ng = [number, number];
 /**
  * Bounding box
  */
-export type Bbox0 = [LatL0ng, LatL0ng];
+export type Bbox0 = [number, number, number, number];
 
 export interface IPanda {
   uuid: string;

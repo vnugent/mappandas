@@ -16,7 +16,7 @@ export const NEW_FC = (): FeatureCollection => ({
 export const NEW_PANDA = (): IPanda => ({
   uuid: uuidv1(),
   geojson: NEW_FC(),
-  bbox: [[0, 0], [0, 0]],
+  bbox: [0, 0, 0, 0],
   description: ""
 });
 
@@ -35,7 +35,7 @@ export const getLatLngFromIP = async (): Promise<LatL0ng | undefined> => {
       "https://api.ipgeolocation.io/ipgeo?apiKey=95f145109e96461794291b908055398d&fields=latitude,longitude"
     );
     if (isNaN(response.data.latitude) || isNaN(response.data.longitude)) {
-        return undefined;
+      return undefined;
     }
     return [Number(response.data.latitude), Number(response.data.longitude)];
   } catch (error) {
@@ -44,25 +44,23 @@ export const getLatLngFromIP = async (): Promise<LatL0ng | undefined> => {
   }
 };
 
-
-export const bboxFromGeoJson = (
-  geojson: FeatureCollection
-): Bbox0 => {
+export const bboxFromGeoJson = (geojson: FeatureCollection): Bbox0 => {
   if (
     geojson.features.length === 1 &&
     geojson.features[0].geometry.type === "Point"
   ) {
     // turn a single point into a buffered box
     const point = geojson.features[0].geometry.coordinates;
-    const sw: [number, number] = [point[0] - 0.005, point[1] - 0.005];
-    const ne: [number, number] = [point[0] + 0.005, point[1] + 0.005];
-    return [sw, ne];
+    return [
+      point[0] - 0.005,
+      point[1] - 0.005,
+      point[0] + 0.005,
+      point[1] + 0.005
+    ];
   }
 
   const _bbox = bbox(geojson);
-  const sw: [number, number] = [_bbox[0], _bbox[1]];
-  const ne: [number, number] = [_bbox[2], _bbox[3]];
-  return [sw, ne];
+  return [_bbox[0], _bbox[1], _bbox[2], _bbox[3]];
 };
 
 export const stringify = (panda: IPanda) => {
@@ -85,13 +83,13 @@ export const parse = (s: string, options?: any): IPanda => {
   };
 };
 
-export const bounds2Viewport = (bounds: [number, number][]) => {
+export const bbox2Viewport = (bbox: Bbox0) => {
   const width = window.innerWidth;
   const height = window.innerHeight;
   return ViewportUtils.fitBounds({
     width: width,
     height: height,
-    bounds: bounds,
+    bounds: [bbox.slice(0,2), bbox.slice(2, 4)],
     padding: 100
   });
 };

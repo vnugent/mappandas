@@ -104,7 +104,7 @@ class App extends React.Component<IAppProps, IAppState> {
     console.log("  viewport: ", this.state.viewstate);
     const newViewstate = Object.assign(
       this.state.viewstate,
-      GeoHelper.bounds2Viewport(data.bbox)
+      GeoHelper.bbox2Viewport(data.bbox)
     );
     console.log("  new viewport: ", newViewstate);
 
