@@ -24,8 +24,7 @@ import MapNG from "./MapNG";
 import ShareScreen from "./ShareScreen";
 
 const styles = {
-  root: {
-  },
+  root: {},
   grow: {
     flexGrow: 1
   },
@@ -52,22 +51,20 @@ interface IAppState {
 }
 
 class App extends React.Component<IAppProps, IAppState> {
-  private editorRef;
-
   constructor(props: IAppProps) {
     super(props);
     this.state = {
-      panda: GeoHelper.NEW_PANDA(),
-      editableJSON: {
-        type: "FeatureCollection",
-        features: []
-      },
-      mode: "view",
-      share_screen: false,
-      viewstate: GeoHelper.INITIAL_VIEWSTATE
+      ...this.getState0()
     };
-    this.editorRef = React.createRef();
   }
+
+  getState0 = (): IAppState => ({
+    panda: GeoHelper.NEW_PANDA(),
+    editableJSON: GeoHelper.NEW_FC(),
+    mode: "view",
+    share_screen: false,
+    viewstate: GeoHelper.INITIAL_VIEWSTATE()
+  });
 
   onShareButtonClick = () => {
     const uri = `/p/${this.state.panda.uuid}`;
@@ -82,19 +79,11 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onNewButtonClick = () => {
-    if (
-      this.state.panda.geojson &&
-      this.editorRef &&
-      typeof this.editorRef.clear === "function"
-    ) {
-      this.editorRef.clear();
-    }
-
     this.setState(
       {
-        mode: "edit",
         panda: GeoHelper.NEW_PANDA(),
-        editableJSON: GeoHelper.NEW_FC()
+        editableJSON: GeoHelper.NEW_FC(),
+        mode: "edit"
       },
       () => {
         this.props.history.push("/", { dontMoveMap: true });
@@ -162,6 +151,14 @@ class App extends React.Component<IAppProps, IAppState> {
     return flag;
   };
 
+  onCancelEdit = () =>
+    this.setState(
+      { panda: GeoHelper.NEW_PANDA(), editableJSON: GeoHelper.NEW_FC(), mode: "view" },
+      () => {
+        this.props.history.push("/", { dontMoveMap: true });
+      }
+    );
+
   onShareScreenClose = event => {
     this.setState(
       { share_screen: false },
@@ -174,11 +171,16 @@ class App extends React.Component<IAppProps, IAppState> {
     const height = window.innerHeight;
     const newViewport = Object.assign({}, this.state.viewstate);
     newViewport.width = width;
-    newViewport.height = height - 50;
+    newViewport.height = height;
     this.setState({ viewstate: newViewport });
   }, 400);
 
   componentDidMount() {
+    GeoHelper.getLatLngFromIP().then(latlng => {
+      GeoHelper.MY_LATLNG.latitude = latlng[0];
+      GeoHelper.MY_LATLNG.longitude = latlng[1];
+      this.setState({ viewstate: GeoHelper.INITIAL_VIEWSTATE() });
+    });
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions);
   }
@@ -226,6 +228,7 @@ class App extends React.Component<IAppProps, IAppState> {
           onDescriptionUpdate={this.onDescriptionUpdate}
           sharable={this.isSharable()}
           onShare={this.onShareButtonClick}
+          onCancel={this.onCancelEdit}
         />
         <LastN />
         <Switch>

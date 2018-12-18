@@ -15,6 +15,7 @@ interface IProps {
   sharable: boolean;
   onShare: () => void;
   onDescriptionUpdate: (event: any) => void;
+  onCancel: () => void;
 }
 
 interface IState {}
@@ -22,7 +23,6 @@ interface IState {}
 const styles = theme => ({
   root: {
     background: "#b2b9e1",
-    zIndex: 1000,
     margin: theme.spacing.unit
   },
   textField: {
@@ -65,7 +65,7 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
     );
   }
 
-  readOnlyText = ({ classes, description }) => (
+  readOnlyText = ({ classes, description }) => ( !description ? null :  
     <div className={classes.roText}>
       <Typography variant="h4">
         {description}
@@ -73,7 +73,7 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
     </div>
   );
 
-  editableForm = ({ classes, editable, description, sharable }) => (
+  editableForm = ({ classes, editable, description, sharable, onCancel }) => (
     <>
       <Input
         id="standard-name"
@@ -105,7 +105,7 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
         <Button
           color="default"
           className={classes.button}
-          //onClick={this.handleClose}
+          onClick={onCancel}
         >
           Cancel
         </Button>

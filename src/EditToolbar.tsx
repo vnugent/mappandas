@@ -1,18 +1,20 @@
 import * as React from "react";
-import Button from "@material-ui/core/Button";
+import { Button, Paper } from "@material-ui/core";
+import { PinDropRounded } from "@material-ui/icons";
 import { withStyles } from "@material-ui/core/styles";
 import { FeatureCollection } from "@turf/helpers";
 
 const styles: any = theme => ({
   root: {
+    background: "white",
+    padding: 2,
     display: "flex",
     flexDirection: "column",
-    flexShrink: "1",
-    maxWidth: 80,
-    zIndex: 1000
+    width: 80
   },
-  chip: {
-    margin: theme.spacing.unit
+  button: {
+      color: "#ab003c",
+      padding: 4
   }
 });
 
@@ -48,63 +50,65 @@ class EditToolbar extends React.Component<IProps, IState> {
 
     return (
       <div className="edittoolbar">
-        <Button
-          {...(this.props.mode === "drawPoint"
-            ? { variant: "contained" }
-            : { variant: "outlined" })}
-          size="small"
-          color="secondary"
-          className={classes.margin}
-          onClick={() =>
-            this.props.onModeChange({
-              prevMode: this.state.mode,
-              currentMode: "drawPoint"
-            })
-          }
-        >
-          Point
-        </Button>
-        <Button
-          variant="outlined"
-          disabled={true}
-          size="small"
-          color="primary"
-          className={classes.margin}
-        >
-          Polygon
-        </Button>
-        <Button
-          {...(this.props.mode === "move"
-            ? { variant: "contained" }
-            : { variant: "outlined" })}
-          size="small"
-          color="secondary"
-          className={classes.margin}
-          onClick={() =>
-            this.props.onModeChange({
-              prevMode: this.state.mode,
-              currentMode: "move"
-            })
-          }
-        >
-          Move
-        </Button>
-        <Button
-          {...(this.props.mode === "deletePoint"
-            ? { variant: "contained" }
-            : { variant: "outlined" })}
-          size="small"
-          color="secondary"
-          className={classes.margin}
-          onClick={() =>
-            this.props.onModeChange({
-              prevMode: this.props.mode,
-              currentMode: "deletePoint"
-            })
-          }
-        >
-          Delete
-        </Button>
+        <Paper className={classes.root} elevation={2}>
+          <Button
+            {...(this.props.mode === "drawPoint"
+              ? { variant: "contained" }
+              : { variant: "outlined" })}
+            size="medium"
+            color="secondary"
+            className={classes.button}
+            onClick={() =>
+              this.props.onModeChange({
+                prevMode: this.state.mode,
+                currentMode: "drawPoint"
+              })
+            }
+          >
+            <PinDropRounded />
+          </Button>
+          {/* <Button
+            variant="outlined"
+            disabled={true}
+            size="small"
+            color="primary"
+            className={classes.margin}
+          >
+            Polygon
+          </Button> */}
+          <Button
+            {...(this.props.mode === "move"
+              ? { variant: "contained" }
+              : { variant: "outlined" })}
+            size="medium"
+            color="secondary"
+            className={classes.button}
+            onClick={() =>
+              this.props.onModeChange({
+                prevMode: this.state.mode,
+                currentMode: "move"
+              })
+            }
+          >
+            Move
+          </Button>
+          <Button
+            {...(this.props.mode === "deletePoint"
+              ? { variant: "contained" }
+              : { variant: "outlined" })}
+            size="medium"
+            color="secondary"
+            className={classes.button}
+            onClick={() =>
+              this.props.onModeChange({
+                prevMode: this.props.mode,
+                currentMode: "deletePoint"
+              })
+            }
+          >
+            Delete
+          </Button>
+        </Paper>
       </div>
     );
   }

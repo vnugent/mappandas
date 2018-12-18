@@ -70,13 +70,18 @@ interface IProps {
   classes: any;
 }
 
-interface IState {}
+interface IState {
+  copied: boolean;
+}
 
 class ShareScreen extends React.Component<IProps, IState> {
   private urlFieldRef: React.RefObject<HTMLInputElement>;
 
   constructor(props: IProps) {
     super(props);
+    this.state = {
+      copied: false
+    };
     this.urlFieldRef = React.createRef();
   }
   handleClose = () => {
@@ -110,8 +115,13 @@ class ShareScreen extends React.Component<IProps, IState> {
               contentEditable={false}
               onClick={this._copy}
             />
-            <Button size="medium" color="primary" className={classes.button}>
-              Copy to clipboard
+            <Button
+              size="medium"
+              color="primary"
+              onClick={this._copy}
+              className={classes.button}
+            >
+              {this.state.copied ? "Copied to clipboard" : "Copy to clipboard"}
             </Button>
           </DialogContentText>
           <DialogActions>
@@ -125,8 +135,6 @@ class ShareScreen extends React.Component<IProps, IState> {
               Create new Panda
             </Button>
             <Button
-              variant="contained"
-              color="secondary"
               size="medium"
               className={classes.button}
               onClick={this.handleClose}
@@ -142,6 +150,7 @@ class ShareScreen extends React.Component<IProps, IState> {
   _copy = () => {
     (this.urlFieldRef.current as HTMLInputElement).select();
     document.execCommand("copy");
+    this.setState({ copied: true });
   };
 }
 

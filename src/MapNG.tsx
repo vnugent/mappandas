@@ -8,7 +8,6 @@ import { FeatureCollection } from "geojson";
 import EditToolbar from "./EditToolbar";
 import PandaGL from "./PandaGL";
 import MyDrawPointHandler from "./MyDrawPointHandler";
-import * as GeoHelper from "./GeoHelper";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoibWFwcGFuZGFzIiwiYSI6ImNqcDdzbW12aTBvOHAzcW82MGg0ZTRrd3MifQ.MYiNJHklgMkRzapAKuTQNg";
@@ -18,7 +17,7 @@ const CUSTOM_MODEHANDLERS = {
 };
 
 const EDIT_MODE_TO_HANDLER_MAP = {
-  drawPoint: { nebula_mode: "drawPoint", cursor: "default" },
+  drawPoint: { nebula_mode: "drawPoint", cursor: "crosshair" },
   move: { nebula_mode: "modify", cursor: "move" },
   deletePoint: { nebula_mode: "view", cursor: "grabbing" }
 };
@@ -35,7 +34,7 @@ interface IProps {
 interface IState {
   selectedFeatureIndexes: any[];
   mode: string;
-  searchResultLayer: any;
+  searchResultLayer: GeoJsonLayer;
 }
 
 class MapNG extends React.Component<IProps, IState> {
@@ -161,6 +160,12 @@ class MapNG extends React.Component<IProps, IState> {
   //     });
   //   };
 
+//   componentDidUpdate() {
+//     if (this.props.editable && this.state.mode === "readonly") {
+//       this.setState({ mode: "drawPoint" });
+//     }
+//   }
+
   render() {
     const { editable, geojson } = this.props;
     const layers = editable
@@ -170,9 +175,12 @@ class MapNG extends React.Component<IProps, IState> {
             ? new PandaGL({ data: geojson.features })
             : null
         ]
-      : new PandaGL({ data: geojson.features });
+      : [new PandaGL({ data: geojson.features })];
 
-    console.log("MapNG layers ", layers);
+    if (this.state.searchResultLayer) {
+        layers.push(this.state.searchResultLayer);
+    }
+    
     return (
       <>
         {editable && (
@@ -182,7 +190,7 @@ class MapNG extends React.Component<IProps, IState> {
           />
         )}
         <DeckGL
-          initialViewState={GeoHelper.INITIAL_VIEWSTATE}
+          initialViewState={this.props.viewstate}
           {...this.props.viewstate}
           layers={layers}
           controller={{
@@ -192,7 +200,7 @@ class MapNG extends React.Component<IProps, IState> {
           }}
           onViewStateChange={this.props.onViewStateChanged}
           onLayerClick={this._onLayerClick}
-          getCursor={e => EDIT_MODE_TO_HANDLER_MAP[this.state.mode].cursor}
+          getCursor={e => !editable ? "default" : EDIT_MODE_TO_HANDLER_MAP[this.state.mode].cursor}
         >
           <Geocoder
             mapRef={this.mapRef}

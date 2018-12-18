@@ -26,17 +26,7 @@ export default class DefaultUrLHandler extends React.Component<IProps, IState> {
       });
       return;
     }
-    GeoHelper.getLatLngFromIP().then(data => {
-      if (data) {
-        this.props.onInitialized({
-          ...GeoHelper.INITIAL_VIEWSTATE,
-          latitude: data[0],
-          longitude: data[1]
-        });
-      } else {
-        this.props.onInitialized(GeoHelper.INITIAL_VIEWSTATE);
-      }
-    });
+    this.props.onInitialized(GeoHelper.INITIAL_VIEWSTATE());
   }
 
   render() {
