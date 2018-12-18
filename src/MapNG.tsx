@@ -25,7 +25,7 @@ const EDIT_MODE_TO_HANDLER_MAP = {
 interface IProps {
   editable: boolean;
   geojson: FeatureCollection;
-
+  mapStyle: string;
   viewstate: any;
   onViewStateChanged: (any) => void;
   onEditUpdated: (any, string) => void;
@@ -160,14 +160,14 @@ class MapNG extends React.Component<IProps, IState> {
   //     });
   //   };
 
-//   componentDidUpdate() {
-//     if (this.props.editable && this.state.mode === "readonly") {
-//       this.setState({ mode: "drawPoint" });
-//     }
-//   }
+  //   componentDidUpdate() {
+  //     if (this.props.editable && this.state.mode === "readonly") {
+  //       this.setState({ mode: "drawPoint" });
+  //     }
+  //   }
 
   render() {
-    const { editable, geojson } = this.props;
+    const { editable, geojson, mapStyle } = this.props;
     const layers = editable
       ? [
           this.makeEditableLayer(geojson),
@@ -178,9 +178,9 @@ class MapNG extends React.Component<IProps, IState> {
       : [new PandaGL({ data: geojson.features })];
 
     if (this.state.searchResultLayer) {
-        layers.push(this.state.searchResultLayer);
+      layers.push(this.state.searchResultLayer);
     }
-    
+
     return (
       <>
         {editable && (
@@ -200,7 +200,11 @@ class MapNG extends React.Component<IProps, IState> {
           }}
           onViewStateChange={this.props.onViewStateChanged}
           onLayerClick={this._onLayerClick}
-          getCursor={e => !editable ? "default" : EDIT_MODE_TO_HANDLER_MAP[this.state.mode].cursor}
+          getCursor={e =>
+            !editable
+              ? "default"
+              : EDIT_MODE_TO_HANDLER_MAP[this.state.mode].cursor
+          }
         >
           <Geocoder
             mapRef={this.mapRef}
@@ -213,7 +217,7 @@ class MapNG extends React.Component<IProps, IState> {
           />
           <StaticMap
             reuseMaps
-            // mapStyle="mapbox://styles/mapbox/streets-v10"
+            mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
             viewState={this.props.viewstate}
             preventStyleDiffing={true}
             mapboxApiAccessToken={MAPBOX_TOKEN}

@@ -22,6 +22,7 @@ import LastN from "./Filters/LastN";
 import PandaMetaEditor from "./PandaMetaEditor";
 import MapNG from "./MapNG";
 import ShareScreen from "./ShareScreen";
+import Switcher from "./Switcher";
 
 const styles = {
   root: {},
@@ -48,6 +49,7 @@ interface IAppState {
   mode: string;
   share_screen: boolean;
   viewstate: any;
+  mapStyle: string;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -63,7 +65,8 @@ class App extends React.Component<IAppProps, IAppState> {
     editableJSON: GeoHelper.NEW_FC(),
     mode: "view",
     share_screen: false,
-    viewstate: GeoHelper.INITIAL_VIEWSTATE()
+    viewstate: GeoHelper.INITIAL_VIEWSTATE(),
+    mapStyle: "light-v9"
   });
 
   onShareButtonClick = () => {
@@ -153,7 +156,11 @@ class App extends React.Component<IAppProps, IAppState> {
 
   onCancelEdit = () =>
     this.setState(
-      { panda: GeoHelper.NEW_PANDA(), editableJSON: GeoHelper.NEW_FC(), mode: "view" },
+      {
+        panda: GeoHelper.NEW_PANDA(),
+        editableJSON: GeoHelper.NEW_FC(),
+        mode: "view"
+      },
       () => {
         this.props.history.push("/", { dontMoveMap: true });
       }
@@ -165,6 +172,8 @@ class App extends React.Component<IAppProps, IAppState> {
       () => event.edit && this.onNewButtonClick()
     );
   };
+
+  onMapStyleChange = (style: string) => this.setState({ mapStyle: style });
 
   updateDimensions = _.debounce(() => {
     const width = window.innerWidth;
@@ -203,7 +212,7 @@ class App extends React.Component<IAppProps, IAppState> {
               onClick={this.onNewButtonClick}
             >
               <EditIcon />
-              &nbsp; Create New
+              &nbsp;Create New
             </Button>
           </Toolbar>
         </AppBar>
@@ -214,6 +223,7 @@ class App extends React.Component<IAppProps, IAppState> {
             viewstate={this.state.viewstate}
             onViewStateChanged={this.onViewstateChanged}
             onEditUpdated={this.onEditUpdated}
+            mapStyle={this.state.mapStyle}
           />
         </div>
         <ShareScreen
@@ -231,6 +241,10 @@ class App extends React.Component<IAppProps, IAppState> {
           onCancel={this.onCancelEdit}
         />
         <LastN />
+        <Switcher
+          currentStyle={this.state.mapStyle}
+          onChange={this.onMapStyleChange}
+        />
         <Switch>
           <Route
             path="/@:lat?/:lng?/:zoom?"
