@@ -1,7 +1,8 @@
 import * as React from "react";
-import DeckGL, { MapController } from "deck.gl";
+import DeckGL, { MapController, GeoJsonLayer } from "deck.gl";
 import { StaticMap } from "react-map-gl";
 import { EditableGeoJsonLayer } from "nebula.gl";
+import Geocoder from "@mappandas/react-map-gl-geocoder";
 import { FeatureCollection } from "geojson";
 
 import EditToolbar from "./EditToolbar";
@@ -9,6 +10,8 @@ import PandaGL from "./PandaGL";
 import MyDrawPointHandler from "./MyDrawPointHandler";
 import * as GeoHelper from "./GeoHelper";
 
+const MAPBOX_TOKEN =
+  "pk.eyJ1IjoibWFwcGFuZGFzIiwiYSI6ImNqcDdzbW12aTBvOHAzcW82MGg0ZTRrd3MifQ.MYiNJHklgMkRzapAKuTQNg";
 const CUSTOM_MODEHANDLERS = {
   ...EditableGeoJsonLayer.defaultProps.modeHandlers,
   drawPoint: new MyDrawPointHandler()
@@ -32,14 +35,17 @@ interface IProps {
 interface IState {
   selectedFeatureIndexes: any[];
   mode: string;
+  searchResultLayer: any;
 }
 
 class MapNG extends React.Component<IProps, IState> {
+  private mapRef = React.createRef<StaticMap>();
   constructor(props: IProps) {
     super(props);
     this.state = {
       selectedFeatureIndexes: [0],
-      mode: "drawPoint"
+      mode: "drawPoint",
+      searchResultLayer: null
     };
   }
 
@@ -133,9 +139,27 @@ class MapNG extends React.Component<IProps, IState> {
     });
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    console.debug("MapNG.componentDidUpdate() ", prevProps, prevState);
-  }
+  handleOnResult = event => {
+    this.setState({
+      searchResultLayer: new GeoJsonLayer({
+        id: "search-result",
+        data: event.result.geometry,
+        getFillColor: [255, 0, 0, 128],
+        getRadius: 1000,
+        pointRadiusMinPixels: 10,
+        pointRadiusMaxPixels: 10
+      })
+    });
+  };
+
+  //   handleGeocoderViewportChange = viewport => {
+  //     const geocoderDefaultOverrides = { transitionDuration: 1000 };
+
+  //     return this.handleViewportChange({
+  //       ...viewport,
+  //       ...geocoderDefaultOverrides
+  //     });
+  //   };
 
   render() {
     const { editable, geojson } = this.props;
@@ -170,12 +194,22 @@ class MapNG extends React.Component<IProps, IState> {
           onLayerClick={this._onLayerClick}
           getCursor={e => EDIT_MODE_TO_HANDLER_MAP[this.state.mode].cursor}
         >
+          <Geocoder
+            mapRef={this.mapRef}
+            onResult={this.handleOnResult}
+            onViewportChange={this.props.onViewStateChanged}
+            mapboxApiAccessToken={MAPBOX_TOKEN}
+            position="top-left"
+            divId="search-container"
+            flyTo={false}
+          />
           <StaticMap
             reuseMaps
             // mapStyle="mapbox://styles/mapbox/streets-v10"
             viewState={this.props.viewstate}
             preventStyleDiffing={true}
-            mapboxApiAccessToken="pk.eyJ1IjoibWFwcGFuZGFzIiwiYSI6ImNqcDdzbW12aTBvOHAzcW82MGg0ZTRrd3MifQ.MYiNJHklgMkRzapAKuTQNg"
+            mapboxApiAccessToken={MAPBOX_TOKEN}
+            ref={this.mapRef}
           />
         </DeckGL>
       </>

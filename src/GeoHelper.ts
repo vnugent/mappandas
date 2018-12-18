@@ -21,6 +21,7 @@ export const NEW_PANDA = (): IPanda => ({
 });
 
 export const INITIAL_VIEWSTATE = {
+  altitude: 0,
   width: window.innerWidth,
   height: window.innerHeight,
   latitude: 37.7577,
@@ -89,7 +90,7 @@ export const bbox2Viewport = (bbox: Bbox0) => {
   return ViewportUtils.fitBounds({
     width: width,
     height: height,
-    bounds: [bbox.slice(0,2), bbox.slice(2, 4)],
+    bounds: [bbox.slice(0, 2), bbox.slice(2, 4)],
     padding: 100
   });
 };

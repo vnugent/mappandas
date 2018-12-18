@@ -6,7 +6,8 @@ import {
   withRouter,
   RouteComponentProps
 } from "react-router-dom";
-import { AppBar, Button, Typography, Toolbar, withStyles } from "@material-ui/core";
+import { AppBar, Button, Toolbar, withStyles } from "@material-ui/core";
+import { Edit as EditIcon } from "@material-ui/icons";
 import { FeatureCollection } from "geojson";
 import * as _ from "underscore";
 
@@ -24,10 +25,13 @@ import ShareScreen from "./ShareScreen";
 
 const styles = {
   root: {
-    flexGrow: 1
   },
   grow: {
     flexGrow: 1
+  },
+  appBar: {
+    backgroundColor: "transparent",
+    zIndex: 1000
   },
   menuButton: {
     marginLeft: -12,
@@ -65,8 +69,7 @@ class App extends React.Component<IAppProps, IAppState> {
     this.editorRef = React.createRef();
   }
 
-  onShareButtonClick = e => {
-    console.log("## onShareButtonClick()");
+  onShareButtonClick = () => {
     const uri = `/p/${this.state.panda.uuid}`;
     restClient.create(this.state.panda);
     localStorage.setItem(
@@ -102,10 +105,10 @@ class App extends React.Component<IAppProps, IAppState> {
   onDataLoaded = (data: IPanda, editable: boolean): void => {
     console.log("App.onDataLoaded()", data.geojson);
     console.log("  viewport: ", this.state.viewstate);
-    const newViewstate = Object.assign(
-      this.state.viewstate,
-      GeoHelper.bbox2Viewport(data.bbox)
-    );
+    const newViewstate = {
+      ...this.state.viewstate,
+      ...GeoHelper.bbox2Viewport(data.bbox)
+    };
     console.log("  new viewport: ", newViewstate);
 
     this.setState({
@@ -134,7 +137,11 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onViewstateChanged = _viewstate => {
-    this.setState({ viewstate: _viewstate.viewState });
+    console.log("## new view ", _viewstate);
+    const newVS = _viewstate.viewState
+      ? _viewstate.viewState
+      : { ...this.state.viewstate, ..._viewstate };
+    this.setState({ viewstate: newVS });
   };
 
   onDescriptionUpdate = (event: any) => {
@@ -184,37 +191,20 @@ class App extends React.Component<IAppProps, IAppState> {
     const { classes } = this.props;
     return (
       <div className={classes.root}>
-        <AppBar position="static">
-          <Toolbar color="" variant="dense">
-            <Typography variant="h6" color="inherit">
-              MapPandas
-            </Typography>
-            &nbsp;&nbsp;
+        <AppBar position="static" className={classes.appBar}>
+          <Toolbar className={classes.appBar}>
+            <div id="search-container" className={classes.grow} />
             <Button
+              color="primary"
               variant="contained"
-              color="secondary"
-              className={classes.button}
-              onClick={this.onShareButtonClick}
-              disabled={!this.isSharable()}
+              size="large"
+              onClick={this.onNewButtonClick}
             >
-              Share
+              <EditIcon />
+              &nbsp; Create New
             </Button>
-            <Button color="inherit" onClick={this.onNewButtonClick}>
-              New
-            </Button>
-            <PandaMetaEditor
-              editable={this.state.mode === "edit"}
-              description={this.state.panda.description}
-              onDescriptionUpdate={this.onDescriptionUpdate}
-            />
           </Toolbar>
         </AppBar>
-        <ShareScreen
-          classes={classes}
-          panda={this.state.panda}
-          open={this.state.share_screen}
-          onClose={this.onShareScreenClose}
-        />
         <div className="mapng-container">
           <MapNG
             editable={this.state.mode === "edit"}
@@ -224,6 +214,19 @@ class App extends React.Component<IAppProps, IAppState> {
             onEditUpdated={this.onEditUpdated}
           />
         </div>
+        <ShareScreen
+          classes={classes}
+          panda={this.state.panda}
+          open={this.state.share_screen}
+          onClose={this.onShareScreenClose}
+        />
+        <PandaMetaEditor
+          editable={this.state.mode === "edit"}
+          description={this.state.panda.description}
+          onDescriptionUpdate={this.onDescriptionUpdate}
+          sharable={this.isSharable()}
+          onShare={this.onShareButtonClick}
+        />
         <LastN />
         <Switch>
           <Route
