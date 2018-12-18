@@ -8,6 +8,11 @@ import { IPanda } from "./types/CustomMapTypes";
 
 const uuidv1 = require("uuid/v1");
 
+export const MY_LATLNG = {
+  latitude: 37.7577,
+  longitude: -122.4376
+};
+
 export const NEW_FC = (): FeatureCollection => ({
   type: "FeatureCollection",
   features: []
@@ -20,27 +25,27 @@ export const NEW_PANDA = (): IPanda => ({
   description: ""
 });
 
-export const INITIAL_VIEWSTATE = {
+export const INITIAL_VIEWSTATE = () => ({
+  altitude: 0,
   width: window.innerWidth,
   height: window.innerHeight,
-  latitude: 37.7577,
-  longitude: -122.4376,
   zoom: 12,
-  pitch: 40
-};
+  pitch: 40,
+  ...MY_LATLNG
+});
 
-export const getLatLngFromIP = async (): Promise<LatL0ng | undefined> => {
+export const getLatLngFromIP = async (): Promise<LatL0ng> => {
   try {
     const response = await axios.get(
       "https://api.ipgeolocation.io/ipgeo?apiKey=95f145109e96461794291b908055398d&fields=latitude,longitude"
     );
     if (isNaN(response.data.latitude) || isNaN(response.data.longitude)) {
-      return undefined;
+      throw new Error("LatLng not a number");
     }
     return [Number(response.data.latitude), Number(response.data.longitude)];
   } catch (error) {
     console.error("getLatLngFromIP() error ", error);
-    return undefined;
+    return [MY_LATLNG.latitude, MY_LATLNG.longitude];
   }
 };
 
@@ -89,7 +94,7 @@ export const bbox2Viewport = (bbox: Bbox0) => {
   return ViewportUtils.fitBounds({
     width: width,
     height: height,
-    bounds: [bbox.slice(0,2), bbox.slice(2, 4)],
+    bounds: [bbox.slice(0, 2), bbox.slice(2, 4)],
     padding: 100
   });
 };
