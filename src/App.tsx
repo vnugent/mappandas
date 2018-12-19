@@ -6,7 +6,7 @@ import {
   withRouter,
   RouteComponentProps
 } from "react-router-dom";
-import { AppBar, Button, Toolbar, withStyles } from "@material-ui/core";
+import { AppBar, Button, Toolbar, Tooltip, withStyles } from "@material-ui/core";
 import { Edit as EditIcon } from "@material-ui/icons";
 import { FeatureCollection } from "geojson";
 import * as _ from "underscore";
@@ -23,8 +23,9 @@ import PandaMetaEditor from "./PandaMetaEditor";
 import MapNG from "./MapNG";
 import ShareScreen from "./ShareScreen";
 import Switcher from "./Switcher";
+import Upload from "./Upload";
 
-const styles = {
+const styles = theme => ({
   root: {},
   grow: {
     flexGrow: 1
@@ -34,10 +35,9 @@ const styles = {
     zIndex: 1000
   },
   menuButton: {
-    marginLeft: -12,
-    marginRight: 20
+    margin: theme.spacing.unit
   }
-};
+});
 
 interface IAppProps extends RouteComponentProps {
   classes: any;
@@ -166,6 +166,16 @@ class App extends React.Component<IAppProps, IAppState> {
       }
     );
 
+  onUpload = (geojson: FeatureCollection) => {
+    this.setState(
+      {
+        mode: "edit"
+      },
+      () => {
+        this.onEditUpdated(geojson);
+      }
+    );
+  };
   onShareScreenClose = event => {
     this.setState(
       { share_screen: false },
@@ -188,7 +198,7 @@ class App extends React.Component<IAppProps, IAppState> {
     GeoHelper.getLatLngFromIP().then(latlng => {
       GeoHelper.MY_LATLNG.latitude = latlng[0];
       GeoHelper.MY_LATLNG.longitude = latlng[1];
-      this.setState({ viewstate: GeoHelper.INITIAL_VIEWSTATE() });
+      //this.setState({ viewstate: GeoHelper.INITIAL_VIEWSTATE() });
     });
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions);
@@ -205,15 +215,25 @@ class App extends React.Component<IAppProps, IAppState> {
         <AppBar position="static" className={classes.appBar}>
           <Toolbar className={classes.appBar}>
             <div id="search-container" className={classes.grow} />
+            <Tooltip title="Hand draw a new map" aria-label="Add">
             <Button
+              className={classes.menuButton}
               color="primary"
               variant="contained"
               size="large"
               onClick={this.onNewButtonClick}
             >
               <EditIcon />
-              &nbsp;Create New
+              &nbsp; Draw New
             </Button>
+            </Tooltip>
+            <Upload
+              classes={classes}
+              onError={e => {
+                console.log(e);
+              }}
+              onUpload={this.onUpload}
+            />
           </Toolbar>
         </AppBar>
         <div className="mapng-container">

@@ -85,7 +85,7 @@ export default class PandaGL extends CompositeLayer implements IProps {
       f => f.geometry.type.toUpperCase() === "POINT"
     );
     const polygons: Feature[] = features.filter(
-      f => f.geometry.type.toUpperCase() === "POLYGON"
+      f => f.geometry.type.toUpperCase() === "POLYGON" || f.geometry.type.toUpperCase() === "LINESTRING"
     );
     console.log("## PandaGL.renderLayers()", points, polygons);
     return [
