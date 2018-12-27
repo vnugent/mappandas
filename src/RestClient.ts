@@ -3,8 +3,8 @@ import { IPanda } from "./types/CustomMapTypes";
 import * as GeoHelper from "./GeoHelper";
 
 export const client = axios.create({
-  baseURL: "https://api.mappandas.com"
-  //baseURL: "http://localhost:5000"
+  //baseURL: "https://api.mappandas.com"
+  baseURL: "http://localhost:5000"
   /* other custom settings */
 });
 

@@ -6,7 +6,13 @@ import {
   withRouter,
   RouteComponentProps
 } from "react-router-dom";
-import { AppBar, Button, Toolbar, Tooltip, withStyles } from "@material-ui/core";
+import {
+  AppBar,
+  Button,
+  Toolbar,
+  Tooltip,
+  withStyles
+} from "@material-ui/core";
 import { Edit as EditIcon } from "@material-ui/icons";
 import { FeatureCollection } from "geojson";
 import * as _ from "underscore";
@@ -216,16 +222,16 @@ class App extends React.Component<IAppProps, IAppState> {
           <Toolbar className={classes.appBar}>
             <div id="search-container" className={classes.grow} />
             <Tooltip title="Hand draw a new map" aria-label="Add">
-            <Button
-              className={classes.menuButton}
-              color="primary"
-              variant="contained"
-              size="large"
-              onClick={this.onNewButtonClick}
-            >
-              <EditIcon />
-              &nbsp; Draw New
-            </Button>
+              <Button
+                className={classes.menuButton}
+                color="primary"
+                variant="contained"
+                size="large"
+                onClick={this.onNewButtonClick}
+              >
+                <EditIcon />
+                &nbsp; Draw New
+              </Button>
             </Tooltip>
             <Upload
               classes={classes}
@@ -249,7 +255,8 @@ class App extends React.Component<IAppProps, IAppState> {
         <ShareScreen
           classes={classes}
           panda={this.state.panda}
-          open={this.state.share_screen}
+          //open={this.state.share_screen}
+          open={true}
           onClose={this.onShareScreenClose}
         />
         <PandaMetaEditor
