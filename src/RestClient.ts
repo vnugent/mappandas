@@ -3,8 +3,8 @@ import { IPanda } from "./types/CustomMapTypes";
 import * as GeoHelper from "./GeoHelper";
 
 export const client = axios.create({
-  //baseURL: "https://api.mappandas.com"
-  baseURL: "http://localhost:5000"
+  baseURL: "https://api.mappandas.com"
+  //baseURL: "http://localhost:5000"
   /* other custom settings */
 });
 
@@ -23,6 +23,20 @@ export const get = async (uuid: string): Promise<string | undefined> => {
   } else {
     return undefined;
   }
+};
+
+export const sendMail = (
+  uuid: string,
+  email: string
+) => {
+  const headers = {
+    "Content-Type": "application/json"
+  };
+  const payload = {
+    uuid: uuid,
+    email: email
+  };
+  client.post("/email", payload, { headers: headers });
 };
 
 export const getLastN = async (limit: number): Promise<Array<any>> => {

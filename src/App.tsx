@@ -255,8 +255,7 @@ class App extends React.Component<IAppProps, IAppState> {
         <ShareScreen
           classes={classes}
           panda={this.state.panda}
-          //open={this.state.share_screen}
-          open={true}
+          open={this.state.share_screen}
           onClose={this.onShareScreenClose}
         />
         <PandaMetaEditor
