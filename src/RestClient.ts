@@ -25,6 +25,20 @@ export const get = async (uuid: string): Promise<string | undefined> => {
   }
 };
 
+export const sendMail = (
+  uuid: string,
+  email: string
+) => {
+  const headers = {
+    "Content-Type": "application/json"
+  };
+  const payload = {
+    uuid: uuid,
+    email: email
+  };
+  client.post("/email", payload, { headers: headers });
+};
+
 export const getLastN = async (limit: number): Promise<Array<any>> => {
   const response = await client.get<Array<any>>(`/lastn/${limit}`);
   if (response) {

@@ -12,6 +12,6 @@ COPY package.json yarn.lock *.json ./
 COPY src ./src
 COPY public ./public
 
-RUN yarn install && yarn build && rm -rf node_modules src public
+RUN yarn install && yarn build && rm -rf node_modules src public build/static/js/*.map
 
 CMD [ "serve", "-p", "3000", "-s", "-n", "./build" ]
