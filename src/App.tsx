@@ -56,6 +56,7 @@ interface IAppState {
   share_screen: boolean;
   viewstate: any;
   mapStyle: string;
+  descriptionVisible: boolean;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -72,7 +73,8 @@ class App extends React.Component<IAppProps, IAppState> {
     mode: "view",
     share_screen: false,
     viewstate: GeoHelper.INITIAL_VIEWSTATE(),
-    mapStyle: "light-v9"
+    mapStyle: "light-v9",
+    descriptionVisible: true
   });
 
   onShareButtonClick = () => {
@@ -216,6 +218,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { classes } = this.props;
+    const { mode } = this.state;
     return (
       <div className={classes.root}>
         <AppBar position="static" className={classes.appBar}>
@@ -244,7 +247,7 @@ class App extends React.Component<IAppProps, IAppState> {
         </AppBar>
         <div className="mapng-container">
           <MapNG
-            editable={this.state.mode === "edit"}
+            editable={mode === "edit"}
             geojson={this.state.editableJSON}
             viewstate={this.state.viewstate}
             onViewStateChanged={this.onViewstateChanged}
@@ -258,14 +261,18 @@ class App extends React.Component<IAppProps, IAppState> {
           open={this.state.share_screen}
           onClose={this.onShareScreenClose}
         />
-        <PandaMetaEditor
-          editable={this.state.mode === "edit"}
-          description={this.state.panda.description}
-          onDescriptionUpdate={this.onDescriptionUpdate}
-          sharable={this.isSharable()}
-          onShare={this.onShareButtonClick}
-          onCancel={this.onCancelEdit}
-        />
+        {(mode === "edit" || mode === "share") && (
+          <PandaMetaEditor
+            visible={this.state.descriptionVisible}
+            editable={mode === "edit"}
+            description={this.state.panda.description}
+            onDescriptionUpdate={this.onDescriptionUpdate}
+            onShowHideFn={this._showHideDescriptionPanel}
+            sharable={this.isSharable()}
+            onShare={this.onShareButtonClick}
+            onCancel={this.onCancelEdit}
+          />
+        )}
         <LastN />
         <Switcher
           currentStyle={this.state.mapStyle}
@@ -304,6 +311,9 @@ class App extends React.Component<IAppProps, IAppState> {
       </div>
     );
   }
+
+  _showHideDescriptionPanel = () =>
+    this.setState({ descriptionVisible: !this.state.descriptionVisible });
 }
 
 const RRApp = withRouter(App);
