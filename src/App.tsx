@@ -17,7 +17,7 @@ import { Edit as EditIcon } from "@material-ui/icons";
 import { FeatureCollection } from "geojson";
 import * as _ from "underscore";
 
-import { IPanda } from "./types/CustomMapTypes";
+import { IPanda, LatLng } from "./types/CustomMapTypes";
 
 import DefaultURLHandler from "./DefaultURLHandler";
 import LatLngURLHandler from "./LatLngURLHandler";
@@ -29,6 +29,7 @@ import PandaMetaEditor from "./PandaMetaEditor";
 import MapNG from "./MapNG";
 import ShareScreen from "./ShareScreen";
 import Switcher from "./Switcher";
+import LocateMe from "./LocateMe";
 import Upload from "./Upload";
 
 const styles = theme => ({
@@ -57,6 +58,7 @@ interface IAppState {
   viewstate: any;
   mapStyle: string;
   descriptionVisible: boolean;
+  myLocation: LatLng;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -74,7 +76,8 @@ class App extends React.Component<IAppProps, IAppState> {
     share_screen: false,
     viewstate: GeoHelper.INITIAL_VIEWSTATE(),
     mapStyle: "light-v9",
-    descriptionVisible: true
+    descriptionVisible: true,
+    myLocation: GeoHelper.DEFAULT_LATLNG
   });
 
   onShareButtonClick = () => {
@@ -203,11 +206,7 @@ class App extends React.Component<IAppProps, IAppState> {
   }, 400);
 
   componentDidMount() {
-    GeoHelper.getLatLngFromIP().then(latlng => {
-      GeoHelper.MY_LATLNG.latitude = latlng[0];
-      GeoHelper.MY_LATLNG.longitude = latlng[1];
-      //this.setState({ viewstate: GeoHelper.INITIAL_VIEWSTATE() });
-    });
+    this._locateMe();
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions);
   }
@@ -274,6 +273,7 @@ class App extends React.Component<IAppProps, IAppState> {
           />
         )}
         <LastN />
+        <LocateMe onClick={this._locateMe} />
         <Switcher
           currentStyle={this.state.mapStyle}
           onChange={this.onMapStyleChange}
@@ -312,6 +312,14 @@ class App extends React.Component<IAppProps, IAppState> {
     );
   }
 
+  _locateMe = () => {
+    GeoHelper.getLatLngFromIP().then(latlng => {
+      this.setState({
+        myLocation: latlng,
+        viewstate: { ...this.state.viewstate, ...latlng }
+      });
+    });
+  };
   _showHideDescriptionPanel = () =>
     this.setState({ descriptionVisible: !this.state.descriptionVisible });
 }
