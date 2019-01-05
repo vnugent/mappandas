@@ -1,9 +1,9 @@
 import { FeatureCollection } from "geojson";
 
 /**
- * [Latitude, Longitude] 
+ * {Latitude, Longitude}
  */
-export type LatL0ng = [number, number];
+export type LatLng = { latitude: number; longitude: number };
 
 /**
  * Bounding box

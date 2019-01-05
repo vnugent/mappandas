@@ -1,14 +1,14 @@
 import axios from "axios";
 import bbox from "@turf/bbox";
 import { FeatureCollection } from "geojson";
-import { LatL0ng, Bbox0 } from "./types/CustomMapTypes";
+import { LatLng, Bbox0 } from "./types/CustomMapTypes";
 import * as ViewportUtils from "viewport-mercator-project";
 
 import { IPanda } from "./types/CustomMapTypes";
 
 const uuidv1 = require("uuid/v1");
 
-export const MY_LATLNG = {
+export const DEFAULT_LATLNG: LatLng = {
   latitude: 37.7577,
   longitude: -122.4376
 };
@@ -31,10 +31,10 @@ export const INITIAL_VIEWSTATE = () => ({
   height: window.innerHeight,
   zoom: 12,
   pitch: 40,
-  ...MY_LATLNG
+  ...DEFAULT_LATLNG
 });
 
-export const getLatLngFromIP = async (): Promise<LatL0ng> => {
+export const getLatLngFromIP = async (): Promise<LatLng> => {
   try {
     const response = await axios.get(
       "https://api.ipgeolocation.io/ipgeo?apiKey=95f145109e96461794291b908055398d&fields=latitude,longitude"
@@ -42,10 +42,13 @@ export const getLatLngFromIP = async (): Promise<LatL0ng> => {
     if (isNaN(response.data.latitude) || isNaN(response.data.longitude)) {
       throw new Error("LatLng not a number");
     }
-    return [Number(response.data.latitude), Number(response.data.longitude)];
+    return {
+      latitude: Number(response.data.latitude),
+      longitude: Number(response.data.longitude)
+    };
   } catch (error) {
     console.error("getLatLngFromIP() error ", error);
-    return [MY_LATLNG.latitude, MY_LATLNG.longitude];
+    return DEFAULT_LATLNG;
   }
 };
 
