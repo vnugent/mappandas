@@ -50,7 +50,7 @@
         position: relative;
         display: flex;
         align-items: flex-start;
-        float: right;  
+        float: right;
         right: 5px;
         top: 5px;
         z-index: 1000;
@@ -64,7 +64,11 @@
       }
       #search-container {
         position: relative;
-        z-index: 1000;
+        width: 20%;
+        min-width: 240px;
+        max-width: 360px;
+        z-index: 2000;
+        border-radius: 5px;
       }
 
       .locate-me-container {
@@ -80,7 +84,7 @@
         opacity: 0.88;
       }
       .map-switcher-container {
-        position: absolute;      
+        position: absolute;
         display: flex;
         background-color: #778899;
         bottom: 25px;
@@ -92,14 +96,20 @@
         box-shadow: 1px 2px 4px 2px gray;
       }
       .feed-container {
-        z-index: 1000;
-        height: 400px;
-        position: fixed;
-        bottom: 0%;
-        width: 200px;
-        background-color: #778899;
-        opacity: 0.8;
-        padding: 4px;
+        z-index: 2000;
+        min-width: 300px;
+        width: 33%;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+      }
+      .geocoder-container {
+        position: relative;
+        background-color: white;
+        width: 100%;
+        min-width: 240px;
+        max-width: 360px;
+        z-index: 2000;
         border-radius: 5px;
       }
     </style>
