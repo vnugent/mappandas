@@ -207,6 +207,7 @@ class MapNG extends React.Component<IProps, IState> {
           }
         >
           <Geocoder
+            className="geocoder-container"
             mapRef={this.mapRef}
             onResult={this.handleOnResult}
             onViewportChange={this.props.onViewStateChanged}

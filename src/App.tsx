@@ -37,6 +37,15 @@ const styles = theme => ({
   grow: {
     flexGrow: 1
   },
+  toolbar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    zIndex: 2000
+  },
+  mainAction: {
+    display: "flex"
+  },
   appBar: {
     backgroundColor: "transparent",
     zIndex: 1000
@@ -221,27 +230,30 @@ class App extends React.Component<IAppProps, IAppState> {
     return (
       <div className={classes.root}>
         <AppBar position="static" className={classes.appBar}>
-          <Toolbar className={classes.appBar}>
+          <Toolbar className={classes.toolbar}>
             <div id="search-container" className={classes.grow} />
-            <Tooltip title="Hand draw a new map" aria-label="Add">
-              <Button
-                className={classes.menuButton}
-                color="primary"
-                variant="contained"
-                size="large"
-                onClick={this.onNewButtonClick}
-              >
-                <EditIcon />
-                &nbsp; Draw New
-              </Button>
-            </Tooltip>
-            <Upload
-              classes={classes}
-              onError={e => {
-                console.log(e);
-              }}
-              onUpload={this.onUpload}
-            />
+            <LastN currentPanda={this.state.panda} />
+            <div className={classes.mainAction}>
+              <Tooltip title="Hand draw a new map" aria-label="Add">
+                <Button
+                  className={classes.menuButton}
+                  color="primary"
+                  variant="contained"
+                  size="large"
+                  onClick={this.onNewButtonClick}
+                >
+                  <EditIcon />
+                  &nbsp; Draw New
+                </Button>
+              </Tooltip>
+              <Upload
+                classes={classes}
+                onError={e => {
+                  console.log(e);
+                }}
+                onUpload={this.onUpload}
+              />
+            </div>
           </Toolbar>
         </AppBar>
         <div className="mapng-container">
@@ -272,7 +284,6 @@ class App extends React.Component<IAppProps, IAppState> {
             onCancel={this.onCancelEdit}
           />
         )}
-        <LastN />
         <LocateMe onClick={this._locateMe} />
         <Switcher
           currentStyle={this.state.mapStyle}
