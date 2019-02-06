@@ -1,6 +1,6 @@
 import axios from "axios";
 import bbox from "@turf/bbox";
-import { FeatureCollection } from "geojson";
+import { FeatureCollection, BBox } from "geojson";
 import { LatLng, Bbox0 } from "./types/CustomMapTypes";
 import * as ViewportUtils from "viewport-mercator-project";
 
@@ -91,13 +91,13 @@ export const parse = (s: string, options?: any): IPanda => {
   };
 };
 
-export const bbox2Viewport = (bbox: Bbox0) => {
+export const bbox2Viewport = (bbox: BBox) => {
   const width = window.innerWidth;
   const height = window.innerHeight;
   return ViewportUtils.fitBounds({
     width: width,
     height: height,
     bounds: [bbox.slice(0, 2), bbox.slice(2, 4)],
-    padding: 100
+    padding: 160
   });
 };

@@ -156,10 +156,18 @@ class App extends React.Component<IAppProps, IAppState> {
     this.setState({ viewstate: newVS });
   };
 
-  onDescriptionUpdate = (event: any) => {
-    const currentPanda = this.state.panda;
-    currentPanda.description = event.target.value;
-    this.setState({ panda: currentPanda });
+  onEditUpdate = (fc: FeatureCollection) => {
+    if (fc.features.length === 0) {
+      this.setState({ editableJSON: fc });
+    } else {
+      const newViewstate = fc.bbox
+        ? {
+            ...this.state.viewstate,
+            ...GeoHelper.bbox2Viewport(fc.bbox)
+          }
+        : this.state.viewstate;
+      this.setState({ editableJSON: fc, viewstate: newViewstate });
+    }
   };
   private isSharable = () => {
     const geojson = this.state.panda.geojson;
@@ -196,6 +204,7 @@ class App extends React.Component<IAppProps, IAppState> {
       }
     );
   };
+
   onShareScreenClose = event => {
     this.setState(
       { share_screen: false },
@@ -277,7 +286,7 @@ class App extends React.Component<IAppProps, IAppState> {
             visible={this.state.descriptionVisible}
             editable={mode === "edit"}
             description={this.state.panda.description}
-            onDescriptionUpdate={this.onDescriptionUpdate}
+            onEditUpdate={this.onEditUpdate}
             onShowHideFn={this._showHideDescriptionPanel}
             sharable={this.isSharable()}
             onShare={this.onShareButtonClick}

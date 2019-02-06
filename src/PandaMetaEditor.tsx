@@ -8,6 +8,13 @@ import {
   Tooltip
 } from "@material-ui/core";
 import { KeyboardArrowRight, KeyboardArrowLeft } from "@material-ui/icons";
+import { FeatureCollection } from "geojson";
+import * as Yelapa from "@mappandas/yelapa";
+import * as GeoHelper from "./GeoHelper";
+import * as Config from "./Config";
+import FormatChecker from "./Edit/FormatChecker";
+
+const geocoder = new Yelapa.Geocoder(Config.MAPBOX_TOKEN);
 
 interface IProps {
   classes: any;
@@ -16,13 +23,15 @@ interface IProps {
   sharable: boolean;
   visible: boolean;
   onShare: () => void;
-  onDescriptionUpdate: (event: any) => void;
+  onEditUpdate: (fc: FeatureCollection) => void;
   onShowHideFn: () => void;
   onCancel: () => void;
 }
 
 interface IState {
   showHandleTooltip: boolean;
+  raw: string;
+  error: any;
 }
 
 const styles = theme => ({
@@ -34,8 +43,9 @@ const styles = theme => ({
   textField: {
     margin: theme.spacing.unit,
     padding: 5,
-    background: "#f3f6cf",
-    width: 500
+    background: "#FBFBEF",
+    width: 500,
+    font: "Georgia, serif"
   },
   roText: {
     width: 500,
@@ -63,7 +73,9 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      showHandleTooltip: false
+      showHandleTooltip: false,
+      raw: "",
+      error: null
     };
   }
 
@@ -88,8 +100,8 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
       title={visible ? "Collapse side panel" : "Expand side pandel"}
       placement="left"
       open={this.state.showHandleTooltip}
-      onClose={()=>(this.setState({showHandleTooltip: false}))}
-      onOpen={()=>(this.setState({showHandleTooltip: true}))}
+      onClose={() => this.setState({ showHandleTooltip: false })}
+      onOpen={() => this.setState({ showHandleTooltip: true })}
     >
       <div
         className={classes.hideHandle}
@@ -122,18 +134,20 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
         multiline={true}
         className={classes.textField}
         error={!description}
-        value={description}
+        value={this.state.raw}
         disabled={!editable}
-        onChange={this.props.onDescriptionUpdate}
+        //onChange={this.props.onEditUpdate}
+        onChange={this.onChange}
         required={true}
         fullWidth={true}
         disableUnderline={true}
         inputProps={{
-          rows: 4,
-          rowsMax: 10
+          rows: 25,
+          rowsMax: 25
         }}
       />
       <DialogActions>
+        <FormatChecker error={this.state.error} />
         <Button
           variant="contained"
           color="secondary"
@@ -149,6 +163,21 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
       </DialogActions>
     </>
   );
+
+  onChange = event => {
+    const _raw = event.target.value;
+    geocoder
+      .parse(_raw)
+      .then(({ ast, fc }) =>
+        this.setState({ raw: _raw, error: undefined }, () => {
+          if (this.props.onEditUpdate) {
+            fc.bbox = GeoHelper.bboxFromGeoJson(fc);
+            this.props.onEditUpdate(fc);
+          }
+        })
+      )
+      .catch((e: any) => this.setState({ raw: _raw, error: e }));
+  };
 }
 
 export default withStyles(styles)(PandaMetaEditor);
