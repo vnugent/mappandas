@@ -14,10 +14,10 @@ import {
   withStyles
 } from "@material-ui/core";
 import { Edit as EditIcon } from "@material-ui/icons";
-import { FeatureCollection } from "geojson";
 import * as _ from "underscore";
 
 import { IPanda, LatLng } from "./types/CustomMapTypes";
+import { FeatureCollection2 } from "@mappandas/yelapa";
 
 import DefaultURLHandler from "./DefaultURLHandler";
 import LatLngURLHandler from "./LatLngURLHandler";
@@ -61,7 +61,7 @@ interface IAppProps extends RouteComponentProps {
 
 interface IAppState {
   panda: IPanda;
-  editableJSON: FeatureCollection;
+  editableJSON: FeatureCollection2;
   mode: string;
   share_screen: boolean;
   viewstate: any;
@@ -131,7 +131,7 @@ class App extends React.Component<IAppProps, IAppState> {
     });
   };
 
-  onEditUpdated = (geojson: FeatureCollection) => {
+  onEditUpdated = (geojson: FeatureCollection2) => {
     const newPanda = this.state.panda;
     newPanda.geojson = geojson;
     newPanda.bbox = GeoHelper.bboxFromGeoJson(geojson);
@@ -139,7 +139,6 @@ class App extends React.Component<IAppProps, IAppState> {
     this.setState({
       editableJSON: geojson,
       panda: newPanda
-      //viewstate: GeoHelper.bounds2Viewport(newPanda.bbox)
     });
   };
 
@@ -156,7 +155,7 @@ class App extends React.Component<IAppProps, IAppState> {
     this.setState({ viewstate: newVS });
   };
 
-  onEditUpdate = (fc: FeatureCollection) => {
+  onEditorUpdate = (fc: FeatureCollection2) => {
     if (fc.features.length === 0) {
       this.setState({ editableJSON: fc });
     } else {
@@ -169,6 +168,7 @@ class App extends React.Component<IAppProps, IAppState> {
       this.setState({ editableJSON: fc, viewstate: newViewstate });
     }
   };
+
   private isSharable = () => {
     const geojson = this.state.panda.geojson;
     const flag =
@@ -194,7 +194,7 @@ class App extends React.Component<IAppProps, IAppState> {
       }
     );
 
-  onUpload = (geojson: FeatureCollection) => {
+  onUpload = (geojson: FeatureCollection2) => {
     this.setState(
       {
         mode: "edit"
@@ -267,7 +267,6 @@ class App extends React.Component<IAppProps, IAppState> {
         </AppBar>
         <div className="mapng-container">
           <MapNG
-            editable={mode === "edit"}
             geojson={this.state.editableJSON}
             viewstate={this.state.viewstate}
             onViewStateChanged={this.onViewstateChanged}
@@ -285,8 +284,8 @@ class App extends React.Component<IAppProps, IAppState> {
           <PandaMetaEditor
             visible={this.state.descriptionVisible}
             editable={mode === "edit"}
-            description={this.state.panda.description}
-            onEditUpdate={this.onEditUpdate}
+            data={this.state.editableJSON}
+            onEditUpdate={this.onEditorUpdate}
             onShowHideFn={this._showHideDescriptionPanel}
             sharable={this.isSharable()}
             onShare={this.onShareButtonClick}

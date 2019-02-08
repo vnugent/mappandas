@@ -8,22 +8,22 @@ import {
   Tooltip
 } from "@material-ui/core";
 import { KeyboardArrowRight, KeyboardArrowLeft } from "@material-ui/icons";
-import { FeatureCollection } from "geojson";
+import { FeatureCollection2 } from "@mappandas/yelapa";
 import * as Yelapa from "@mappandas/yelapa";
 import * as GeoHelper from "./GeoHelper";
 import * as Config from "./Config";
-import FormatChecker from "./Edit/FormatChecker";
+import FormatChecker from "./edit/FormatChecker";
 
 const geocoder = new Yelapa.Geocoder(Config.MAPBOX_TOKEN);
 
 interface IProps {
+  data: FeatureCollection2;
   classes: any;
-  description: string;
   editable: boolean;
   sharable: boolean;
   visible: boolean;
   onShare: () => void;
-  onEditUpdate: (fc: FeatureCollection) => void;
+  onEditUpdate: (fc: FeatureCollection2) => void;
   onShowHideFn: () => void;
   onCancel: () => void;
 }
@@ -32,6 +32,7 @@ interface IState {
   showHandleTooltip: boolean;
   raw: string;
   error: any;
+  ast: any;
 }
 
 const styles = theme => ({
@@ -66,6 +67,11 @@ const styles = theme => ({
   },
   container: {
     display: "flex"
+  },
+  actionContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
   }
 });
 
@@ -75,7 +81,8 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
     this.state = {
       showHandleTooltip: false,
       raw: "",
-      error: null
+      error: null,
+      ast: {entries: []}
     };
   }
 
@@ -119,25 +126,25 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
     </Tooltip>
   );
 
-  readOnlyText = ({ classes, description }) =>
-    !description ? null : (
+  readOnlyText = ({ classes, data }) =>
+    !data.properties.description ? null : (
       <div className={classes.roText}>
-        <Typography variant="h4">{description}</Typography>
+        <Typography variant="h4">{data.properties.description}</Typography>
       </div>
     );
 
-  editableForm = ({ classes, editable, description, sharable, onCancel }) => (
+  editableForm = ({ classes, editable, data, sharable, onCancel }) => (
     <>
       <Input
         id="standard-name"
         placeholder="Describe this panda..."
         multiline={true}
         className={classes.textField}
-        error={!description}
+        //error={!description}
         value={this.state.raw}
         disabled={!editable}
         //onChange={this.props.onEditUpdate}
-        onChange={this.onChange}
+        onChange={evt => this.onChange(evt.target.value)}
         required={true}
         fullWidth={true}
         disableUnderline={true}
@@ -145,38 +152,69 @@ class PandaMetaEditor extends React.Component<IProps, IState> {
           rows: 25,
           rowsMax: 25
         }}
+        onKeyDown={this.onKeyDown}
       />
-      <DialogActions>
-        <FormatChecker error={this.state.error} />
-        <Button
-          variant="contained"
-          color="secondary"
-          className={classes.button}
-          disabled={!sharable}
-          onClick={this.props.onShare}
-        >
-          Share
-        </Button>
-        <Button color="default" onClick={onCancel}>
-          Cancel Draw
-        </Button>
+      <DialogActions className={classes.actionContainer}>
+        <FormatChecker
+          error={this.state.error}
+          onCheckStyle={this.onCheckStyle}
+        />
+        <div>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            disabled={!sharable}
+            onClick={this.props.onShare}
+          >
+            Share
+          </Button>
+          <Button color="default" onClick={onCancel}>
+            Cancel Draw
+          </Button>
+        </div>
       </DialogActions>
     </>
   );
 
-  onChange = event => {
-    const _raw = event.target.value;
+  parseUserInput = raw =>
     geocoder
-      .parse(_raw)
+      .parse(raw)
       .then(({ ast, fc }) =>
-        this.setState({ raw: _raw, error: undefined }, () => {
+        this.setState({ raw: raw, error: undefined }, () => {
           if (this.props.onEditUpdate) {
             fc.bbox = GeoHelper.bboxFromGeoJson(fc);
             this.props.onEditUpdate(fc);
           }
         })
       )
-      .catch((e: any) => this.setState({ raw: _raw, error: e }));
+      .catch((e: any) => this.setState({ raw: raw, error: e }));
+
+  onChange = raw => {
+    console.log("onChange raw", raw);
+    if (raw.length > 3 && raw.substring(raw.length - 3) === "\n--") {
+      // if line begins with -- automatically jump to a new line
+      raw = raw + "\n";
+    }
+    this.parseUserInput(raw);
+  };
+
+  onKeyDown = event => {
+    let _raw = this.state.raw;
+    if (event.keyCode == 8 && _raw.substring(_raw.length - 4) === "\n--\n") {
+      // Backspace after -- will remove -- altogether
+      const z = _raw.substring(0, _raw.length - 3);
+      this.setState({ raw: z });
+    }
+  };
+
+  onCheckStyle = () => {
+    const raw = this.state.raw;
+    if (raw.charAt(raw.length - 1) != "\n" && this.state.ast.entries.length > 0) {
+      console.log("last char");
+      this.parseUserInput(raw.concat("\n--\n"));
+      //this.setState({ raw: raw.concat("\n--") });
+    }
   };
 }
 

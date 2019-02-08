@@ -1,10 +1,11 @@
 import axios from "axios";
+
 import bbox from "@turf/bbox";
 import { FeatureCollection, BBox } from "geojson";
-import { LatLng, Bbox0 } from "./types/CustomMapTypes";
-import * as ViewportUtils from "viewport-mercator-project";
+import { FeatureCollection2 } from "@mappandas/yelapa";
+import { LatLng, Bbox0, IPanda } from "./types/CustomMapTypes";
 
-import { IPanda } from "./types/CustomMapTypes";
+import * as ViewportUtils from "viewport-mercator-project";
 
 const uuidv1 = require("uuid/v1");
 
@@ -13,8 +14,9 @@ export const DEFAULT_LATLNG: LatLng = {
   longitude: -122.4376
 };
 
-export const NEW_FC = (): FeatureCollection => ({
+export const NEW_FC = (): FeatureCollection2 => ({
   type: "FeatureCollection",
+  properties: {},
   features: []
 });
 

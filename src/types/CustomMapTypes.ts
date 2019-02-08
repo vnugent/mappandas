@@ -1,4 +1,4 @@
-import { FeatureCollection } from "geojson";
+import { FeatureCollection2 } from "@mappandas/yelapa";
 
 /**
  * {Latitude, Longitude}
@@ -12,7 +12,7 @@ export type Bbox0 = [number, number, number, number];
 
 export interface IPanda {
   uuid: string;
-  geojson: FeatureCollection;
+  geojson: FeatureCollection2;
   bbox: Bbox0;
   description: string;
 }
