@@ -16,7 +16,7 @@ import {
 import { Edit as EditIcon } from "@material-ui/icons";
 import * as _ from "underscore";
 
-import { IPanda, LatLng } from "./types/CustomMapTypes";
+import { IPanda, LatLng, IActiveFeature } from "./types/CustomMapTypes";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
 import DefaultURLHandler from "./DefaultURLHandler";
@@ -31,6 +31,7 @@ import ShareScreen from "./ShareScreen";
 import Switcher from "./Switcher";
 import LocateMe from "./LocateMe";
 import Upload from "./Upload";
+import Popup from "./map/Popup";
 
 const styles = theme => ({
   root: {},
@@ -68,6 +69,7 @@ interface IAppState {
   mapStyle: string;
   descriptionVisible: boolean;
   myLocation: LatLng;
+  hoveredFeature: IActiveFeature | null;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -86,7 +88,8 @@ class App extends React.Component<IAppProps, IAppState> {
     viewstate: GeoHelper.INITIAL_VIEWSTATE(),
     mapStyle: "light-v9",
     descriptionVisible: true,
-    myLocation: GeoHelper.DEFAULT_LATLNG
+    myLocation: GeoHelper.DEFAULT_LATLNG,
+    hoveredFeature: null
   });
 
   onShareButtonClick = () => {
@@ -148,7 +151,6 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onViewstateChanged = _viewstate => {
-    console.log("## new view ", _viewstate);
     const newVS = _viewstate.viewState
       ? _viewstate.viewState
       : { ...this.state.viewstate, ..._viewstate };
@@ -272,7 +274,9 @@ class App extends React.Component<IAppProps, IAppState> {
             onViewStateChanged={this.onViewstateChanged}
             onEditUpdated={this.onEditUpdated}
             mapStyle={this.state.mapStyle}
+            onHover={this.onHover}
           />
+          <Popup data={this.state.hoveredFeature} />
         </div>
         <ShareScreen
           classes={classes}
@@ -341,6 +345,10 @@ class App extends React.Component<IAppProps, IAppState> {
   };
   _showHideDescriptionPanel = () =>
     this.setState({ descriptionVisible: !this.state.descriptionVisible });
+
+  onHover = _.debounce((evt: IActiveFeature) => {
+    this.setState({ hoveredFeature: evt });
+  }, 100);
 }
 
 const RRApp = withRouter(App);

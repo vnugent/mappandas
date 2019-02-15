@@ -6,9 +6,11 @@ import { FeatureCollection2 } from "@mappandas/yelapa";
 
 import Geocoder from "@mappandas/react-map-gl-geocoder";
 
+import * as _ from "underscore";
+
 import * as Config from "./Config";
 import PandaGL from "./PandaGL";
-
+import { IActiveFeature } from "./types/CustomMapTypes";
 
 interface IProps {
   geojson: FeatureCollection2;
@@ -16,6 +18,7 @@ interface IProps {
   viewstate: any;
   onViewStateChanged: (any) => void;
   onEditUpdated: (any, string) => void;
+  onHover?: (data: IActiveFeature | null) => void;
 }
 
 interface IState {
@@ -26,6 +29,7 @@ interface IState {
 
 class MapNG extends React.Component<IProps, IState> {
   private mapRef = React.createRef<StaticMap>();
+
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -47,7 +51,6 @@ class MapNG extends React.Component<IProps, IState> {
     }
   };
 
-
   handleOnResult = event => {
     this.setState({
       searchResultLayer: new GeoJsonLayer({
@@ -61,6 +64,16 @@ class MapNG extends React.Component<IProps, IState> {
     });
   };
 
+  _onHover = (evt: any) => {
+    if (this.props.onHover) {
+      if (!evt) {
+        this.props.onHover(null);
+      } else {
+        const { x, y, index, object } = evt;
+        this.props.onHover({ x, y, index, object });
+      }
+    }
+  };
 
   render() {
     const { geojson, mapStyle } = this.props;
@@ -82,7 +95,7 @@ class MapNG extends React.Component<IProps, IState> {
             doubleClickZoom: true
           }}
           onViewStateChange={this.props.onViewStateChanged}
-          onLayerClick={this._onLayerClick}
+          onLayerHover={this._onHover}
         >
           <Geocoder
             className="geocoder-container"

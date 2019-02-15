@@ -103,3 +103,27 @@ export const bbox2Viewport = (bbox: BBox) => {
     padding: 160
   });
 };
+
+export const geojson2string = (fc: FeatureCollection2) => {
+  const { properties, features } = fc;
+
+  let s = "";
+  if (properties) {
+    const title = properties.title ? properties.title : "";
+    const summary = properties.summary ? properties.summary.join("\n") : "";
+    s = title + "\n" + summary;
+  }
+
+  features.forEach(feature => {
+    console.log("### Feature", feature);
+    const properties = feature.properties;
+    const name = properties ? properties.name : "";
+    const summary =
+      properties && properties.description
+        ? properties.description.join("\n")
+        : "";
+    s = s + "\n--\n" + [name, summary].join("\n");
+  });
+
+  return s;
+};
