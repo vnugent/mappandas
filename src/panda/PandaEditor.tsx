@@ -11,7 +11,7 @@ import * as GeoHelper from "../GeoHelper";
 const geocoder = new Yelapa.Geocoder(Config.MAPBOX_TOKEN);
 export interface IAppProps {
   classes?: any;
-  data: FeatureCollection2,
+  data: FeatureCollection2;
   onContentChange: (fc: FeatureCollection2) => void;
 }
 
@@ -23,10 +23,7 @@ export interface IAppState {
 }
 
 const styles = theme => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper
-  }
+  root: {}
 });
 
 export class PandaEditor extends React.Component<IAppProps, IAppState> {
@@ -45,25 +42,29 @@ export class PandaEditor extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { classes, data } = this.props;
+    const { data } = this.props;
     const initialStr = GeoHelper.geojson2string(data);
     return (
+      //   <div contentEditable={true} onInput={evt => this.onChange(evt.target)}>
+      //     foo bar foobar\n
+      //     new line
+      //   </div>
       <Input
         id="standard-name2"
         inputRef={this.textareaRef}
         placeholder="Describe this panda..."
         multiline={true}
-        className={classes.textField}
+        //className={classes.textField}
         defaultValue={initialStr}
         //value={this.state.raw}
         onChange={evt => this.onChange(evt.target)}
         required={true}
         fullWidth={true}
         disableUnderline={true}
-        inputProps={{
-          rows: 25,
-          rowsMax: 25
-        }}
+        // inputProps={{
+        //   rows: 25,
+        //   rowsMax: 25
+        // }}
       />
     );
   }

@@ -7,13 +7,13 @@ import {
   RouteComponentProps
 } from "react-router-dom";
 import {
-  AppBar,
-  Button,
-  Toolbar,
-  Tooltip,
+  //   Button,
+  //   Toolbar,
+  //   Tooltip,
+  Grid,
   withStyles
 } from "@material-ui/core";
-import { Edit as EditIcon } from "@material-ui/icons";
+//import { Edit as EditIcon } from "@material-ui/icons";
 import * as _ from "underscore";
 
 import { IPanda, LatLng, IActiveFeature } from "./types/CustomMapTypes";
@@ -24,36 +24,17 @@ import LatLngURLHandler from "./LatLngURLHandler";
 import ShowPandaURLHandler from "./ShowPandaURLHandler";
 import * as GeoHelper from "./GeoHelper";
 import * as restClient from "./RestClient";
-import LastN from "./Filters/LastN";
-import PandaMetaEditor from "./PandaMetaEditor";
+//import LastN from "./Filters/LastN";
 import MapNG from "./MapNG";
 import ShareScreen from "./ShareScreen";
 import Switcher from "./Switcher";
 import LocateMe from "./LocateMe";
-import Upload from "./Upload";
+//import Upload from "./Upload";
 import Popup from "./map/Popup";
+import TextPane from './TextPane';
 
 const styles = theme => ({
-  root: {},
-  grow: {
-    flexGrow: 1
-  },
-  toolbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    zIndex: 2000
-  },
-  mainAction: {
-    display: "flex"
-  },
-  appBar: {
-    backgroundColor: "transparent",
-    zIndex: 1000
-  },
-  menuButton: {
-    margin: theme.spacing.unit
-  }
+  root: { display: "flex", height: "100%" },
 });
 
 interface IAppProps extends RouteComponentProps {
@@ -171,18 +152,18 @@ class App extends React.Component<IAppProps, IAppState> {
     }
   };
 
-  private isSharable = () => {
-    const geojson = this.state.panda.geojson;
-    const flag =
-      this.state.mode === "edit" &&
-      geojson &&
-      geojson.features &&
-      geojson.features.length > 0 &&
-      this.state.panda.description
-        ? true
-        : false;
-    return flag;
-  };
+//   private isSharable = () => {
+//     const geojson = this.state.panda.geojson;
+//     const flag =
+//       this.state.mode === "edit" &&
+//       geojson &&
+//       geojson.features &&
+//       geojson.features.length > 0 &&
+//       this.state.panda.description
+//         ? true
+//         : false;
+//     return flag;
+//   };
 
   onCancelEdit = () =>
     this.setState(
@@ -217,8 +198,13 @@ class App extends React.Component<IAppProps, IAppState> {
   onMapStyleChange = (style: string) => this.setState({ mapStyle: style });
 
   updateDimensions = _.debounce(() => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    //const width = window.innerWidth;
+    const div = document.getElementById("mapng");
+    let width = 500;
+    if (div) {
+      width = div.clientWidth;
+    }
+    const height = window.innerHeight - 10;
     const newViewport = Object.assign({}, this.state.viewstate);
     newViewport.width = width;
     newViewport.height = height;
@@ -237,12 +223,12 @@ class App extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { classes } = this.props;
-    const { mode } = this.state;
+    //const { mode } = this.state;
     return (
       <div className={classes.root}>
-        <AppBar position="static" className={classes.appBar}>
+        {/* <AppBar position="relative" className={classes.appBar}>
           <Toolbar className={classes.toolbar}>
-            <div id="search-container" className={classes.grow} />
+            <div id="search-container" className={classes.grow} /> 
             <LastN currentPanda={this.state.panda} />
             <div className={classes.mainAction}>
               <Tooltip title="Hand draw a new map" aria-label="Add">
@@ -266,71 +252,74 @@ class App extends React.Component<IAppProps, IAppState> {
               />
             </div>
           </Toolbar>
-        </AppBar>
-        <div className="mapng-container">
-          <MapNG
-            geojson={this.state.editableJSON}
-            viewstate={this.state.viewstate}
-            onViewStateChanged={this.onViewstateChanged}
-            onEditUpdated={this.onEditUpdated}
-            mapStyle={this.state.mapStyle}
-            onHover={this.onHover}
-          />
-          <Popup data={this.state.hoveredFeature} />
-        </div>
-        <ShareScreen
-          classes={classes}
-          panda={this.state.panda}
-          open={this.state.share_screen}
-          onClose={this.onShareScreenClose}
-        />
-        {(mode === "edit" || mode === "share") && (
-          <PandaMetaEditor
-            visible={this.state.descriptionVisible}
-            editable={mode === "edit"}
-            data={this.state.editableJSON}
-            onEditUpdate={this.onEditorUpdate}
-            onShowHideFn={this._showHideDescriptionPanel}
-            sharable={this.isSharable()}
-            onShare={this.onShareButtonClick}
-            onCancel={this.onCancelEdit}
-          />
-        )}
-        <LocateMe onClick={this._locateMe} />
-        <Switcher
-          currentStyle={this.state.mapStyle}
-          onChange={this.onMapStyleChange}
-        />
-        <Switch>
-          <Route
-            path="/@:lat?/:lng?/:zoom?"
-            render={props => (
-              <LatLngURLHandler
-                {...props}
-                onLatLngChanged={this.onViewstateChanged}
+        </AppBar> */}
+        <Grid spacing={0} container={true}>
+          <Grid item xs={12} sm={6}>
+            <TextPane data={this.state.editableJSON} onEditorUpdate={this.onEditUpdated} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <div
+              id="mapng"
+              style={{
+                display: "flex",
+                position: "relative",
+                backgroundColor: "blue"
+              }}
+            >
+              <MapNG
+                geojson={this.state.editableJSON}
+                viewstate={this.state.viewstate}
+                onViewStateChanged={this.onViewstateChanged}
+                onEditUpdated={this.onEditUpdated}
+                mapStyle={this.state.mapStyle}
+                onHover={this.onHover}
               />
-            )}
-          />
-          <Route
-            path="/p/:uuid/:edit?"
-            render={props => (
-              <ShowPandaURLHandler
-                key={props.location.key}
-                {...props}
-                onDataLoaded={this.onDataLoaded}
+              <Popup data={this.state.hoveredFeature} />
+            </div>
+            <ShareScreen
+              classes={classes}
+              panda={this.state.panda}
+              open={this.state.share_screen}
+              onClose={this.onShareScreenClose}
+            />
+
+            <LocateMe onClick={this._locateMe} />
+            <Switcher
+              currentStyle={this.state.mapStyle}
+              onChange={this.onMapStyleChange}
+            />
+            <Switch>
+              <Route
+                path="/@:lat?/:lng?/:zoom?"
+                render={props => (
+                  <LatLngURLHandler
+                    {...props}
+                    onLatLngChanged={this.onViewstateChanged}
+                  />
+                )}
               />
-            )}
-          />
-          } />
-          <Route
-            render={props => (
-              <DefaultURLHandler
-                {...props}
-                onInitialized={this.onInitialized}
+              <Route
+                path="/p/:uuid/:edit?"
+                render={props => (
+                  <ShowPandaURLHandler
+                    key={props.location.key}
+                    {...props}
+                    onDataLoaded={this.onDataLoaded}
+                  />
+                )}
               />
-            )}
-          />
-        </Switch>
+              } />
+              <Route
+                render={props => (
+                  <DefaultURLHandler
+                    {...props}
+                    onInitialized={this.onInitialized}
+                  />
+                )}
+              />
+            </Switch>
+          </Grid>
+        </Grid>
       </div>
     );
   }

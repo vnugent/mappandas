@@ -84,7 +84,6 @@ class MapNG extends React.Component<IProps, IState> {
     }
 
     return (
-      <>
         <DeckGL
           initialViewState={this.props.viewstate}
           {...this.props.viewstate}
@@ -116,7 +115,6 @@ class MapNG extends React.Component<IProps, IState> {
             ref={this.mapRef}
           />
         </DeckGL>
-      </>
     );
   }
 }

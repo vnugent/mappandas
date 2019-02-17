@@ -37,8 +37,13 @@
 
     <title>Map Pandas - Online Map sharing community</title>
     <style>
+      html,
+      body, #root {
+        max-height: "98vh";
+        height: 100%;
+      }
       .mapng-container {
-        position: fixed;
+        position: relative;
         top: 0px;
         left: 0px;
         min-height: 95vh;
@@ -53,7 +58,7 @@
         float: left;
         left: 5px;
         top: 5px;
-        min-height: 100vh;
+        height: 100%;
         max-height: 100vh;
         z-index: 1000;
         background-color: transparent;

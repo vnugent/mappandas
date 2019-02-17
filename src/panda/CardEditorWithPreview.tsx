@@ -19,9 +19,18 @@ export interface IAppState {
 
 const styles = (theme: any) => ({
   root: {
-    width: "500px",
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper
+    marginTop: 100,
+    width: "100%",
+    padding: theme.spacing.unit * 2,
+    overflow: "auto",
+    borderWidth: "medium",
+    borderStyle: "dashed",
+    borderColor: "#e0f2f1"
+  },
+  content: {
+    padding: "10px",
+    height: "80%",
+    margin: theme.spacing.unit
   }
 });
 
@@ -46,7 +55,7 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
           {editable && <Tab label="Write" />}
           <Tab label="Preview" />
         </Tabs>
-        <div style={{ padding: "10px" }}>
+        <div className={classes.content}>
           {this.state.value === 0 && (
             <PandaEditor
               data={this.props.data}

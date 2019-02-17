@@ -29,8 +29,10 @@ export const NEW_PANDA = (): IPanda => ({
 
 export const INITIAL_VIEWSTATE = () => ({
   altitude: 0,
-  width: window.innerWidth,
-  height: window.innerHeight,
+  //   width: window.innerWidth,
+  //   height: window.innerHeight,
+  width: 400,
+  height: 250,
   zoom: 12,
   pitch: 40,
   ...DEFAULT_LATLNG
