@@ -13,6 +13,8 @@ import {
   Grid,
   withStyles
 } from "@material-ui/core";
+import { createStyles, Theme } from "@material-ui/core/styles";
+
 //import { Edit as EditIcon } from "@material-ui/icons";
 import * as _ from "underscore";
 
@@ -31,11 +33,22 @@ import Switcher from "./Switcher";
 import LocateMe from "./LocateMe";
 //import Upload from "./Upload";
 import Popup from "./map/Popup";
-import TextPane from './TextPane';
+import TextPane from "./TextPane";
+import PandaCardView from "./panda/PandaCardView";
+import TopLevelAppBar from "./AppBars";
 
-const styles = theme => ({
-  root: { display: "flex", height: "100%" },
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    root: { display: "flex", height: "100vh", maxHeight: "100%" },
+    textPane: {
+      width: "100%",
+      height: "100%",
+      paddingTop: 100,
+      paddingBottom: theme.spacing.unit * 3,
+      boxSizing: "border-box",
+      alignItems: "stretch",
+    }
+  });
 
 interface IAppProps extends RouteComponentProps {
   classes: any;
@@ -48,7 +61,6 @@ interface IAppState {
   share_screen: boolean;
   viewstate: any;
   mapStyle: string;
-  descriptionVisible: boolean;
   myLocation: LatLng;
   hoveredFeature: IActiveFeature | null;
 }
@@ -64,24 +76,24 @@ class App extends React.Component<IAppProps, IAppState> {
   getState0 = (): IAppState => ({
     panda: GeoHelper.NEW_PANDA(),
     editableJSON: GeoHelper.NEW_FC(),
-    mode: "view",
+    mode: "edit",
     share_screen: false,
     viewstate: GeoHelper.INITIAL_VIEWSTATE(),
     mapStyle: "light-v9",
-    descriptionVisible: true,
     myLocation: GeoHelper.DEFAULT_LATLNG,
     hoveredFeature: null
   });
 
   onShareButtonClick = () => {
     const uri = `/p/${this.state.panda.uuid}`;
-    restClient.create(this.state.panda);
-    localStorage.setItem(
-      this.state.panda.uuid,
-      GeoHelper.stringify(this.state.panda)
-    );
-    this.setState({ mode: "share", share_screen: true });
+    const { panda, editableJSON } = this.state;
+    panda.geojson = editableJSON;
+    panda.bbox = GeoHelper.bboxFromGeoJson(editableJSON);
 
+    restClient.create(panda);
+
+    localStorage.setItem(this.state.panda.uuid, GeoHelper.stringify(panda));
+    this.setState({ mode: "share", share_screen: true });
     this.props.history.replace(uri);
   };
 
@@ -98,14 +110,15 @@ class App extends React.Component<IAppProps, IAppState> {
     );
   };
 
+  /**
+   * Handle new data from the backend (or possibly from local storage cache)
+   */
   onDataLoaded = (data: IPanda, editable: boolean): void => {
-    console.log("App.onDataLoaded()", data.geojson);
-    console.log("  viewport: ", this.state.viewstate);
-    const newViewstate = {
-      ...this.state.viewstate,
-      ...GeoHelper.bbox2Viewport(data.bbox)
-    };
-    console.log("  new viewport: ", newViewstate);
+    const { width, height } = this.getMapDivDimensions();
+    const newViewstate = Object.assign(
+      this.state.viewstate,
+      GeoHelper.bbox2Viewport(data.bbox, width, height)
+    );
 
     this.setState({
       mode: "share",
@@ -119,17 +132,13 @@ class App extends React.Component<IAppProps, IAppState> {
     const newPanda = this.state.panda;
     newPanda.geojson = geojson;
     newPanda.bbox = GeoHelper.bboxFromGeoJson(geojson);
-    console.log("App.onEditUpdate() ", geojson);
     this.setState({
       editableJSON: geojson,
       panda: newPanda
     });
   };
 
-  onInitialized = (_viewstate: any) => {
-    console.log("setting initial URL", _viewstate);
-    this.setState({ viewstate: _viewstate });
-  };
+  onInitialized = (_viewstate: any) => this._locateMe();
 
   onViewstateChanged = _viewstate => {
     const newVS = _viewstate.viewState
@@ -142,28 +151,17 @@ class App extends React.Component<IAppProps, IAppState> {
     if (fc.features.length === 0) {
       this.setState({ editableJSON: fc });
     } else {
+      const { width, height } = this.getMapDivDimensions();
+      console.log("#WxH", width, height);
       const newViewstate = fc.bbox
-        ? {
-            ...this.state.viewstate,
-            ...GeoHelper.bbox2Viewport(fc.bbox)
-          }
+        ? Object.assign(
+            this.state.viewstate,
+            GeoHelper.bbox2Viewport(fc.bbox, width, height)
+          )
         : this.state.viewstate;
       this.setState({ editableJSON: fc, viewstate: newViewstate });
     }
   };
-
-//   private isSharable = () => {
-//     const geojson = this.state.panda.geojson;
-//     const flag =
-//       this.state.mode === "edit" &&
-//       geojson &&
-//       geojson.features &&
-//       geojson.features.length > 0 &&
-//       this.state.panda.description
-//         ? true
-//         : false;
-//     return flag;
-//   };
 
   onCancelEdit = () =>
     this.setState(
@@ -198,21 +196,26 @@ class App extends React.Component<IAppProps, IAppState> {
   onMapStyleChange = (style: string) => this.setState({ mapStyle: style });
 
   updateDimensions = _.debounce(() => {
-    //const width = window.innerWidth;
-    const div = document.getElementById("mapng");
-    let width = 500;
-    if (div) {
-      width = div.clientWidth;
-    }
-    const height = window.innerHeight - 10;
+    const { width, height } = this.getMapDivDimensions();
     const newViewport = Object.assign({}, this.state.viewstate);
     newViewport.width = width;
     newViewport.height = height;
     this.setState({ viewstate: newViewport });
   }, 400);
 
+  getMapDivDimensions = () => {
+    const div = document.getElementById("mapng");
+    let width = 500;
+    //let height = 250;
+    if (div) {
+      width = div.clientWidth;
+      //height = div.clientHeight;
+    }
+    const height = window.innerHeight;
+    return { width, height };
+  };
+
   componentDidMount() {
-    this._locateMe();
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions);
   }
@@ -223,7 +226,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { classes } = this.props;
-    //const { mode } = this.state;
+    const { mode } = this.state;
     return (
       <div className={classes.root}>
         {/* <AppBar position="relative" className={classes.appBar}>
@@ -255,22 +258,37 @@ class App extends React.Component<IAppProps, IAppState> {
         </AppBar> */}
         <Grid spacing={0} container={true}>
           <Grid item xs={12} sm={6}>
-            <TextPane data={this.state.editableJSON} onEditorUpdate={this.onEditUpdated} />
+            <TopLevelAppBar
+              data={this.state.editableJSON}
+              onCreateNewClick={this.onNewButtonClick}
+            />
+            <div id="text-pane-id" className={classes.textPane}>
+              {mode === "share" && (
+                  <PandaCardView data={this.state.editableJSON} />
+              )}
+              {mode === "edit" && (
+                <TextPane
+                  data={this.state.editableJSON}
+                  onPublishButtonClick={this.onShareButtonClick}
+                  onEditorUpdate={this.onEditorUpdate}
+                />
+              )}
+            </div>
           </Grid>
           <Grid item xs={12} sm={6}>
             <div
               id="mapng"
               style={{
                 display: "flex",
-                position: "relative",
-                backgroundColor: "blue"
+                padding: 0,
+                position: "relative"
               }}
             >
               <MapNG
                 geojson={this.state.editableJSON}
                 viewstate={this.state.viewstate}
                 onViewStateChanged={this.onViewstateChanged}
-                onEditUpdated={this.onEditUpdated}
+                onEditUpdated={this.onEditorUpdate}
                 mapStyle={this.state.mapStyle}
                 onHover={this.onHover}
               />
@@ -325,6 +343,7 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   _locateMe = () => {
+    //return GeoHelper.getLatLngFromIP();
     GeoHelper.getLatLngFromIP().then(latlng => {
       this.setState({
         myLocation: latlng,
@@ -332,8 +351,6 @@ class App extends React.Component<IAppProps, IAppState> {
       });
     });
   };
-  _showHideDescriptionPanel = () =>
-    this.setState({ descriptionVisible: !this.state.descriptionVisible });
 
   onHover = _.debounce((evt: IActiveFeature) => {
     this.setState({ hoveredFeature: evt });

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { IPanda } from "./types/CustomMapTypes";
 import * as GeoHelper from "./GeoHelper";
+import { FeatureCollection2 } from "@mappandas/yelapa";
 
 export const client = axios.create({
   baseURL: "https://api.mappandas.com"
@@ -8,12 +9,22 @@ export const client = axios.create({
   /* other custom settings */
 });
 
-export const create = (panda: IPanda): void => {
+export const create = (data: IPanda | FeatureCollection2): void => {
   const headers = {
     "Content-Type": "application/json"
   };
-  const payload = GeoHelper.stringify(panda);
-  client.post(`/p/${panda.uuid}`, payload, { headers: headers });
+  let newPanda;
+
+  if (data.hasOwnProperty("uuid")) {
+    newPanda = data as IPanda;
+  } else
+  {
+    newPanda = GeoHelper.NEW_PANDA();
+    newPanda.geojson = data as FeatureCollection2;
+    newPanda.bbox = GeoHelper.bboxFromGeoJson(newPanda.geojson);
+  }
+  const restPayload = GeoHelper.stringify(newPanda);
+  client.post(`/p/${newPanda.uuid}`, restPayload, { headers: headers });
 };
 
 export const get = async (uuid: string): Promise<string | undefined> => {
@@ -25,10 +36,7 @@ export const get = async (uuid: string): Promise<string | undefined> => {
   }
 };
 
-export const sendMail = (
-  uuid: string,
-  email: string
-) => {
+export const sendMail = (uuid: string, email: string) => {
   const headers = {
     "Content-Type": "application/json"
   };

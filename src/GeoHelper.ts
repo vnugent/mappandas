@@ -16,7 +16,9 @@ export const DEFAULT_LATLNG: LatLng = {
 
 export const NEW_FC = (): FeatureCollection2 => ({
   type: "FeatureCollection",
-  properties: {},
+  properties: {
+    uuid: uuidv1()
+  },
   features: []
 });
 
@@ -95,12 +97,12 @@ export const parse = (s: string, options?: any): IPanda => {
   };
 };
 
-export const bbox2Viewport = (bbox: BBox) => {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+export const bbox2Viewport = (bbox: BBox, width?: number, height?: number) => {
+  const calWidth = width ? width : window.innerWidth;
+  const calHeight = height ? height : window.innerHeight;
   return ViewportUtils.fitBounds({
-    width: width,
-    height: height,
+    width: calWidth,
+    height: calHeight,
     bounds: [bbox.slice(0, 2), bbox.slice(2, 4)],
     padding: 160
   });
@@ -111,13 +113,12 @@ export const geojson2string = (fc: FeatureCollection2) => {
 
   let s = "";
   if (properties) {
-    const title = properties.title ? properties.title : "";
-    const summary = properties.summary ? properties.summary.join("\n") : "";
-    s = title + "\n" + summary;
+    const title = properties.title ? properties.title : null;
+    const summary = properties.summary ? properties.summary : null;
+    s = [title, summary].join("\n");
   }
 
   features.forEach(feature => {
-    console.log("### Feature", feature);
     const properties = feature.properties;
     const name = properties ? properties.name : "";
     const summary =

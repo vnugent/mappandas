@@ -1,41 +1,28 @@
 import * as React from "react";
-import {
-  AppBar,
-  Button,
-  Toolbar,
-  //   Tooltip,
-  withStyles
-} from "@material-ui/core";
+import { withStyles } from "@material-ui/core";
+import { createStyles, Theme } from "@material-ui/core/styles";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
 import CardEditorWithPreview from "./panda/CardEditorWithPreview";
+import { EditorAppBar } from "./AppBars";
 
-const styles = theme => ({
-  root: { display: "flex", height: "100%" },
-  grow: {
-    flexGrow: 1
-  },
-  toolbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    zIndex: 2000
-  },
-  mainAction: {
-    display: "flex"
-  },
-  appBar: {
-    boxShadow: "none",
-    backgroundColor: "transparent",
-    zIndex: 1000,
-    marginBottom: 20,
-  }
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    container: {
+      display: "flex",
+      boxSizing: "border-box",
+      flexDirection: "column",
+      height: "100%",
+      width: "100%",
+      paddingLeft: theme.spacing.unit * 3,
+    }
+  });
 
 export interface IAppProps {
   classes?: any;
   data: FeatureCollection2;
   onEditorUpdate: (fc: FeatureCollection2) => void;
+  onPublishButtonClick: () => void;
 }
 
 export interface IAppState {}
@@ -43,27 +30,16 @@ export interface IAppState {}
 class TextPane extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
-
-    this.state = {};
   }
 
   public render() {
     const { classes, data } = this.props;
     return (
-      <div className={classes.root}>
-        <AppBar position="fixed" className={classes.appBar}>
-          <Toolbar>
-            <Button
-              variant="contained"
-              color="secondary"
-              className={classes.button}
-              //disabled={!sharable}
-              //onClick={this.props.onShare}
-            >
-              Publish
-            </Button>
-          </Toolbar>
-        </AppBar>
+      <div className={classes.container}>
+        <EditorAppBar
+          data={data}
+          onPublishClick={this.props.onPublishButtonClick}
+        />
         <CardEditorWithPreview
           data={data}
           editable={true}

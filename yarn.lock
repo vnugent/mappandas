@@ -561,6 +561,11 @@
     "@turf/invariant" "6.x"
     martinez-polygon-clipping "^0.4.3"
 
+"@types/classnames@^2.2.7":
+  version "2.2.7"
+  resolved "https://registry.yarnpkg.com/@types/classnames/-/classnames-2.2.7.tgz#fb68cc9be8487e6ea5b13700e759bfbab7e0fefd"
+  integrity sha512-rzOhiQ55WzAiFgXRtitP/ZUT8iVNyllEpylJ5zHzR4vArUvMB39GTk+Zon/uAM0JxEFAWnwsxC2gH8s+tZ3Myg==
+
 "@types/geojson@^7946.0.4":
   version "7946.0.4"
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.4.tgz#4e049756383c3f055dd8f3d24e63fb543e98eb07"
@@ -2306,7 +2311,7 @@ classname@^0.0.0:
   resolved "https://registry.yarnpkg.com/classname/-/classname-0.0.0.tgz#43d171b484e354c7a293a5b78004df6852db20d6"
   integrity sha1-Q9FxtITjVMeik6W3gATfaFLbINY=
 
-classnames@^2.2.5:
+classnames@^2.2.5, classnames@^2.2.6:
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
   integrity sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==
