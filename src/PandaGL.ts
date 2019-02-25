@@ -64,10 +64,10 @@ export default class PandaGL extends CompositeLayer implements IProps {
           mask: true
         }
       },
-      sizeScale: 10,
+      sizeScale: 12,
       getPosition: d => d.geometry.coordinates,
       getIcon: d => "marker",
-      getSize: 10,
+      getSize: 6,
       getColor: d => [255, 128, 0],
     });
   }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { withStyles } from "@material-ui/core";
+import { withStyles, Typography } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
@@ -14,7 +14,13 @@ const styles = (theme: Theme) =>
       flexDirection: "column",
       height: "100%",
       width: "100%",
-      paddingLeft: theme.spacing.unit * 3,
+      paddingLeft: theme.spacing.unit * 3
+    },
+    footer: {
+      alignSelf: "flex-end",
+      paddingTop: theme.spacing.unit,
+      paddingRight: theme.spacing.unit * 3,
+      flexShrink: 3
     }
   });
 
@@ -45,6 +51,9 @@ class TextPane extends React.Component<IAppProps, IAppState> {
           editable={true}
           onContentChange={this.props.onEditorUpdate}
         />
+        <Typography variant="caption" align="right" className={classes.footer}>
+          Contact us: <a href="mailto:hola@mappandas.com">hola@mappandas.com</a>
+        </Typography>
       </div>
     );
   }
