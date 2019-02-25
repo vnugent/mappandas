@@ -39,13 +39,7 @@ export class PandaEditor extends React.Component<IAppProps, IAppState> {
   });
 
   componentDidMount() {
-    console.log(
-      "##PandaEditor.CDU()",
-      this.props.data.properties,
-      this.state.initialText
-    );
     this.parseUserInput(this.state.initialText, 1);
-    //this.fixOEF();
   }
 
   public render() {
@@ -57,11 +51,10 @@ export class PandaEditor extends React.Component<IAppProps, IAppState> {
 
     const uuid = data.properties ? data.properties.uuid : "1";
 
-    console.log("#PandaEditor.render()", this.props.data.properties);
     return (
       <textarea
         key={uuid}
-        placeholder="Begin writing your story here..."
+        placeholder="Begin writing your story here.  Click 'Try Me' to see an example."
         autoFocus={true}
         defaultValue={this.state.initialText}
         onChange={evt => this.onChange(evt.target)}
@@ -119,13 +112,19 @@ export class PandaEditor extends React.Component<IAppProps, IAppState> {
   };
 
   parseUserInput = (raw, cursor) => {
+    const { properties } = this.props.data;
+
     if (!raw) {
       this.setState(this.state0(), () => {
         // combine this with normal case once geocoder.parse()
         // doesn't generate error on "" input
-        // if (this.props.onContentChange) {
-        //   this.props.onContentChange(GeoHelper.NEW_FC());
-        // }
+        if (this.props.onContentChange) {
+          const fc = GeoHelper.NEW_FC();
+          if (properties && properties.uuid) {
+            fc.properties.uuid = properties.uuid;
+          }
+          this.props.onContentChange(fc);
+        }
       });
       return;
     }
@@ -133,11 +132,10 @@ export class PandaEditor extends React.Component<IAppProps, IAppState> {
       .parse(raw)
       .then(({ ast, fc }) =>
         this.setState({ raw: raw, error: undefined }, () => {
-        //   if (this.textareaRef.current != null) {
-        //     this.textareaRef.current.selectionEnd = cursor;
-        //   }
+          //   if (this.textareaRef.current != null) {
+          //     this.textareaRef.current.selectionEnd = cursor;
+          //   }
           if (this.props.onContentChange) {
-            const { properties } = this.props.data;
             if (properties && properties.uuid) {
               fc.properties.uuid = properties.uuid;
             }

@@ -152,7 +152,6 @@ class App extends React.Component<IAppProps, IAppState> {
     if (fc.features.length === 0) {
       this.setState({ editableJSON: fc });
     } else {
-      console.log("##onEditorUpdate()", fc.properties && fc.properties.uuid);
       const { width, height } = this.getMapDivDimensions();
       const newViewstate = fc.bbox
         ? Object.assign(
@@ -300,7 +299,6 @@ class App extends React.Component<IAppProps, IAppState> {
             />
 
             <ShareScreen
-              classes={classes}
               panda={this.state.panda}
               open={this.state.share_screen}
               onClose={this.onShareScreenClose}

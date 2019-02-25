@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Tabs, Tab, Button } from "@material-ui/core";
+import { Tabs, Tab } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { createStyles, Theme } from "@material-ui/core/styles";
 
@@ -32,6 +32,9 @@ const styles = (theme: Theme) =>
       flexFlow: "column",
       alignItems: "stretch",
       alignContent: "center"
+    },
+    tryme: {
+      color: theme.palette.secondary.main
     }
   });
 
@@ -62,15 +65,15 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
         <Tabs value={this.state.value} onChange={this.handleChange}>
           {editable && <Tab label="Write" />}
           <Tab label="Preview" />
-          <Button
-            style={{ marginLeft: 10 }}
-            color="secondary"
-            size="small"
-            variant="text"
+          <Tab
+            label="Try Me!"
             onClick={this.loadExample}
-          >
-            Try me!
-          </Button>
+            textColor="secondary"
+            classes={{
+              root: classes.tryme,
+              textColorSecondary: classes.color
+            }}
+          />
         </Tabs>
         <PandaEditor
           key={activeUUID}
@@ -95,7 +98,7 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
     RestClient.getTextFile("example1.txt").then(s => {
       const { data } = this.props;
       if (data.properties) data.properties.uuid = uuidv1();
-      this.setState({ sampleText: s });
+      this.setState({ sampleText: s, value: 0 });
       (this.timer = setTimeout(() => {
         this.setState({ sampleText: "" });
       })),
