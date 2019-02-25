@@ -1,6 +1,7 @@
 import * as React from "react";
 import DeckGL, { MapController, GeoJsonLayer } from "deck.gl";
 import { StaticMap } from "react-map-gl";
+import { Hidden, withWidth } from "@material-ui/core";
 
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
@@ -83,7 +84,7 @@ class MapNG extends React.Component<IProps, IState> {
         onViewStateChange={this.props.onViewStateChanged}
         onLayerHover={this._onHover}
       >
-        <Geocoder
+        <ResponsiveGeocoder
           className="geocoder-container"
           mapRef={this.mapRef}
           onResult={this.handleOnResult}
@@ -105,5 +106,11 @@ class MapNG extends React.Component<IProps, IState> {
     );
   }
 }
+
+const ResponsiveGeocoder = withWidth()((props: any) => (
+  <Hidden mdDown>
+    <Geocoder {...props} />
+  </Hidden>
+));
 
 export default MapNG;

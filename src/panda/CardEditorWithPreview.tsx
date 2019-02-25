@@ -18,8 +18,9 @@ export interface IAppProps {
 }
 
 export interface IAppState {
-  value: number;
+  selectedTab: number;
   sampleText: string;
+  uuid: string;
 }
 
 const styles = (theme: Theme) =>
@@ -44,13 +45,29 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
     super(props);
 
     this.state = {
-      value: 0,
-      sampleText: ""
+      selectedTab: 0,
+      sampleText: "",
+      uuid: this.props.data.properties ? this.props.data.properties.uuid : "1"
     };
   }
 
-  handleChange = (event, value) => {
-    this.setState({ value });
+  static getDerivedStateFromProps(nextProps: IAppProps, prevState: IAppState) {
+    const nextUUID = nextProps.data.properties ? nextProps.data.properties.uuid : 1;
+    if (nextUUID !== prevState.uuid) {
+        return {
+            uuid: nextUUID,
+            selectedTab: 0
+        }
+    }
+    return {}
+  }
+
+//   shouldComponentUpdate(nextProps: , nextState) {
+    
+//   }
+
+  handleChange = (event, selectedTab) => {
+    this.setState({ selectedTab });
   };
 
   componentWillUnmount() {
@@ -60,9 +77,10 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
   public render() {
     const { editable, classes, data } = this.props;
     const activeUUID = data.properties ? data.properties.uuid : "1";
+    const {selectedTab} = this.state;
     return (
       <div className={classes.root}>
-        <Tabs value={this.state.value} onChange={this.handleChange}>
+        <Tabs value={this.state.selectedTab} onChange={this.handleChange}>
           {editable && <Tab label="Write" />}
           <Tab label="Preview" />
           <Tab
@@ -77,13 +95,13 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
         </Tabs>
         <PandaEditor
           key={activeUUID}
-          hide={this.state.value !== 0}
+          hide={selectedTab !== 0}
           data={data}
           initialText={this.state.sampleText}
           onContentChange={this.props.onContentChange}
         />
         <PandaCardView
-          hide={this.state.value !== 1}
+          hide={selectedTab !== 1}
           data={this.props.data}
           previewMode={true}
         />
@@ -98,7 +116,7 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
     RestClient.getTextFile("example1.txt").then(s => {
       const { data } = this.props;
       if (data.properties) data.properties.uuid = uuidv1();
-      this.setState({ sampleText: s, value: 0 });
+      this.setState({ sampleText: s });
       (this.timer = setTimeout(() => {
         this.setState({ sampleText: "" });
       })),
