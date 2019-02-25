@@ -1,19 +1,40 @@
 import * as React from "react";
 
-import { Radio, RadioGroup, FormControlLabel } from "@material-ui/core";
+import {
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  createStyles,
+  Theme
+} from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 
-const styles = theme => ({
-  root: {
-    display: "flex"
-  },
-  formControl: {
-    margin: theme.spacing.unit * 3
-  },
-  group: {
-    margin: `${theme.spacing.unit}px 0`
-  }
-});
+const styles = (theme: Theme) =>
+  createStyles({
+    root: {
+      position: "relative",
+      [theme.breakpoints.up("sm")]: {
+        display: "flex"
+      },
+      [theme.breakpoints.down("sm")]: {
+        display: "none"
+      },
+      float: "left",
+      backgroundColor: "#778899",
+      left: 30,
+      width: 350,
+      zIndex: 2000,
+      opacity: 0.88,
+      borderRadius: "10px 35px 20px",
+      boxShadow: "1px 2px 4px 2px gray"
+    },
+    formControl: {
+      margin: theme.spacing.unit * 3
+    },
+    group: {
+      margin: `${theme.spacing.unit}px 0`
+    }
+  });
 
 export interface IAppProps {
   classes: any;
@@ -38,7 +59,12 @@ class Switcher extends React.Component<IAppProps, IAppState> {
     const { classes } = this.props;
 
     return (
-      <div className="map-switcher-container">
+      <div
+        className={classes.root}
+        style={{
+          top: window.innerHeight - 100
+        }}
+      >
         <RadioGroup
           aria-label="Gender"
           name="gender1"

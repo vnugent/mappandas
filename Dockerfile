@@ -8,7 +8,7 @@ RUN mkdir -p ${APP_DIR}
 EXPOSE 3000
 
 RUN yarn global add serve
-COPY package.json yarn.lock *.json ./
+COPY package.json yarn.lock *.json .env ./
 COPY src ./src
 COPY public ./public
 

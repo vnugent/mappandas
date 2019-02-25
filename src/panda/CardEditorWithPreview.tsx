@@ -1,11 +1,12 @@
 import * as React from "react";
-import { Tabs, Tab } from "@material-ui/core";
+import { Tabs, Tab, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { createStyles, Theme } from "@material-ui/core/styles";
 
 import { FeatureCollection2 } from "@mappandas/yelapa";
 import PandaCardView from "./PandaCardView";
 import PandaEditor from "./PandaEditor";
+import * as RestClient from "../RestClient";
 
 const uuidv1 = require("uuid/v1");
 
@@ -18,6 +19,7 @@ export interface IAppProps {
 
 export interface IAppState {
   value: number;
+  sampleText: string;
 }
 
 const styles = (theme: Theme) =>
@@ -34,11 +36,13 @@ const styles = (theme: Theme) =>
   });
 
 class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
+  private timer: any;
   constructor(props: IAppProps) {
     super(props);
 
     this.state = {
-      value: 0
+      value: 0,
+      sampleText: ""
     };
   }
 
@@ -46,19 +50,33 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
     this.setState({ value });
   };
 
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
   public render() {
     const { editable, classes, data } = this.props;
-    const uuid = data.properties ? data.properties.uuid : uuidv1();
+    const activeUUID = data.properties ? data.properties.uuid : "1";
     return (
       <div className={classes.root}>
         <Tabs value={this.state.value} onChange={this.handleChange}>
           {editable && <Tab label="Write" />}
           <Tab label="Preview" />
+          <Button
+            style={{ marginLeft: 10 }}
+            color="secondary"
+            size="small"
+            variant="text"
+            onClick={this.loadExample}
+          >
+            Try me!
+          </Button>
         </Tabs>
         <PandaEditor
-          key={uuid}
+          key={activeUUID}
           hide={this.state.value !== 0}
-          data={this.props.data}
+          data={data}
+          initialText={this.state.sampleText}
           onContentChange={this.props.onContentChange}
         />
         <PandaCardView
@@ -72,6 +90,18 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
 
   // allow publishing if there's 1 entry
   isPublishable = () => this.props.data.features.length > 0;
+
+  loadExample = () => {
+    RestClient.getTextFile("example1.txt").then(s => {
+      const { data } = this.props;
+      if (data.properties) data.properties.uuid = uuidv1();
+      this.setState({ sampleText: s });
+      (this.timer = setTimeout(() => {
+        this.setState({ sampleText: "" });
+      })),
+        600;
+    });
+  };
 }
 
 export default withStyles(styles)(CardEditorWithPreview);

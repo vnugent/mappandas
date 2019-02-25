@@ -46,7 +46,7 @@ const styles = (theme: Theme) =>
       paddingTop: 100,
       paddingBottom: theme.spacing.unit * 3,
       boxSizing: "border-box",
-      alignItems: "stretch",
+      alignItems: "stretch"
     }
   });
 
@@ -114,7 +114,8 @@ class App extends React.Component<IAppProps, IAppState> {
    * Handle new data from the backend (or possibly from local storage cache)
    */
   onDataLoaded = (data: IPanda, editable: boolean): void => {
-    const { width, height } = this.getMapDivDimensions();
+    const { width } = this.getMapDivDimensions();
+    const height = window.innerHeight;
     const newViewstate = Object.assign(
       this.state.viewstate,
       GeoHelper.bbox2Viewport(data.bbox, width, height)
@@ -151,8 +152,8 @@ class App extends React.Component<IAppProps, IAppState> {
     if (fc.features.length === 0) {
       this.setState({ editableJSON: fc });
     } else {
+      console.log("##onEditorUpdate()", fc.properties && fc.properties.uuid);
       const { width, height } = this.getMapDivDimensions();
-      console.log("#WxH", width, height);
       const newViewstate = fc.bbox
         ? Object.assign(
             this.state.viewstate,
@@ -256,15 +257,15 @@ class App extends React.Component<IAppProps, IAppState> {
             </div>
           </Toolbar>
         </AppBar> */}
-        <Grid spacing={0} container={true}>
+        <TopLevelAppBar
+          data={this.state.editableJSON}
+          onCreateNewClick={this.onNewButtonClick}
+        />
+        <Grid spacing={0} container={true} alignContent="stretch">
           <Grid item xs={12} sm={6}>
-            <TopLevelAppBar
-              data={this.state.editableJSON}
-              onCreateNewClick={this.onNewButtonClick}
-            />
             <div id="text-pane-id" className={classes.textPane}>
               {mode === "share" && (
-                  <PandaCardView data={this.state.editableJSON} />
+                <PandaCardView data={this.state.editableJSON} />
               )}
               {mode === "edit" && (
                 <TextPane
@@ -279,7 +280,6 @@ class App extends React.Component<IAppProps, IAppState> {
             <div
               id="mapng"
               style={{
-                display: "flex",
                 padding: 0,
                 position: "relative"
               }}
@@ -288,23 +288,22 @@ class App extends React.Component<IAppProps, IAppState> {
                 geojson={this.state.editableJSON}
                 viewstate={this.state.viewstate}
                 onViewStateChanged={this.onViewstateChanged}
-                onEditUpdated={this.onEditorUpdate}
                 mapStyle={this.state.mapStyle}
                 onHover={this.onHover}
               />
               <Popup data={this.state.hoveredFeature} />
             </div>
+            <LocateMe onClick={this._locateMe} />
+            <Switcher
+              currentStyle={this.state.mapStyle}
+              onChange={this.onMapStyleChange}
+            />
+
             <ShareScreen
               classes={classes}
               panda={this.state.panda}
               open={this.state.share_screen}
               onClose={this.onShareScreenClose}
-            />
-
-            <LocateMe onClick={this._locateMe} />
-            <Switcher
-              currentStyle={this.state.mapStyle}
-              onChange={this.onMapStyleChange}
             />
             <Switch>
               <Route

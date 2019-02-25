@@ -36,6 +36,13 @@ export const get = async (uuid: string): Promise<string | undefined> => {
   }
 };
 
+export const getTextFile = async(name: string):Promise<string> => {
+    const response = await client.get<string>(name, {
+        baseURL: undefined
+    });
+    return response ? response.data : ""; 
+}
+
 export const sendMail = (uuid: string, email: string) => {
   const headers = {
     "Content-Type": "application/json"

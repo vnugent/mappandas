@@ -21,13 +21,17 @@ const styles = (theme: Theme) =>
       letterSpacing: "0.1em"
     },
     appBar: {
-      display: "flex",
-      justifyContent: "flex-start",
+      position: "fixed",
       boxShadow: "none",
-      backgroundColor: "transparent",
-      zIndex: 1000,
-      width: "50%",
-      left: 0
+      backgroundColor: "white",
+      [theme.breakpoints.up("xs")]: {
+        width: "50%"
+      },
+      [theme.breakpoints.down("xs")]: {
+        width: "100%"
+      },
+      left: 0,
+      zIndex: 2000
     },
     editorSubMenu: {
       display: "flex",
@@ -89,11 +93,16 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
     const { classes } = this.props;
     return (
       <div className={classes.appBar}>
-        <AppBar position="fixed" className={classes.appBar}>
+        <AppBar
+          position="sticky"
+          style={{
+            backgroundColor: "transparent"
+          }}
+        >
           <Toolbar>
             <Typography
               className={classes.title}
-              variant="h5"
+              variant="h6"
               color="inherit"
               noWrap
             >

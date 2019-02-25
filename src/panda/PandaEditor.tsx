@@ -11,10 +11,12 @@ export interface IAppProps {
   classes?: any;
   hide: boolean;
   data: FeatureCollection2;
+  initialText: string;
   onContentChange: (fc: FeatureCollection2) => void;
 }
 
 export interface IAppState {
+  initialText: string;
   raw: string;
   error: any;
   ast: any;
@@ -22,7 +24,6 @@ export interface IAppState {
 
 export class PandaEditor extends React.Component<IAppProps, IAppState> {
   private textareaRef: React.RefObject<HTMLTextAreaElement>;
-  //private timer: any;
 
   constructor(props: IAppProps) {
     super(props);
@@ -31,41 +32,46 @@ export class PandaEditor extends React.Component<IAppProps, IAppState> {
   }
 
   state0 = () => ({
-    raw: "",
+    initialText: this.props.initialText,
+    raw: this.props.initialText,
     error: null,
     ast: { entries: [] }
   });
 
   componentDidMount() {
-    //this.timer = setInterval(this.checkEOF, 20000);
-  }
-
-  componentWillUnmount() {
-//    clearInterval(this.timer);
+    console.log(
+      "##PandaEditor.CDU()",
+      this.props.data.properties,
+      this.state.initialText
+    );
+    this.parseUserInput(this.state.initialText, 1);
+    //this.fixOEF();
   }
 
   public render() {
-    const { data, hide } = this.props;
+    const { hide, data } = this.props;
     const hideAttr: string = hide ? "none" : "flex";
-    if (!hide &&  this.textareaRef.current) {
-        console.log("###focus");
-        this.textareaRef.current.focus();
+    if (!hide && this.textareaRef.current) {
+      this.textareaRef.current.focus();
     }
 
-    const initialStr = this.checkEOF(GeoHelper.geojson2string(data).trim());
+    const uuid = data.properties ? data.properties.uuid : "1";
+
+    console.log("#PandaEditor.render()", this.props.data.properties);
     return (
       <textarea
-        id="standard-name2"
-        placeholder="Describe this panda..."
+        key={uuid}
+        placeholder="Begin writing your story here..."
         autoFocus={true}
-        defaultValue={initialStr}
+        defaultValue={this.state.initialText}
         onChange={evt => this.onChange(evt.target)}
         onPaste={evt => this.onPaste(evt)}
-        required={true}
+        //required={true}
         className="style-4"
         ref={this.textareaRef}
         style={{
           fontSize: "1.2em",
+          lineHeight: 1.8,
           border: "none",
           outline: "none",
           borderColor: "transparent",
@@ -104,7 +110,6 @@ export class PandaEditor extends React.Component<IAppProps, IAppState> {
 
   onChange = target => {
     let raw = target.value;
-    console.log("##onChange", raw);
     // if (raw.length > 3 && raw.substring(raw.length - 3) === "\n--") {
     //   // if line begins with -- automatically jump to a new line
     //   raw = raw + "\n";
@@ -118,9 +123,9 @@ export class PandaEditor extends React.Component<IAppProps, IAppState> {
       this.setState(this.state0(), () => {
         // combine this with normal case once geocoder.parse()
         // doesn't generate error on "" input
-        if (this.props.onContentChange) {
-          this.props.onContentChange(GeoHelper.NEW_FC());
-        }
+        // if (this.props.onContentChange) {
+        //   this.props.onContentChange(GeoHelper.NEW_FC());
+        // }
       });
       return;
     }
@@ -128,10 +133,14 @@ export class PandaEditor extends React.Component<IAppProps, IAppState> {
       .parse(raw)
       .then(({ ast, fc }) =>
         this.setState({ raw: raw, error: undefined }, () => {
-          if (this.textareaRef.current != null) {
-            this.textareaRef.current.selectionEnd = cursor;
-          }
+        //   if (this.textareaRef.current != null) {
+        //     this.textareaRef.current.selectionEnd = cursor;
+        //   }
           if (this.props.onContentChange) {
+            const { properties } = this.props.data;
+            if (properties && properties.uuid) {
+              fc.properties.uuid = properties.uuid;
+            }
             fc.bbox = GeoHelper.bboxFromGeoJson(fc);
             this.props.onContentChange(fc);
           }

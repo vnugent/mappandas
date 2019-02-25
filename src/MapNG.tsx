@@ -17,7 +17,6 @@ interface IProps {
   mapStyle: string;
   viewstate: any;
   onViewStateChanged: (any) => void;
-  onEditUpdated: (any, string) => void;
   onHover?: (data: IActiveFeature | null) => void;
 }
 
@@ -38,18 +37,6 @@ class MapNG extends React.Component<IProps, IState> {
       searchResultLayer: null
     };
   }
-
-  _onLayerClick = info => {
-    console.log("onLayerClick", info);
-    if (info && this.state.mode === "deletePoint" && this.props.geojson) {
-      const features = [...this.props.geojson.features];
-      features.splice(info.index, 1);
-      const data = { ...this.props.geojson, features };
-      this.setState({ selectedFeatureIndexes: [] }, () =>
-        this.props.onEditUpdated(data, "removePoint")
-      );
-    }
-  };
 
   handleOnResult = event => {
     this.setState({
@@ -84,37 +71,37 @@ class MapNG extends React.Component<IProps, IState> {
     }
 
     return (
-        <DeckGL
-          initialViewState={this.props.viewstate}
-          {...this.props.viewstate}
-          layers={layers}
-          controller={{
-            type: MapController,
-            dragRotate: false,
-            doubleClickZoom: true
-          }}
-          onViewStateChange={this.props.onViewStateChanged}
-          onLayerHover={this._onHover}
-        >
-          <Geocoder
-            className="geocoder-container"
-            mapRef={this.mapRef}
-            onResult={this.handleOnResult}
-            onViewportChange={this.props.onViewStateChanged}
-            mapboxApiAccessToken={Config.MAPBOX_TOKEN}
-            position="top-left"
-            divId="search-container"
-            flyTo={false}
-          />
-          <StaticMap
-            reuseMaps
-            mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
-            viewState={this.props.viewstate}
-            preventStyleDiffing={true}
-            mapboxApiAccessToken={Config.MAPBOX_TOKEN}
-            ref={this.mapRef}
-          />
-        </DeckGL>
+      <DeckGL
+        initialViewState={this.props.viewstate}
+        {...this.props.viewstate}
+        layers={layers}
+        controller={{
+          type: MapController,
+          dragRotate: false,
+          doubleClickZoom: true
+        }}
+        onViewStateChange={this.props.onViewStateChanged}
+        onLayerHover={this._onHover}
+      >
+        <Geocoder
+          className="geocoder-container"
+          mapRef={this.mapRef}
+          onResult={this.handleOnResult}
+          onViewportChange={this.props.onViewStateChanged}
+          mapboxApiAccessToken={Config.MAPBOX_TOKEN}
+          position="top-left"
+          divId="search-container"
+          flyTo={false}
+        />
+        <StaticMap
+          reuseMaps
+          mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
+          viewState={this.props.viewstate}
+          preventStyleDiffing={true}
+          mapboxApiAccessToken={Config.MAPBOX_TOKEN}
+          ref={this.mapRef}
+        />
+      </DeckGL>
     );
   }
 }

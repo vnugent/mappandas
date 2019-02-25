@@ -97,14 +97,12 @@ export const parse = (s: string, options?: any): IPanda => {
   };
 };
 
-export const bbox2Viewport = (bbox: BBox, width?: number, height?: number) => {
-  const calWidth = width ? width : window.innerWidth;
-  const calHeight = height ? height : window.innerHeight;
+export const bbox2Viewport = (bbox: BBox, width: number, height: number) => {
   return ViewportUtils.fitBounds({
-    width: calWidth,
-    height: calHeight,
+    width: width,
+    height: height,
     bounds: [bbox.slice(0, 2), bbox.slice(2, 4)],
-    padding: 160
+    padding: Math.min(width, height) * 0.2
   });
 };
 
