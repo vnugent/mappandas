@@ -1,0 +1,16 @@
+What is Map Pandas?
+MapPandas.com is where you can tell stories using maps. You can use the site to write about your travel destinations or make lists of your favorite restaurants and share them with others.
+--
+Portland, Oregon
+There are 5 entries in this story.  Each entry is separated by two minus signs.  The first line indicates the name of the location which can be a city, a business name or an address.  The pandas working behind the scene will help locate these locations and place markers on the map as you type.
+--
+Hood River
+--
+Astoria, Oregon
+Morbi dictum massa vitae tristique sollicitudin. Donec porta elementum tellus, id fermentum nibh suscipit eget. Sed tristique at tortor sit amet scelerisque. Donec ac tortor massa. Aenean in nisl ornare, finibus lacus in, luctus justo. Maecenas elementum eros eget gravida porttitor.
+--
+Cannon Beach, Oregon
+Morbi dictum massa vitae tristique sollicitudin. Donec porta elementum tellus, id fermentum nibh suscipit eget. Sed tristique at tortor sit amet scelerisque. Donec ac tortor massa. Aenean in nisl ornare, finibus lacus in, luctus justo.
+--
+Newport, Oregon
+Justo laoreet sit amet cursus sit. At varius vel pharetra vel turpis nunc eget lorem. Accumsan tortor posuere ac ut consequat semper viverra nam libero. Id venenatis a condimentum vitae. Congue nisi vitae suscipit tellus. Habitant morbi tristique senectus et netus et. Faucibus vitae aliquet nec ullamcorper sit.

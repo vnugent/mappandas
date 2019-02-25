@@ -7,6 +7,7 @@ interface IProps {
 }
 export default class PandaGL extends CompositeLayer implements IProps {
   static defaultProps = {
+    pickable: true,
     data: []
   };
 
@@ -68,11 +69,9 @@ export default class PandaGL extends CompositeLayer implements IProps {
       getIcon: d => "marker",
       getSize: 10,
       getColor: d => [255, 128, 0],
-      onHover: ({ object, x, y }) => {
-        // const tooltip = `${object.name}\n${object.address}`;
-      }
     });
   }
+
 
   renderLayers() {
     if (!this.props.data || this.props.data.length < 1) {
@@ -88,14 +87,9 @@ export default class PandaGL extends CompositeLayer implements IProps {
         f.geometry.type.toUpperCase() === "POLYGON" ||
         f.geometry.type.toUpperCase() === "LINESTRING"
     );
-    console.log("## PandaGL.renderLayers()", points, polygons);
     return [
       points.length > 0 && this.makePointLayer(points),
       polygons.length > 0 && this.makeGeoJSONLayer(featureCollection(polygons))
     ];
-    // return [
-    //   points.length > 0 && this.makePointLayer(points),
-    //   polygons.length > 0 && this.makeEditableLayer(featureCollection(polygons))
-    // ];
   }
 }

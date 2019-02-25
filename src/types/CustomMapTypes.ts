@@ -1,4 +1,5 @@
-import { FeatureCollection } from "geojson";
+import { FeatureCollection2 } from "@mappandas/yelapa";
+import { Feature } from "@turf/helpers";
 
 /**
  * {Latitude, Longitude}
@@ -12,7 +13,14 @@ export type Bbox0 = [number, number, number, number];
 
 export interface IPanda {
   uuid: string;
-  geojson: FeatureCollection;
+  geojson: FeatureCollection2;
   bbox: Bbox0;
   description: string;
+}
+
+export interface IActiveFeature {
+  x: number;
+  y: number;
+  index: number;
+  object?: Feature<any>;
 }

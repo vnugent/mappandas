@@ -6,6 +6,10 @@ import { BrowserRouter } from "react-router-dom";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 
 import App from "./App";
+//@ts-ignore
+import * as Config from "./Config";
+
+
 
 const theme = createMuiTheme({
   palette: {

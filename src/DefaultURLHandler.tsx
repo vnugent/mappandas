@@ -12,7 +12,6 @@ interface IState {}
 export default class DefaultUrLHandler extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    console.log("### DefaultURLHandler ###", props.match);
   }
 
   componentDidMount() {

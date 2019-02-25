@@ -27,12 +27,10 @@ export default class ShowPandaURLHandler extends React.Component<
     const uuid = this.props.match.params["uuid"];
     const editable: boolean =
       this.props.match.params["edit"] === "edit" ? true : false;
-    console.log("##ShowPandaURHLHandler.componentDidmount() ", uuid, editable);
     this.getGeojsonFromCacheOrRemote(uuid, editable);
   }
 
   componentWillUnmount() {
-    console.log("ShowPandaURLHandlr().willUnmount()");
   }
   shouldComponentUpdate(
     nextProps: IShowPandaProps,
