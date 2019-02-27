@@ -3,7 +3,8 @@ import { withStyles, Typography } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
-import CardEditorWithPreview from "./panda/CardEditorWithPreview";
+//import CardEditorWithPreview from "./panda/CardEditorWithPreview";
+import SmartEditor from "./edit/SmartEditor";
 import { EditorAppBar } from "./AppBars";
 
 const styles = (theme: Theme) =>
@@ -46,11 +47,12 @@ class TextPane extends React.Component<IAppProps, IAppState> {
           data={data}
           onPublishClick={this.props.onPublishButtonClick}
         />
-        <CardEditorWithPreview
+        <SmartEditor />
+        {/* <CardEditorWithPreview
           data={data}
           editable={true}
           onContentChange={this.props.onEditorUpdate}
-        />
+        /> */}
         <Typography variant="caption" align="right" className={classes.footer}>
           Contact us: <a href="mailto:hola@mappandas.com">hola@mappandas.com</a>
         </Typography>
