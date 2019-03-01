@@ -1,5 +1,4 @@
-import { Block } from "slate";
-import { List } from "immutable";
+import * as F from "./Factory";
 
 const onDash = (event: any, editor: any, next) => {
   const { value } = editor;
@@ -7,31 +6,22 @@ const onDash = (event: any, editor: any, next) => {
   if (type === "overview" || type === "title") {
     const nodes = value.document.nodes;
 
-    //editor.moveFocusToStartOfNextBlock;
     const currentText = value.focusText.text;
-    console.log("###", currentText);
     if (currentText.charAt(currentText.length - 1) === "-") {
-      const entryNode = nodes.find(v => v.type === "entry");
-      if (entryNode) {
+      editor.deleteBackward(1);
+      const listNode = nodes.find(v => v.type === "list");
+      if (listNode) {
         // already exist so simply move there
-        const textNode = entryNode.getFirstText();
+        const textNode = listNode.nodes.first().getFirstText();
 
         event.preventDefault();
         return editor.moveToEndOfNode(textNode);
       }
       event.preventDefault();
-      const block = Block.create({
-        type: "entry",
-        nodes: List.of(
-          Block.create({ type: "location" }),
-          Block.create({ type: "description" })
-        )
-      });
-      return editor.insertBlock(block);
+      const list = F.initializeList();
+      return editor.insertBlock(list);
     }
     return next();
-    //return editor.moveToRangeOfNode(textNode);
-    //return next();
   }
   if (value.startBlock.type === "overview") {
     return next();

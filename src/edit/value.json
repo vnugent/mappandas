@@ -1,69 +1,20 @@
 {
-    "document": {
-      "nodes": [
-        {
-          "object": "block",
-          "type": "title",
-          "nodes": [
-            {
-              "object": "text",
-              "leaves": [
-                {
-                  "text": ""
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "object": "block",
-          "type": "overview",
-          "nodes": [
-            {
-              "object": "text",
-              "leaves": [
-                {
-                  "text": ""
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "object": "block",
-          "type": "entry",
-          "nodes": [
-            {
-              "object": "block",
-              "type": "location",
-              "nodes": [
-                {
-                  "object": "text",
-                  "leaves": [
-                    {
-                      "text": ""
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "object": "block",
-              "type": "description",
-              "nodes": [
-                {
-                  "object": "text",
-                  "leaves": [
-                    {
-                      "text": ""
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+  "document": {
+    "nodes": [
+      {
+        "object": "block",
+        "type": "title",
+        "nodes": [
+          {
+            "object": "text",
+            "leaves": [
+              {
+                "text": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
-  
+}
