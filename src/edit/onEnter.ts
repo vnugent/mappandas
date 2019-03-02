@@ -31,7 +31,8 @@ const onEnter = (event: any, editor: any, next) => {
         //return editor.insertBlock(desc);
       //return editor.moveToStartOfNode(desc);
     }
-    return undefined;
+
+    return editor.moveToStartOfNode(desc.getFirstText());
   }
   //   if (type === "location") {
   //     const loc = value.startBlock;
