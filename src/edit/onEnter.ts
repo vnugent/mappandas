@@ -1,7 +1,9 @@
 import { Block } from "slate";
+import { List } from "immutable";
+
 import * as F from "./Factory";
 
-const onEnter = (event: any, editor: any, next) => {
+const onEnter = ({ event, editor, next, onEntryUpdate }) => {
   const { value } = editor;
 
   const type = value.startBlock.type;
@@ -24,36 +26,32 @@ const onEnter = (event: any, editor: any, next) => {
     var desc = editor.value.document.getNextSibling(loc.key);
     console.log("###editor, desc, location", editor, desc, loc);
     if (!desc) {
-        console.log("description not found")
-        desc = Block.create({ type: "description" });
-        const entry = loc.getParent([0]);
-        console.log("parent of", loc, entry);
-        //return editor.insertBlock(desc);
-      //return editor.moveToStartOfNode(desc);
+      console.log("description not found");
+      desc = Block.create({ type: "description" });
+      const entry = loc.getParent([0]);
+      console.log("parent of", loc, entry);
     }
-
+    if (onEntryUpdate) {
+      onEntryUpdate({
+        location: loc,
+        mDescription: List.of(desc)
+      });
+    }
     return editor.moveToStartOfNode(desc.getFirstText());
   }
-  //   if (type === "location") {
-  //     const loc = value.startBlock;
-  //     var desc =  editor.value.document.getNextSibling(loc.key)
-  //     console.log("###editor, desc, location", editor, desc, loc);
-  //     if (desc) {
-  //         return editor.moveToStartOfNode(desc);
-  //     }
-  //     desc = Block.create({ type: "description" });
-  //     return editor.insertBlock(desc);
-  //     //return desc.getParent(desc.key).nodes.insert(loc);
-  //     //return ;
-
-  //   }
 
   if (type === "description") {
-    console.log("new line in desc");
+    // if (onEntryUpdate) {
+    //   const entry = editor.value.document.getParent(value.startBlock.key);
+    //   onEntryUpdate({
+    //     location: entry.nodes.first(),
+    //     mDescription: entry.nodes.slice(1)
+    //   });
+    // }
     return next();
   }
 
-  console.log("Type", type);
+  console.log("### Unexpected Type", type);
   return undefined;
 };
 

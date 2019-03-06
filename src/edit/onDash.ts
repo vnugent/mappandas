@@ -7,7 +7,7 @@ const onDash = (event: any, editor: any, next) => {
 
   // let's see if there are 2 consecutive --
   const currentText = value.focusText.text;
-  if (currentText.charAt(currentText.length - 1) !== "-") {
+  if (currentText.charAt(currentText.length - 1) !== "=") {
     return next();
   }
 

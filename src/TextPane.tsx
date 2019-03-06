@@ -2,10 +2,13 @@ import * as React from "react";
 import { withStyles, Typography } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
 import { FeatureCollection2 } from "@mappandas/yelapa";
+// import { serializeEntry } from "./edit/handlers/deserializers";
 
 //import CardEditorWithPreview from "./panda/CardEditorWithPreview";
 import SmartEditor from "./edit/SmartEditor";
 import { EditorAppBar } from "./AppBars";
+//import * as GeoHelper from "./GeoHelper";
+
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -47,7 +50,7 @@ class TextPane extends React.Component<IAppProps, IAppState> {
           data={data}
           onPublishClick={this.props.onPublishButtonClick}
         />
-        <SmartEditor />
+        <SmartEditor uuid={data.properties.uuid} onLocationUpdate={this.props.onEditorUpdate} />
         {/* <CardEditorWithPreview
           data={data}
           editable={true}
@@ -58,6 +61,36 @@ class TextPane extends React.Component<IAppProps, IAppState> {
         </Typography>
       </div>
     );
+  }
+
+  onEntryUpdate = (data: any) => {
+    console.log(
+      "### onEntryUpdate()",
+      data.location.toJSON(),
+      data.mDescription.toJSON()
+    );
+    // serializeEntry(data).then(f => {
+    //   console.log(f);
+    //   if (!f) {
+    //     return;
+    //   }
+    // //   const {location, mDescription} = data;
+
+    // //   this.locationMap.set(location.key, f);
+
+    // //   const newFC: FeatureCollection2 = {
+    // //       type: "FeatureCollection",
+    // //       properties: {
+    // //           uuid: this.props.data.properties.uuid
+    // //       },
+    // //       features: List(this.props.data.features).push(f).toArray()
+    // //   }
+    // //   this.props.onEditorUpdate(newFC);
+    // }); 
+  };
+
+  toFC = () => {
+
   }
 }
 

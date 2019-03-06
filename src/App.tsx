@@ -149,10 +149,13 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onEditorUpdate = (fc: FeatureCollection2) => {
+    console.log("New data", fc);
+
     if (fc.features.length === 0) {
       this.setState({ editableJSON: fc });
     } else {
       const { width, height } = this.getMapDivDimensions();
+      fc.bbox = GeoHelper.bboxFromGeoJson(fc);
       const newViewstate = fc.bbox
         ? Object.assign(
             this.state.viewstate,

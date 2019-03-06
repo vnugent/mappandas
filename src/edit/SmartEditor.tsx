@@ -2,46 +2,79 @@ import * as React from "react";
 import { Editor } from "slate-react";
 import { Block, Value } from "slate";
 import { Typography } from "@material-ui/core";
-
+import { FeatureCollection2 } from "@mappandas/yelapa";
 import placeholderPlugins from "./placeholders";
 
 import onEnter from "./onEnter";
 import onDash from "./onDash";
 import onBackspace from "./onBackspace";
+import * as ToolbarHandler from "./handlers/toolbarHander";
+import { geocoderLookupAndCache, toGeojson } from "./handlers/deserializers";
 
 import Entry from "./ui/Entry";
 
 //import * as F from "./Factory";
 
-export interface IAppProps {}
+export interface IAppProps {
+  uuid: string;
+  onLocationUpdate: (fc: FeatureCollection2) => void;
+}
 
-export interface IAppState {}
+export interface IAppState {
+  value: any;
+}
 
 const KEY_ENTER = "Enter";
-const KEY_DASH = "-";
+const KEY_DASH = "=";
 const KEY_BACKSPACE = "Backspace";
 
 const plugins = placeholderPlugins;
 
 class SmartEditor extends React.Component<IAppProps, IAppState> {
   private editorRef: any;
+  private toolbarHandler: any;
   constructor(props: IAppProps) {
     super(props);
 
-    this.state = {};
+    this.state = { value: initialValue };
     this.editorRef = React.createRef();
   }
 
+  setRef = ref => {
+    console.log("### setting ref", ref);
+    this.editorRef = ref;
+    if (!ref) return;
+    this.toolbarHandler = ToolbarHandler.create(
+      this.props.uuid,
+      this.props.onLocationUpdate,
+      this.editorRef
+    );
+  };
+
   onKeyDown = (event, editor, next) => {
+    //const { onEntryUpdate } = this.props;
+    const args = { event, editor, next, onEntryUpdate: this._onEntryUpdate };
     switch (event.key) {
       case KEY_ENTER:
-        return onEnter(event, editor, next);
+        return onEnter(args);
       case KEY_DASH:
         return onDash(event, editor, next);
       case KEY_BACKSPACE:
         return onBackspace(event, editor, next);
     }
     return next();
+  };
+
+  _onEntryUpdate = data => {
+    const editor = this.editorRef;
+    if (editor) {
+      geocoderLookupAndCache(data, this.editorRef)
+        .then(f => {
+          const fc = toGeojson(this.props.uuid, editor.value);
+          this.props.onLocationUpdate(fc);
+        })
+        .catch(e => null);
+    }
   };
 
   _printNode = (nodes, depth) => {
@@ -64,9 +97,19 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     }
   };
 
+  onChange = ({ value }) => {
+    // Check to see if the document has changed before saving.
+    if (value.document != this.state.value.document) {
+      const content = JSON.stringify(value.toJSON());
+      localStorage.setItem("content", content);
+    }
+
+    this.setState({ value });
+  };
+
   printDebug = (e: any) => {
-    const document = this.editorRef.current.value
-      ? this.editorRef.current.value.document
+    const document = this.editorRef.value
+      ? this.editorRef.value.document
       : undefined;
     if (document) {
       console.log(" ========= Document nodes =========");
@@ -76,13 +119,12 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         console.log(node.toJSON({ preserveKeys: true }));
         this._printNode(node.nodes, 3);
       });
-      //console.log(document && document.toJSON());
     }
   };
 
   printSelection = (e: any) => {
-    const selection = this.editorRef.current.value
-      ? this.editorRef.current.value.selection
+    const selection = this.editorRef.value
+      ? this.editorRef.value.selection
       : undefined;
     if (selection) {
       console.log(" ");
@@ -94,17 +136,18 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   public render() {
     return (
       <div>
-        {/* <button onClick={this.printDebug}>Document</button>
-        <button onClick={this.printSelection}>Selection</button> */}
+        <button onClick={this.printDebug}>Document</button>
+        <button onClick={this.printSelection}>Selection</button>
         <Editor
-          ref={this.editorRef}
+          ref={this.setRef}
           autoFocus={true}
           placeholder="Enter a title..."
-          defaultValue={initialValue}
+          defaultValue={this.state.value}
           schema={schema}
           plugins={plugins}
           renderNode={this.renderNode}
           onKeyDown={this.onKeyDown}
+          onChange={this.onChange}
         />
       </div>
     );
@@ -144,7 +187,13 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       case "list":
         return <div {...attributes}>{children}</div>;
       case "entry":
-        return <Entry attributes={attributes} children={children} />;
+        return (
+          <Entry
+            attributes={attributes}
+            children={children}
+            handlers={this.toolbarHandler}
+          />
+        );
       case "location":
         return <h3 {...attributes}>{children}</h3>;
       default:
