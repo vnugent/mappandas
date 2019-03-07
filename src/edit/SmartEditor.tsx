@@ -41,7 +41,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   }
 
   setRef = ref => {
-    console.log("### setting ref", ref);
     this.editorRef = ref;
     if (!ref) return;
     this.toolbarHandler = ToolbarHandler.create(
@@ -135,9 +134,11 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
   public render() {
     return (
-      <div>
-        <button onClick={this.printDebug}>Document</button>
-        <button onClick={this.printSelection}>Selection</button>
+      // {/* <button onClick={this.printDebug}>Document</button>
+      // <button onClick={this.printSelection}>Selection</button> */}
+      <div style={{
+          paddingRight: 45
+      }}>
         <Editor
           ref={this.setRef}
           autoFocus={true}

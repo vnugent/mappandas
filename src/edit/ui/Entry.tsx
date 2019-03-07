@@ -7,20 +7,21 @@ import classnames from "classnames";
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-      marginTop: 2,
-      marginLeft: -theme.spacing.unit * 3,
-      paddingLeft: theme.spacing.unit * 3,
-      paddingRIght: theme.spacing.unit * 3,
-      padding: 2
+      zIndex: 2500,
+      marginTop: theme.spacing.unit* 2,
+      //marginLeft: -theme.spacing.unit * 4,
+      //marginRight: -theme.spacing.unit * 2,
+      padding: theme.spacing.unit * 2,
+      boxSizing: "border-box"
     },
     hover: {
-      backgroundColor: "#eeeeee"
+      backgroundColor: "#f5f5f5"
     },
     toolbar: {
-      marginRight: theme.spacing.unit * 3,
+      marginRight: theme.spacing.unit * 5,
       borderRadius: 8,
       border: "thin solid #e0e0e0",
-      marginTop: -20,
+      marginTop: -28,
       float: "right",
       background: "white"
       //   justifyContent: "space-beween"
@@ -53,7 +54,6 @@ class Entry extends React.Component<IAppProps, IAppState> {
       hoverClass: undefined
     };
   }
-
 
   public render() {
     const { attributes, children, classes } = this.props;

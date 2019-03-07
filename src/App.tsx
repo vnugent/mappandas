@@ -149,8 +149,6 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onEditorUpdate = (fc: FeatureCollection2) => {
-    console.log("New data", fc);
-
     if (fc.features.length === 0) {
       this.setState({ editableJSON: fc });
     } else {
