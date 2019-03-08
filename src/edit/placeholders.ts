@@ -10,7 +10,7 @@ const createFor = (placeholders: placeholder[]): any[] => {
     return new PlaceholderPlugin({
       placeholder: placeholder.text,
       when: (editor, node) => {
-        return isEmpty(placeholder.type, node);
+        return isEmpty(placeholder.type, node) && isFirstLine(editor, node);
       }
     });
   });
@@ -25,9 +25,19 @@ const isEmpty = (type: string, node: any) => {
   );
 };
 
+const isFirstLine = (editor: any, node: any) => {
+    const prev = editor.value.document.getPreviousSibling(node.key);
+    if (prev && prev.type === node.type) {
+        return false;
+    }
+    return true;
+}
+
+
+
 const placeholderPlugins = createFor([
-  // { type: "title", text: "Title" },
-  { type: "overview", text: "Overview" },
+   { type: "title", text: "Title" },
+  { type: "overview", text: "Tell your story" },
   { type: "location", text: "Location" },
   { type: "description", text: "Description" }
 ]);

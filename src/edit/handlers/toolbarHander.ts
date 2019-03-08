@@ -1,9 +1,9 @@
-import * as F from "../Factory";
+//import * as F from "../Factory";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 import * as _ from "underscore";
 
 import { toGeojson } from "./deserializers";
-
+import addLocation from "../actions/addLocation";
 
 const onDelete = (key: number, uuid: string, fn, editor: any) => {
   console.log("onDelete ref", key);
@@ -15,11 +15,13 @@ const onDelete = (key: number, uuid: string, fn, editor: any) => {
 };
 
 const onAdd = (key: number, editor: any) => {
-  const newEntry = F.createEntry();
-  const list = editor.value.document.getParent(key);
-  editor
-    .insertNodeByKey(list.key, list.nodes.size, newEntry)
-    .moveToStartOfNode(newEntry.nodes.first());
+  addLocation(editor);
+  //   const newEntry = F.createEntry();
+  //   console.log("### onAdd()");
+  //   const list = editor.value.document.getParent(key);
+  //   editor
+  //     .insertNodeByKey(list.key, list.nodes.size, newEntry)
+  //     .moveToStartOfNode(newEntry.nodes.first());
 };
 
 export const create = (

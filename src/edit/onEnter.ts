@@ -1,4 +1,4 @@
-import { Block } from "slate";
+//import { Block } from "slate";
 import { List } from "immutable";
 
 import * as F from "./Factory";
@@ -20,24 +20,21 @@ const onEnter = ({ event, editor, next, onEntryUpdate }) => {
   if (type === "overview") {
     return next();
   }
+
   if (type === "location") {
-    event.preventDefault();
     const loc = value.startBlock;
     var desc = editor.value.document.getNextSibling(loc.key);
-    console.log("###editor, desc, location", editor, desc, loc);
-    if (!desc) {
-      console.log("description not found");
-      desc = Block.create({ type: "description" });
-      const entry = loc.getParent([0]);
-      console.log("parent of", loc, entry);
-    }
+    console.log("## desc", desc.toJSON());
+    event.preventDefault();
     if (onEntryUpdate) {
       onEntryUpdate({
         location: loc,
         mDescription: List.of(desc)
       });
     }
-    return editor.moveToStartOfNode(desc.getFirstText());
+    console.log("fistText", desc.getFirstText());
+
+    return editor.moveTo(desc.getFirstText().key, 1);
   }
 
   if (type === "description") {

@@ -1,19 +1,19 @@
 import * as React from "react";
 import { Editor } from "slate-react";
 import { Block, Value } from "slate";
-import { Typography } from "@material-ui/core";
 import { FeatureCollection2 } from "@mappandas/yelapa";
+import * as _ from "underscore";
+
 import placeholderPlugins from "./placeholders";
 
 import onEnter from "./onEnter";
 import onDash from "./onDash";
 import onBackspace from "./onBackspace";
 import * as ToolbarHandler from "./handlers/toolbarHander";
+import SideToolbar from "./SideToolbar";
 import { geocoderLookupAndCache, toGeojson } from "./handlers/deserializers";
 
-import Entry from "./ui/Entry";
-
-//import * as F from "./Factory";
+import { Title, Overview, Entry, Location, Description } from "./slate-views";
 
 export interface IAppProps {
   uuid: string;
@@ -24,6 +24,9 @@ export interface IAppState {
   value: any;
 }
 
+const existingValue = localStorage.getItem('content')
+
+
 const KEY_ENTER = "Enter";
 const KEY_DASH = "=";
 const KEY_BACKSPACE = "Backspace";
@@ -31,6 +34,7 @@ const KEY_BACKSPACE = "Backspace";
 const plugins = placeholderPlugins;
 
 class SmartEditor extends React.Component<IAppProps, IAppState> {
+  private timer: any;
   private editorRef: any;
   private toolbarHandler: any;
   constructor(props: IAppProps) {
@@ -96,7 +100,15 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     }
   };
 
-  onChange = ({ value }) => {
+  onChange = (event, editor) => {
+    const { value } = event;
+    // console.log(" ===== onChange() ===== ");
+    // console.log("  ", event);
+    // console.log("  operation", event.operations.toJSON());
+    // console.log("   focusBlock", event.value.focusBlock.toJSON());
+    // console.log("    selection", this.editorRef.selection);
+    // console.log(" ====================== ");
+
     // Check to see if the document has changed before saving.
     if (value.document != this.state.value.document) {
       const content = JSON.stringify(value.toJSON());
@@ -132,59 +144,69 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     }
   };
 
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      this.props.onLocationUpdate(
+        toGeojson(this.props.uuid, this.editorRef.value)
+      );
+    }, 3500);
+  }
+
+  componentWillUnmount() {
+      clearInterval(this.timer);
+  }
+
   public render() {
     return (
-      // {/* <button onClick={this.printDebug}>Document</button>
-      // <button onClick={this.printSelection}>Selection</button> */}
-      <div style={{
-          paddingRight: 45
-      }}>
-        <Editor
-          ref={this.setRef}
-          autoFocus={true}
-          placeholder="Enter a title..."
-          defaultValue={this.state.value}
-          schema={schema}
-          plugins={plugins}
-          renderNode={this.renderNode}
-          onKeyDown={this.onKeyDown}
-          onChange={this.onChange}
-        />
-      </div>
+      // <button onClick={this.printSelection}>Selection</button>
+
+      //<button onClick={this.printDebug}>Document</button>
+      <Editor
+        ref={this.setRef}
+        autoFocus={true}
+        defaultValue={this.state.value}
+        schema={schema}
+        plugins={plugins}
+        renderNode={this.renderNode}
+        onKeyDown={this.onKeyDown}
+        onChange={this.onChange}
+        onFocus={event => {
+          console.log("#onFocus() ", event);
+        }}
+      />
     );
   }
 
   renderNode = (props, editor, next) => {
     const { attributes, children, node } = props;
-    //console.log("#children", node.type, children);
-    //console.log("##", node.type, attributes, node);
 
+    const sideToolbar = (
+      <SideToolbar
+        key={attributes["data-key"]}
+        editor={editor}
+        dataKey={attributes["data-key"]}
+        handlers={this.toolbarHandler}
+      />
+    );
     switch (node.type) {
       case "title":
-        return (
-          <Typography
-            {...attributes}
-            variant="h3"
-            color="textPrimary"
-            gutterBottom
-            style={{ zIndex: 2000, fontFamily: "serif" }}
-          >
-            {children}
-          </Typography>
-        );
+        return <Title attributes={attributes} children={children} />;
       case "overview":
         return (
-          <Typography
-            variant="h5"
-            color="textPrimary"
-            gutterBottom
-            style={{ zIndex: 2000, fontFamily: "serif" }}
-          >
-            {children}
-          </Typography>
+          <Overview
+            attributes={attributes}
+            children={children}
+            sideToolbar={sideToolbar}
+          />
         );
       case "description":
-        return <p {...attributes}>{children}</p>;
+        return (
+          <Description
+            attributes={attributes}
+            children={children}
+            sideToolbar={sideToolbar}
+          />
+        );
       case "list":
         return <div {...attributes}>{children}</div>;
       case "entry":
@@ -196,7 +218,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
           />
         );
       case "location":
-        return <h3 {...attributes}>{children}</h3>;
+        return <Location attributes={attributes} children={children} />;
       default:
         return next();
     }
@@ -205,7 +227,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
 const initialValueAsJson = require("./value.json");
 
-const initialValue = Value.fromJSON(initialValueAsJson);
+const initialValue = existingValue ? Value.fromJSON(JSON.parse(existingValue)) : Value.fromJSON(initialValueAsJson);
 
 //const node_map = ["title", "overview", "list"];
 const schema: any = {
@@ -219,8 +241,6 @@ const schema: any = {
       console.log("##normalize document ", code, node, child, index);
       switch (code) {
         case "child_type_invalid": {
-          //const type = node_map[index];
-          //return editor.setNodeByKey(child.key, type);
           break;
         }
         case "child_min_invalid": {
@@ -258,6 +278,9 @@ const schema: any = {
           case "child_min_invalid": {
             var block = Block.create(node_map[index]);
             return editor.insertNodeByKey(node.key, index, block);
+          }
+          case "child_max_invalid": {
+              return editor;
           }
         }
       }

@@ -9,8 +9,6 @@ const styles = (theme: Theme) =>
     root: {
       zIndex: 2500,
       marginTop: theme.spacing.unit* 2,
-      //marginLeft: -theme.spacing.unit * 4,
-      //marginRight: -theme.spacing.unit * 2,
       padding: theme.spacing.unit * 2,
       boxSizing: "border-box"
     },
@@ -18,7 +16,7 @@ const styles = (theme: Theme) =>
       backgroundColor: "#f5f5f5"
     },
     toolbar: {
-      marginRight: theme.spacing.unit * 5,
+      marginRight: theme.spacing.unit * 2,
       borderRadius: 8,
       border: "thin solid #e0e0e0",
       marginTop: -28,
@@ -66,16 +64,7 @@ class Entry extends React.Component<IAppProps, IAppState> {
         onMouseLeave={this.mouseLeave}
       >
         {hoverClass && (
-          <Toolbar className={classes.toolbar}>
-            <Tooltip title="Add a new location" aria-label="Add a new location">
-              <IconButton
-                className={classes.menuButton}
-                aria-label="New entry"
-                onClick={this.onAdd}
-              >
-                ==
-              </IconButton>
-            </Tooltip>
+          <Toolbar className={classes.toolbar} contentEditable={false}>
             <Tooltip
               title="Delete this location"
               aria-label="Add a new location"

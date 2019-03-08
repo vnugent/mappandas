@@ -30,7 +30,7 @@ export const geocoderLookupAndCache = async (entry, editor) => {
       data: Data.create({
         text: locationStr,
         feature: feature
-      })    
+      })
     });
 
     return feature;
@@ -39,14 +39,19 @@ export const geocoderLookupAndCache = async (entry, editor) => {
   }
 };
 
+/**
+ * Turn Slate document to FeatureCollection
+ */
 export const toGeojson = (uuid, value): FeatureCollection2 => {
   const { document } = value;
   const listNode = document.nodes.filter(node => node.type === "list").first();
-
+  const overviews = document.nodes.filter(node => node.type === "overview");
   return {
     type: "FeatureCollection",
     properties: {
-      uuid: uuid
+      uuid: uuid,
+      title: document.nodes.first().getFirstText().text,
+      summary:  textNodesToArrayOfString(overviews)
     },
     features: listNode ? listToFeatures(listNode) : []
   };
@@ -60,9 +65,14 @@ const listToFeatures = (list): Feature[] => {
       const feature = data.get("feature");
       feature.properties = {
         name: data.get("text"),
-        description: []
+        description: textNodesToArrayOfString(entry
+          .getBlocksByType("description"))
       };
       return feature;
     })
     .toArray();
 };
+
+const textNodesToArrayOfString = (node: any) => node.map(node => node.getFirstText().text)
+.filter(text => text.trim() !== "")
+.toArray()

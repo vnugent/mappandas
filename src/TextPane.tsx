@@ -14,11 +14,10 @@ const styles = (theme: Theme) =>
   createStyles({
     container: {
       display: "flex",
-      boxSizing: "border-box",
+      //boxSizing: "border-box",
       flexDirection: "column",
       height: "100%",
-      width: "100%",
-      paddingLeft: theme.spacing.unit * 5
+      width: "100%"
     },
     footer: {
       alignSelf: "flex-end",
@@ -26,8 +25,16 @@ const styles = (theme: Theme) =>
       paddingRight: theme.spacing.unit * 3,
       flexShrink: 3
     },
-    editor: {
-      overflow: "auto"
+    scrollableEditor: {
+      paddingBottom: theme.spacing.unit * 8,
+      overflowY: "auto"
+    },
+    slateWrapperHack: {
+      paddingLeft: theme.spacing.unit * 8,
+      paddingRight: theme.spacing.unit * 6,
+      paddingBottom: theme.spacing.unit * 6
+      ///marginTop: theme.spacing.unit * 5
+      //overflowX: "visible",
     }
   });
 
@@ -53,11 +60,14 @@ class TextPane extends React.Component<IAppProps, IAppState> {
           data={data}
           onPublishClick={this.props.onPublishButtonClick}
         />
-        <div className={classnames(classes.editor, "style-4")}>
-          <SmartEditor
-            uuid={data.properties.uuid}
-            onLocationUpdate={this.props.onEditorUpdate}
-          />
+        <div className={classnames(classes.scrollableEditor, "style-4")}>
+          <div className={classes.slateWrapperHack}>
+            <SmartEditor
+              key={data.properties.uuid}
+              uuid={data.properties.uuid}
+              onLocationUpdate={this.props.onEditorUpdate}
+            />
+          </div>
         </div>
         {/* <CardEditorWithPreview
           data={data}
