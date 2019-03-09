@@ -16,13 +16,12 @@ const styles = (theme: Theme) =>
       backgroundColor: "#f5f5f5"
     },
     toolbar: {
-      marginRight: theme.spacing.unit * 2,
+      marginRight: theme.spacing.unit,
       borderRadius: 8,
       border: "thin solid #e0e0e0",
       marginTop: -28,
       float: "right",
       background: "white"
-      //   justifyContent: "space-beween"
     },
     menuButton: {
       //   flexGrow: 1,
@@ -67,14 +66,14 @@ class Entry extends React.Component<IAppProps, IAppState> {
           <Toolbar className={classes.toolbar} contentEditable={false}>
             <Tooltip
               title="Delete this location"
-              aria-label="Add a new location"
+              aria-label="Delete thiS location"
             >
               <IconButton
                 className={classes.menuButton}
                 aria-label="Delete"
                 onClick={this.onDelete}
               >
-                <CloseRounded />
+                <CloseRounded fontSize="small"/>
               </IconButton>
             </Tooltip>
           </Toolbar>

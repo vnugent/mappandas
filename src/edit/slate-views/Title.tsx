@@ -5,10 +5,10 @@ import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-        position: "relative",
-        paddingLeft: theme.spacing.unit * 2,
-        paddingRight: theme.spacing.unit * 2
-      }
+      position: "relative",
+      paddingLeft: theme.spacing.unit * 2,
+      paddingRight: theme.spacing.unit * 2
+    }
   });
 
 export interface IAppProps {
@@ -36,7 +36,11 @@ class Title extends React.Component<IAppProps, IAppState> {
           variant="h3"
           color="textPrimary"
           gutterBottom
-          style={{ fontWeight: "medium", fontFamily: "serif" }}
+          style={{
+            fontWeight: 400,
+            lineHeight: 1.2,
+            fontFamily: "Georgia,Cambria,Times New Roman,Times,serif"
+          }}
         >
           {children}
         </Typography>
