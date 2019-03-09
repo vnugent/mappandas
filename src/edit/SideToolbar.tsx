@@ -43,7 +43,7 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
     super(props);
     this.state = { collapse: true };
   }
-  toogle = () => this.setState({ collapse: !this.state.collapse });
+  toggle = () => this.setState({ collapse: !this.state.collapse });
 
   render() {
     const { classes, editor, dataKey, handlers } = this.props;
@@ -58,14 +58,13 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
       <div
         className={classes.toolFab}
         contentEditable={false}
-        //onBlur={() => this.setState({ collapse: true })}
       >
         <Tooltip
           title="Add a new location or image "
           aria-label="Add a new location or image"
           placement="bottom-end"
         >
-          <IconButton color="secondary" onClick={this.toogle}>
+          <IconButton color="secondary" onClick={this.toggle}>
             {collapse ? (
               <AddCircleOutlined fontSize="large" />
             ) : (
@@ -73,20 +72,22 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
             )}
           </IconButton>
         </Tooltip>
-        {!collapse && ToolbarExpanded(classes, handlers, dataKey)}
+        {!collapse && ToolbarExpanded(classes, this.toggle, handlers, dataKey)}
       </div>
     );
   }
 }
-const ToolbarExpanded = (classes, handlers, dataKey) => {
+const ToolbarExpanded = (classes, toggle, handlers, dataKey) => {
   return (
-    <div className={classnames(classes.root, classes.active)}>
-      <Tooltip title="Add a new location" aria-label="Add a new location">
+    <div className={classnames(classes.root, classes.active)}
+    >
+      <Tooltip title="Add a location to the map" aria-label="Add a new location">
         <IconButton
           className={classes.menuButton}
           aria-label="New entry"
           onClick={() => {
               console.log("#add new clicked");
+              //toggle();
               handlers.onAdd(dataKey)}}
         >
           ==

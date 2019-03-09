@@ -17,15 +17,14 @@ import { Title, Overview, Entry, Location, Description } from "./slate-views";
 
 export interface IAppProps {
   uuid: string;
-  onLocationUpdate: (fc: FeatureCollection2) => void;
+  onLocationUpdate: (fc: FeatureCollection2, options?: any) => void;
 }
 
 export interface IAppState {
   value: any;
 }
 
-const existingValue = localStorage.getItem('content')
-
+//const existingValue = localStorage.getItem("content");
 
 const KEY_ENTER = "Enter";
 const KEY_DASH = "=";
@@ -74,7 +73,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       geocoderLookupAndCache(data, this.editorRef)
         .then(f => {
           const fc = toGeojson(this.props.uuid, editor.value);
-          this.props.onLocationUpdate(fc);
+          this.props.onLocationUpdate(fc, { shouldUpdateView: true });
         })
         .catch(e => null);
     }
@@ -153,7 +152,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   }
 
   componentWillUnmount() {
-      clearInterval(this.timer);
+    clearInterval(this.timer);
   }
 
   public render() {
@@ -190,7 +189,13 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     );
     switch (node.type) {
       case "title":
-        return <Title attributes={attributes} children={children} />;
+        return (
+          <Title
+            attributes={attributes}
+            children={children}
+            sideToolbar={sideToolbar}
+          />
+        );
       case "overview":
         return (
           <Overview
@@ -227,8 +232,10 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
 const initialValueAsJson = require("./value.json");
 
-const initialValue = existingValue ? Value.fromJSON(JSON.parse(existingValue)) : Value.fromJSON(initialValueAsJson);
-
+// const initialValue = existingValue
+//   ? Value.fromJSON(JSON.parse(existingValue))
+//   : Value.fromJSON(initialValueAsJson);
+const initialValue = Value.fromJSON(initialValueAsJson);
 //const node_map = ["title", "overview", "list"];
 const schema: any = {
   document: {
@@ -280,7 +287,7 @@ const schema: any = {
             return editor.insertNodeByKey(node.key, index, block);
           }
           case "child_max_invalid": {
-              return editor;
+            return editor;
           }
         }
       }

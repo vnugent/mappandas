@@ -5,7 +5,8 @@ import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-        marginTop: theme.spacing.unit
+        position: "relative",
+      marginTop: theme.spacing.unit
     }
   });
 

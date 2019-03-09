@@ -5,26 +5,14 @@ import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-      padding: theme.spacing.unit * 2,
-      boxSizing: "border-box"
-    },
-    toolbar: {
-      marginRight: theme.spacing.unit * 5,
-      borderRadius: 8,
-      border: "thin solid #e0e0e0",
-      marginTop: -28,
-      float: "right",
-      background: "white"
-      //   justifyContent: "space-beween"
-    },
-    menuButton: {
-      //   flexGrow: 1,
-      border: "thin",
-      marginRight: 10
-    }
+        position: "relative",
+        paddingLeft: theme.spacing.unit * 2,
+        paddingRight: theme.spacing.unit * 2
+      }
   });
 
 export interface IAppProps {
+  sideToolbar: any;
   classes?: any;
   attributes: any;
 }
@@ -41,16 +29,18 @@ class Title extends React.Component<IAppProps, IAppState> {
   public render() {
     const { attributes, children, classes } = this.props;
     return (
-      <Typography
-        className={classes.root}
-        {...attributes}
-        variant="h3"
-        color="textPrimary"
-        gutterBottom
-        style={{ fontWeight: "medium", fontFamily: "serif" }}
-      >
-        {children}
-      </Typography>
+      <div className={classes.root} {...attributes}>
+        {this.props.sideToolbar}
+        <Typography
+          {...attributes}
+          variant="h3"
+          color="textPrimary"
+          gutterBottom
+          style={{ fontWeight: "medium", fontFamily: "serif" }}
+        >
+          {children}
+        </Typography>
+      </div>
     );
   }
 }

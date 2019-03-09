@@ -41,7 +41,7 @@ const styles = (theme: Theme) =>
 export interface IAppProps {
   classes?: any;
   data: FeatureCollection2;
-  onEditorUpdate: (fc: FeatureCollection2) => void;
+  onEditorUpdate: (fc: FeatureCollection2, options: any) => void;
   onPublishButtonClick: () => void;
 }
 

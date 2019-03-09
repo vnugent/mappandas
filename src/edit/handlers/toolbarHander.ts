@@ -10,7 +10,7 @@ const onDelete = (key: number, uuid: string, fn, editor: any) => {
   const e = editor.removeNodeByKey(key);
   _.delay(f => {
     const fc = toGeojson(uuid, e.value);
-    fn(fc);
+    fn(fc, { shouldUpdateView: true });
   }, 200);
 };
 
@@ -26,7 +26,7 @@ const onAdd = (key: number, editor: any) => {
 
 export const create = (
   uuid: string,
-  fn: (FeatureCollection2) => void,
+  fn: (FeatureCollection2, options: any) => void,
   editor: any
 ) => {
   return {
