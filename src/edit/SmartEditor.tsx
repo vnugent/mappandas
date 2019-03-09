@@ -170,7 +170,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         onKeyDown={this.onKeyDown}
         onChange={this.onChange}
         onFocus={event => {
-          console.log("#onFocus() ", event);
+          //console.log("#onFocus() ", event);
         }}
       />
     );

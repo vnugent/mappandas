@@ -37,26 +37,26 @@ const onDash = (event: any, editor: any, next) => {
 
   if (type === "location" || type === "description") {
     event.preventDefault();
-
-    const entry = document.getParent(value.focusBlock.key);
-    const sibling = document.getNextSibling(entry.key);
-    if (sibling) {
-      const leaf = sibling.nodes.first().getFirstText();
-      return editor.moveToEndOfNode(leaf);
-    }
+    return editor.splitBlock(2);
+    // const entry = document.getParent(value.focusBlock.key);
+    // const sibling = document.getNextSibling(entry.key);
+    // if (sibling) {
+    //   const leaf = sibling.nodes.first().getFirstText();
+    //   return editor.moveToEndOfNode(leaf);
+    // }
 
     // const newList = listNode.nodes.insert(F.createEntry());
     // console.log("##", newList.toJSON());
     // return editor.replaceNodeByKey(listNode.key, F.initializeList(newList));
-    const newEntry = F.createEntry();
-    console.log(
-      "#newentry",
-      newEntry.nodes.first().toJSON(),
-      newEntry.nodes.first()
-    );
-    return editor
-      .insertNodeByKey(listNode.key, listNode.nodes.size, newEntry)
-      .moveToStartOfNode(newEntry.nodes.first());
+    // const newEntry = F.createEntry();
+    // console.log(
+    //   "#newentry",
+    //   newEntry.nodes.first().toJSON(),
+    //   newEntry.nodes.first()
+    // );
+    // return editor
+    //   .insertNodeByKey(listNode.key, listNode.nodes.size, newEntry)
+    //   .moveToStartOfNode(newEntry.nodes.first());
   }
 
   return undefined;

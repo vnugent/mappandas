@@ -1,5 +1,5 @@
-//import { Block } from "slate";
 import { List } from "immutable";
+import * as _ from "underscore";
 
 import * as F from "./Factory";
 
@@ -24,17 +24,19 @@ const onEnter = ({ event, editor, next, onEntryUpdate }) => {
   if (type === "location") {
     const loc = value.startBlock;
     var desc = editor.value.document.getNextSibling(loc.key);
-    console.log("## desc", desc.toJSON());
+    console.log("desc", desc.toJSON());
     event.preventDefault();
     if (onEntryUpdate) {
-      onEntryUpdate({
-        location: loc,
-        mDescription: List.of(desc)
-      });
+      _.delay(
+        () =>
+          onEntryUpdate({
+            location: loc,
+            mDescription: List.of(desc)
+          }),
+        250
+      );
     }
-    console.log("fistText", desc.getFirstText());
-
-    return editor.moveTo(desc.getFirstText().key, 1);
+    return editor.moveToStartOfNode(desc.nodes.first());
   }
 
   if (type === "description") {
