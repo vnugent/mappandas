@@ -52,12 +52,30 @@ class PandaCardView extends React.Component<IAppProps, IAppState> {
           display: hideAttr
         }}
       >
-        <Typography variant="h4" color="textPrimary" gutterBottom>
+        <Typography
+          variant="h3"
+          color="textPrimary"
+          gutterBottom
+          style={{
+            fontWeight: 600,
+            lineHeight: 1.2,
+            fontFamily: "Georgia,Cambria,Times New Roman,Times,serif"
+          }}
+        >
           {properties && properties.title}
         </Typography>
 
-        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-          {properties && properties.summary}
+        <Typography
+          variant="h4"
+          color="textSecondary"
+          gutterBottom
+          style={{
+            fontWeight: 400,
+            lineHeight: 1.5,
+            fontFamily: "Georgia,Cambria,Times New Roman,Times,serif"
+          }}
+        >
+          {properties && <this.Paragraph mlines={properties.summary} />}
         </Typography>
         <this.FeatureList features={features} />
       </div>
@@ -69,11 +87,30 @@ class PandaCardView extends React.Component<IAppProps, IAppState> {
       const p = feature.properties;
       if (p) {
         return (
-          <div key={index} style={{ marginTop: "28px" }}>
-            <Typography variant="h6">{p.name && p.name}</Typography>
-            <Typography component="div" variant="body1" paragraph={true}>
-              <this.Paragraph mlines={p.description} />
+          <div key={index} style={{ marginTop: "35px" }}>
+            <Typography
+              variant="h4"
+              style={{
+                fontFamily: "Georgia,Cambria,Times New Roman,Times,serif",
+                fontWeight: 600
+              }}
+            >
+              {p.name && p.name}
             </Typography>
+            <div style={{ marginTop: "12px" }}>
+              <Typography
+                component="div"
+                variant="h5"
+                paragraph={true}
+                style={{
+                  fontWeight: 400,
+                  lineHeight: 1.8,
+                  fontFamily: "Georgia,Cambria,Times New Roman,Times,serif"
+                }}
+              >
+                <this.Paragraph mlines={p.description} />
+              </Typography>
+            </div>
           </div>
         );
       }

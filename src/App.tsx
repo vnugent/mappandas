@@ -148,17 +148,25 @@ class App extends React.Component<IAppProps, IAppState> {
     this.setState({ viewstate: newVS });
   };
 
-  onEditorUpdate = (fc: FeatureCollection2) => {
+  onEditorUpdate = (
+    fc: FeatureCollection2,
+    options = {
+      shouldUpdateView: false
+    }
+  ) => {
     if (fc.features.length === 0) {
       this.setState({ editableJSON: fc });
     } else {
+      const { shouldUpdateView } = options;
       const { width, height } = this.getMapDivDimensions();
-      const newViewstate = fc.bbox
-        ? Object.assign(
-            this.state.viewstate,
-            GeoHelper.bbox2Viewport(fc.bbox, width, height)
-          )
-        : this.state.viewstate;
+      fc.bbox = GeoHelper.bboxFromGeoJson(fc);
+      const newViewstate =
+        shouldUpdateView && fc.bbox
+          ? Object.assign(
+              this.state.viewstate,
+              GeoHelper.bbox2Viewport(fc.bbox, width, height)
+            )
+          : this.state.viewstate;
       this.setState({ editableJSON: fc, viewstate: newViewstate });
     }
   };

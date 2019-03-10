@@ -75,7 +75,7 @@ class Editor extends React.Component<IEditorProps, IAppState> {
           disabled={!this.isPublishable()}
           onClick={this.props.onPublishClick}
         >
-          Publish
+          Ready to Publish
         </Button>
       </div>
     );

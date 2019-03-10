@@ -66,7 +66,6 @@ class MapNG extends React.Component<IProps, IState> {
   render() {
     const { geojson, mapStyle } = this.props;
     const layers = [new PandaGL({ data: geojson.features })];
-
     if (this.state.searchResultLayer) {
       layers.push(this.state.searchResultLayer);
     }
