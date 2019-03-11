@@ -8,12 +8,15 @@ const styles = (theme: Theme) =>
   createStyles({
     root: {
       zIndex: 2500,
-      marginTop: theme.spacing.unit* 2,
+      marginTop: theme.spacing.unit * 2,
       padding: theme.spacing.unit * 2,
       boxSizing: "border-box"
     },
     hover: {
       backgroundColor: "#f5f5f5"
+    },
+    active: {
+      border: "1px dashed #b2ebf2"
     },
     toolbar: {
       marginRight: theme.spacing.unit,
@@ -33,6 +36,7 @@ const styles = (theme: Theme) =>
 export interface IAppProps {
   classes?: any;
   attributes: any;
+  editor: any;
   handlers: {
     onDelete: (key: number) => void;
     onAdd: (key: number) => void;
@@ -53,12 +57,25 @@ class Entry extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { attributes, children, classes } = this.props;
+    const { attributes, children, classes, editor } = this.props;
     const { hoverClass } = this.state;
+    //const focusBlock = editor.value.focusBlock;
+
+    const parentOfinFocus = editor.value.document.getParent(
+      editor.value.focusBlock.key
+    );
+    console.log("## parent focus", parentOfinFocus);
+
+    const active = parentOfinFocus.key === attributes["data-key"];
+
     return (
       <div
         {...attributes}
-        className={classnames(classes.root, hoverClass)}
+        className={classnames(
+          classes.root,
+          hoverClass,
+          active ? classes.active : ""
+        )}
         onMouseOver={this.mouseOver}
         onMouseLeave={this.mouseLeave}
       >
@@ -73,7 +90,7 @@ class Entry extends React.Component<IAppProps, IAppState> {
                 aria-label="Delete"
                 onClick={this.onDelete}
               >
-                <CloseRounded fontSize="small"/>
+                <CloseRounded fontSize="small" />
               </IconButton>
             </Tooltip>
           </Toolbar>

@@ -7,10 +7,10 @@ const styles = (theme: Theme) =>
   createStyles({
     root: {
       position: "relative",
-      [theme.breakpoints.up("sm")]: {
+      [theme.breakpoints.up("md")]: {
         display: "flex"
       },
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         display: "none"
       },
       float: "right",

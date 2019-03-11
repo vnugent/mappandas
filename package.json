@@ -47,6 +47,6 @@
     "@types/react-dom": "^16.0.10",
     "@types/react-router-dom": "^4.3.1",
     "@types/underscore": "^1.8.9",
-    "typescript": "^3.1.6"
+    "typescript": "^3.3.3333"
   }
 }

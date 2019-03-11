@@ -14,10 +14,9 @@ const styles = (theme: Theme) =>
   createStyles({
     container: {
       display: "flex",
-      //boxSizing: "border-box",
       flexDirection: "column",
       height: "100%",
-      width: "100%"
+      width: "100%",
     },
     footer: {
       alignSelf: "flex-end",
@@ -27,14 +26,13 @@ const styles = (theme: Theme) =>
     },
     scrollableEditor: {
       paddingBottom: theme.spacing.unit * 8,
-      overflowY: "auto"
+      overflowY: "auto",
     },
     slateWrapperHack: {
       paddingLeft: theme.spacing.unit * 8,
       paddingRight: theme.spacing.unit * 6,
-      paddingBottom: theme.spacing.unit * 6
-      ///marginTop: theme.spacing.unit * 5
-      //overflowX: "visible",
+      paddingBottom: theme.spacing.unit * 6,
+      background: "white"
     }
   });
 

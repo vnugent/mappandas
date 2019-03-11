@@ -4,12 +4,11 @@ import "./index.css";
 import registerServiceWorker from "./registerServiceWorker";
 import { BrowserRouter } from "react-router-dom";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { CssBaseline } from "@material-ui/core";
 
 import App from "./App";
 //@ts-ignore
 import * as Config from "./Config";
-
-
 
 const theme = createMuiTheme({
   palette: {
@@ -25,6 +24,7 @@ const theme = createMuiTheme({
 ReactDOM.render(
   <BrowserRouter>
     <MuiThemeProvider theme={theme}>
+      <CssBaseline />
       <App />
     </MuiThemeProvider>
   </BrowserRouter>,

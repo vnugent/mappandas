@@ -15,7 +15,6 @@ import {
 } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
 
-//import { Edit as EditIcon } from "@material-ui/icons";
 import * as _ from "underscore";
 
 import { IPanda, LatLng, IActiveFeature } from "./types/CustomMapTypes";
@@ -31,7 +30,7 @@ import MapNG from "./MapNG";
 import ShareScreen from "./ShareScreen";
 import Switcher from "./Switcher";
 import LocateMe from "./LocateMe";
-//import Upload from "./Upload";
+import ScrollToTop from "./ScrollToTop";
 import Popup from "./map/Popup";
 import TextPane from "./TextPane";
 import PandaCardView from "./panda/PandaCardView";
@@ -39,7 +38,12 @@ import TopLevelAppBar from "./AppBars";
 
 const styles = (theme: Theme) =>
   createStyles({
-    root: { display: "flex", height: "100vh", maxHeight: "100%" },
+    root: {
+      display: "flex",
+      height: "100vh",
+      maxHeight: "100%",
+      background: "white"
+    },
     textPane: {
       width: "100%",
       height: "100%",
@@ -237,39 +241,12 @@ class App extends React.Component<IAppProps, IAppState> {
     const { mode } = this.state;
     return (
       <div className={classes.root}>
-        {/* <AppBar position="relative" className={classes.appBar}>
-          <Toolbar className={classes.toolbar}>
-            <div id="search-container" className={classes.grow} /> 
-            <LastN currentPanda={this.state.panda} />
-            <div className={classes.mainAction}>
-              <Tooltip title="Hand draw a new map" aria-label="Add">
-                <Button
-                  className={classes.menuButton}
-                  color="primary"
-                  variant="contained"
-                  size="large"
-                  onClick={this.onNewButtonClick}
-                >
-                  <EditIcon />
-                  &nbsp; Draw New
-                </Button>
-              </Tooltip>
-              <Upload
-                classes={classes}
-                onError={e => {
-                  console.log(e);
-                }}
-                onUpload={this.onUpload}
-              />
-            </div>
-          </Toolbar>
-        </AppBar> */}
         <TopLevelAppBar
           data={this.state.editableJSON}
           onCreateNewClick={this.onNewButtonClick}
         />
         <Grid spacing={0} container={true} alignContent="stretch">
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <div id="text-pane-id" className={classes.textPane}>
               {mode === "share" && (
                 <PandaCardView data={this.state.editableJSON} />
@@ -283,7 +260,7 @@ class App extends React.Component<IAppProps, IAppState> {
               )}
             </div>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <div
               id="mapng"
               style={{
@@ -301,6 +278,7 @@ class App extends React.Component<IAppProps, IAppState> {
               <Popup data={this.state.hoveredFeature} />
             </div>
             <LocateMe onClick={this._locateMe} />
+            <ScrollToTop />
             <Switcher
               currentStyle={this.state.mapStyle}
               onChange={this.onMapStyleChange}
