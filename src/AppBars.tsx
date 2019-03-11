@@ -24,10 +24,10 @@ const styles = (theme: Theme) =>
       position: "fixed",
       boxShadow: "none",
       backgroundColor: "white",
-      [theme.breakpoints.up("xs")]: {
+      [theme.breakpoints.up("md")]: {
         width: "50%"
       },
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("md")]: {
         width: "100%"
       },
       left: 0,
@@ -105,8 +105,15 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
               variant="h6"
               color="inherit"
               noWrap
+              onClick={() => {
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera;
+              }}
             >
-              Map Pandas
+              Map Pandas&nbsp;
+              <span style={{ fontColor: "#757575", fontSize: "0.8em" }}>
+                <sup>Beta</sup>
+              </span>
             </Typography>
             <div className={classes.padding} />
             <Button

@@ -220,6 +220,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
             attributes={attributes}
             children={children}
             handlers={this.toolbarHandler}
+            editor={this.editorRef}
           />
         );
       case "location":
