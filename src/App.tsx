@@ -47,7 +47,7 @@ const styles = (theme: Theme) =>
     textPane: {
       width: "100%",
       height: "100%",
-      paddingTop: 100,
+      paddingTop: "80px",
       paddingBottom: theme.spacing.unit * 3,
       boxSizing: "border-box",
       alignItems: "stretch"

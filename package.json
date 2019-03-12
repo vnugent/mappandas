@@ -14,7 +14,6 @@
     "dotenv": "^6.2.0",
     "geojson": "^0.5.0",
     "immutable": "^4.0.0-rc.12",
-    "immutables": "^0.0.0",
     "nebula.gl": "^0.7.3",
     "nebula.gl-react": "^0.7.3",
     "react": "^16.8.3",

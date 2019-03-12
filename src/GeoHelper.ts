@@ -88,6 +88,8 @@ export const stringify = (panda: IPanda) => {
 
 export const parse = (s: string, options?: any): IPanda => {
   const data = options && options.json ? s : JSON.parse(s);
+  if (!data.geojson.properties) data.geojson.properties={}
+  data.geojson.properties.uuid = data.uuid;
   return {
     uuid: data.uuid,
     //bbox: new LatLngBounds(data.bbox),
