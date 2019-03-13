@@ -33,7 +33,6 @@ const KEY_BACKSPACE = "Backspace";
 const plugins = placeholderPlugins;
 
 class SmartEditor extends React.Component<IAppProps, IAppState> {
-  private timer: any;
   private editorRef: any;
   private toolbarHandler: any;
   constructor(props: IAppProps) {
@@ -110,6 +109,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
     // Check to see if the document has changed before saving.
     if (value.document != this.state.value.document) {
+      this.props.onLocationUpdate(toGeojson(this.props.uuid, value));
       const content = JSON.stringify(value.toJSON());
       localStorage.setItem("content", content);
     }
@@ -144,15 +144,15 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   };
 
   componentDidMount() {
-    this.timer = setInterval(() => {
-      this.props.onLocationUpdate(
-        toGeojson(this.props.uuid, this.editorRef.value)
-      );
-    }, 3500);
+    // this.timer = setInterval(() => {
+    //   this.props.onLocationUpdate(
+    //     toGeojson(this.props.uuid, this.editorRef.value)
+    //   );
+    // }, 3500);
   }
 
   componentWillUnmount() {
-    clearInterval(this.timer);
+    //  clearInterval(this.timer);
   }
 
   public render() {
@@ -248,12 +248,9 @@ const schema: any = {
     normalize: (editor, { code, node, child, index }) => {
       console.log("##normalize document ", code, node, child, index);
       switch (code) {
-        case "child_type_invalid": {
-          break;
-        }
         case "child_min_invalid": {
           var title = Block.create("title");
-          return editor.insertNodeByKey(node.key, index, title);
+          return editor.insertNodeByKey(node.key, index, title).focus();
         }
       }
     }
@@ -286,6 +283,7 @@ const schema: any = {
           case "child_min_invalid": {
             var block = Block.create(node_map[index]);
             return editor.insertNodeByKey(node.key, index, block);
+            //return editor;
           }
           case "child_max_invalid": {
             return editor;

@@ -4,8 +4,7 @@ import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 const styles = (theme: Theme) =>
   createStyles({
-    root: {
-    }
+    root: {}
   });
 
 export interface IAppProps {
@@ -13,13 +12,15 @@ export interface IAppProps {
   attributes: any;
 }
 
-export interface IAppState {}
+export interface IAppState {
+}
 
 class Location extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
 
-    this.state = {};
+    this.state = {
+    };
   }
 
   public render() {

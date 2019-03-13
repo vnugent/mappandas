@@ -17,7 +17,9 @@ export const DEFAULT_LATLNG: LatLng = {
 export const NEW_FC = (): FeatureCollection2 => ({
   type: "FeatureCollection",
   properties: {
-    uuid: uuidv1()
+    uuid: uuidv1(),
+    title: "",
+    summary: []
   },
   features: []
 });
