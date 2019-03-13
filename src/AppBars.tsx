@@ -35,10 +35,12 @@ const styles = (theme: Theme) =>
     },
     editorSubMenu: {
       display: "flex",
-      justifyContent: "flex-end",
+      justifyContent: "space-between",
+      alignItems: "center",
       margin: 0,
       paddingTop: theme.spacing.unit,
-      paddingBottom: theme.spacing.unit,
+      paddingLeft: theme.spacing.unit * 3,
+      paddingBottom: theme.spacing.unit * 3,
       paddingRight: theme.spacing.unit * 3
     }
   });
@@ -66,6 +68,7 @@ class Editor extends React.Component<IEditorProps, IAppState> {
     const { classes } = this.props;
     return (
       <div className={classes.editorSubMenu}>
+        <a href="https://mappandas.com/p/97cb72b0-4215-11e9-9cf2-afccc66ce6e3">See an example</a>
         <div style={{ flexGrow: 2 }} />
         <Button
           variant="contained"
