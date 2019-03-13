@@ -81,7 +81,7 @@ const ToolbarExpanded = (classes, toggle, handlers, dataKey) => {
   return (
     <div className={classnames(classes.root, classes.active)}
     >
-      <Tooltip title="Add a location to the map" aria-label="Add a new location">
+      <Tooltip title="Add a location" aria-label="Add a location">
         <IconButton
           className={classes.menuButton}
           aria-label="New entry"

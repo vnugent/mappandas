@@ -103,7 +103,6 @@ class CardEditorWithPreview extends React.Component<IAppProps, IAppState> {
         <PandaCardView
           hide={selectedTab !== 1}
           data={this.props.data}
-          previewMode={true}
         />
       </div>
     );

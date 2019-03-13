@@ -4672,11 +4672,6 @@ immutable@^4.0.0-rc.12:
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.0.0-rc.12.tgz#ca59a7e4c19ae8d9bf74a97bdf0f6e2f2a5d0217"
   integrity sha512-0M2XxkZLx/mi3t8NVwIm1g8nHoEmM9p9UBl/G9k4+hm0kBgOVdMV/B3CY5dQ8qG8qc80NN4gDV4HQv6FTJ5q7A==
 
-immutables@^0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/immutables/-/immutables-0.0.0.tgz#a24aaabe5d88a6e86854e70d593c1c6320d8ca4e"
-  integrity sha512-kmlW6ntSRUDMhHIYvB28jCubhXpA3i7dJr0q/s80l7pBRAsKwZZBm0PsEMwv2CHuq6sRlVf7+yNJGQ51ZA4CnA==
-
 import-lazy@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
