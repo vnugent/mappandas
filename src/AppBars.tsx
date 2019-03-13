@@ -80,8 +80,15 @@ class Editor extends React.Component<IEditorProps, IAppState> {
       </div>
     );
   }
-  // allow publishing if there's 1 entry
-  isPublishable = () => this.props.data.features.length > 0;
+  // allow publishing if there's some text in title or overview
+  isPublishable = () => {
+    const { properties, features } = this.props.data;
+    return (
+      properties.title ||
+      properties.summary.length > 1 ||
+      features.length > 0
+    );
+  };
 }
 
 class TopLevelAppBar extends React.Component<IAppProps, IAppState> {

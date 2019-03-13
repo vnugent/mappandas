@@ -49,6 +49,9 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
     const { classes, editor, dataKey, handlers } = this.props;
     const { collapse } = this.state;
     const focusBlock = editor.value.focusBlock;
+    if (!focusBlock) {
+        return null;
+    }
     const text = focusBlock.nodes.first().getFirstText().text;
     if (focusBlock.key !== dataKey || text) {
       // only show toolbar at focus and empty node

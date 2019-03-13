@@ -13,10 +13,18 @@ export const geocoderLookupAndCache = async (entry, editor) => {
     return node.getFirstText().text;
   });
   const locationStr = location.getFirstText().text;
-  if (locationStr.trim() === "" || locationStr === location.data.get("text")) {
+  if (locationStr === location.data.get("text")) {
     console.log("location text has not changed");
     return;
   }
+  if (locationStr.trim() === "") {
+    editor.setNodeByKey(location.key, {
+      data: {}
+    });
+    console.log("Empty location text -> reset cached feature");
+    return;
+  }
+
   try {
     const feature = await locationToFeature(locationStr);
 
@@ -46,33 +54,44 @@ export const toGeojson = (uuid, value): FeatureCollection2 => {
   const { document } = value;
   const listNode = document.nodes.filter(node => node.type === "list").first();
   const overviews = document.nodes.filter(node => node.type === "overview");
+  const features = listNode ? listToFeatures(listNode) : [];
   return {
     type: "FeatureCollection",
     properties: {
       uuid: uuid,
       title: document.nodes.first().getFirstText().text,
-      summary:  textNodesToArrayOfString(overviews)
+      summary: textNodesToArrayOfString(overviews)
     },
-    features: listNode ? listToFeatures(listNode) : []
+    features: features
   };
 };
 
 const listToFeatures = (list): Feature[] => {
   return list.nodes
-    .filter(entry => entry.nodes.first().data.has("feature"))
+    .filter(entry => {
+      // current value is different than cache value
+      // don't include this feature in global geojson
+      const data = entry.nodes.first().data;
+      return (
+        data.has("feature") && data.get("text") === entry.getFirstText().text
+      );
+    })
     .map(entry => {
       const data = entry.nodes.first().data;
       const feature = data.get("feature");
       feature.properties = {
         name: data.get("text"),
-        description: textNodesToArrayOfString(entry
-          .getBlocksByType("description"))
+        description: textNodesToArrayOfString(
+          entry.getBlocksByType("description")
+        )
       };
       return feature;
     })
     .toArray();
 };
 
-const textNodesToArrayOfString = (node: any) => node.map(node => node.getFirstText().text)
-.filter(text => text.trim() !== "")
-.toArray()
+const textNodesToArrayOfString = (node: any) =>
+  node
+    .map(node => node.getFirstText().text)
+    .filter(text => text.trim() !== "")
+    .toArray();

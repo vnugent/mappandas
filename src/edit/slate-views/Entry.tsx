@@ -18,18 +18,26 @@ const styles = (theme: Theme) =>
     active: {
       border: "1px dashed #b2ebf2"
     },
+    suggestion: {
+      marginTop: -38,
+      marginLeft: -theme.spacing.unit,
+      borderRadius: 4,
+      padding: theme.spacing.unit,
+      border: "thin solid #e0e0e0",
+      float: "left",
+      background: "#e0f7fa"
+    },
     toolbar: {
       marginRight: theme.spacing.unit,
-      borderRadius: 8,
+      borderRadius: 4,
       border: "thin solid #e0e0e0",
       marginTop: -28,
       float: "right",
       background: "white"
     },
     menuButton: {
-      //   flexGrow: 1,
       border: "thin",
-      marginRight: 10
+      marginRight: theme.spacing.unit
     }
   });
 
@@ -60,13 +68,14 @@ class Entry extends React.Component<IAppProps, IAppState> {
     const { attributes, children, classes, editor } = this.props;
     const { hoverClass } = this.state;
     //const focusBlock = editor.value.focusBlock;
-
+    // parent is "this" entry
     const parentOfinFocus = editor.value.document.getParent(
       editor.value.focusBlock.key
     );
-    console.log("## parent focus", parentOfinFocus);
 
     const active = parentOfinFocus.key === attributes["data-key"];
+
+    const emptyLocationText = parentOfinFocus.getFirstText().text.trim() === "";
 
     return (
       <div
@@ -79,6 +88,11 @@ class Entry extends React.Component<IAppProps, IAppState> {
         onMouseOver={this.mouseOver}
         onMouseLeave={this.mouseLeave}
       >
+        {emptyLocationText && active && (
+          <span className={classes.suggestion} contentEditable={false}>
+            Type a location (Ex. Portland) and hit Enter
+          </span>
+        )}
         {hoverClass && (
           <Toolbar className={classes.toolbar} contentEditable={false}>
             <Tooltip
@@ -95,7 +109,7 @@ class Entry extends React.Component<IAppProps, IAppState> {
             </Tooltip>
           </Toolbar>
         )}
-        {children}
+        <div style={{ clear: "left" }}>{children}</div>
       </div>
     );
   }
