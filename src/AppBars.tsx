@@ -68,7 +68,8 @@ class Editor extends React.Component<IEditorProps, IAppState> {
     const { classes } = this.props;
     return (
       <div className={classes.editorSubMenu}>
-        <a href="https://mappandas.com/p/97cb72b0-4215-11e9-9cf2-afccc66ce6e3">See an example</a>
+        <a href="https://mappandas.com/p/97cb72b0-4215-11e9-9cf2-afccc66ce6e3">Example one</a>&nbsp;&nbsp;
+        <a href="https://mappandas.com/p/85cf6470-47a8-11e9-962c-61a624428919">Example two</a>
         <div style={{ flexGrow: 2 }} />
         <Button
           variant="contained"
