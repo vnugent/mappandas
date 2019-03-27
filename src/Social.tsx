@@ -29,7 +29,7 @@ const Social = (props: IAppProps) => (
     variant="outlined"
     onClick={() => {
       window.open(
-        `https://www.facebook.com/sharer/sharer.php?u=https://mappandas.com/p/${
+        `https://www.facebook.com/sharer/sharer.php?u=https://app.mappandas.com/p/${
           props.uuid
         }`,
         "_blank"

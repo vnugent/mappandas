@@ -172,7 +172,7 @@ class ShareScreen extends React.Component<IProps, IState> {
             label="Unique link"
             fullWidth={true}
             margin="normal"
-            value={`https://mappandas.com/p/${panda.uuid}`}
+            value={`https://app.mappandas.com/p/${panda.uuid}`}
             onClick={this._copy}
             inputRef={this.urlFieldRef}
             InputProps={{

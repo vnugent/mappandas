@@ -42,6 +42,9 @@ const styles = (theme: Theme) =>
       paddingLeft: theme.spacing.unit * 3,
       paddingBottom: theme.spacing.unit * 3,
       paddingRight: theme.spacing.unit * 3
+    },
+    button: {
+        marginLeft: theme.spacing.unit
     }
   });
 
@@ -68,8 +71,8 @@ class Editor extends React.Component<IEditorProps, IAppState> {
     const { classes } = this.props;
     return (
       <div className={classes.editorSubMenu}>
-        <a href="https://mappandas.com/p/97cb72b0-4215-11e9-9cf2-afccc66ce6e3">Example one</a>&nbsp;&nbsp;
-        <a href="https://mappandas.com/p/85cf6470-47a8-11e9-962c-61a624428919">Example two</a>
+        <a href="https://app.mappandas.com/p/97cb72b0-4215-11e9-9cf2-afccc66ce6e3">Example one</a>&nbsp;&nbsp;
+        <a href="https://app.mappandas.com/p/85cf6470-47a8-11e9-962c-61a624428919">Example two</a>
         <div style={{ flexGrow: 2 }} />
         <Button
           variant="contained"
@@ -129,12 +132,21 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
             <div className={classes.padding} />
             <Button
               variant="outlined"
-              color="secondary"
+              color="primary"
               size="small"
               className={classes.button}
               onClick={this.props.onCreateNewClick}
             >
               New Story
+            </Button>
+            <Button
+              variant="text"
+              color="secondary"
+              size="small"
+              className={classes.button}
+              href="https://mappandas.com"
+            >
+              About
             </Button>
           </Toolbar>
         </AppBar>
