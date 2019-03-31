@@ -9,14 +9,17 @@ const styles = (theme: Theme) =>
     root: {
       zIndex: 2500,
       marginTop: theme.spacing.unit * 2,
+      marginBottom: theme.spacing.unit * 2,
       padding: theme.spacing.unit * 2,
-      boxSizing: "border-box"
+      boxSizing: "border-box",
+      border: "2px dashed #b2ebf2"
     },
     hover: {
       backgroundColor: "#f5f5f5"
     },
     active: {
-      border: "1px dashed #b2ebf2"
+      border: "none",
+      boxShadow: "1px 2px 4px 2px gray"
     },
     suggestion: {
       marginTop: -38,
@@ -75,7 +78,8 @@ class Entry extends React.Component<IAppProps, IAppState> {
 
     const active = parentOfinFocus.key === attributes["data-key"];
 
-    const emptyLocationText = parentOfinFocus.getFirstText().text.trim() === "";
+    const emptyLocationText =
+      editor.value.focusBlock.getFirstText().text.trim() === "";
 
     return (
       <div

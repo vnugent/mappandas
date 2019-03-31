@@ -6,7 +6,7 @@ export const initializeList = (nodes?: any) =>
 
 export const createEntry = () =>
   Block.create({
-    type: "entry",
+    type: "card",
     nodes: List.of(
       Block.create({
         type: "location",

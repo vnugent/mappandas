@@ -33,12 +33,20 @@ const isFirstLine = (editor: any, node: any) => {
   return true;
 };
 
+const paragraphPlaceholder = new PlaceholderPlugin({
+    placeholder: "Tell your story...",
+    when: (editor, node) => {
+        return isEmpty("overview", node) && editor.value.document.nodes.size === 1;
+    }
+})
+
 const placeholderPlugins = createFor([
   { type: "title", text: "Title" },
-  { type: "overview", text: "Type your text" },
   { type: "location", text: "Location" },
   { type: "description", text: "Description" },
   { type: "caption", text: "Enter caption for image (optional)" }
 ]);
+
+placeholderPlugins.push(paragraphPlaceholder);
 
 export default placeholderPlugins;

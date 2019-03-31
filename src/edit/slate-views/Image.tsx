@@ -7,7 +7,8 @@ const styles = (theme: Theme) =>
     root: {
       marginLeft: "auto",
       marginRight: "auto",
-      display: "block"
+      display: "block",
+      maxWidth: "100%"
     },
     selected: {
       boxShadow: "0 0 0 3px #00c853;"

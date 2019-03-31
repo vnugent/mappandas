@@ -49,7 +49,6 @@ const insertImage = (editor, src, target) => {
         type: "image",
         data: { url }
       });
-      console.log("uploaded", url);
     })
     .catch(reason => console.log(reason));
   console.log("## insert figure block", figure.toJS());

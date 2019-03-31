@@ -84,6 +84,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       geocoderLookupAndCache(data, this.editorRef)
         .then(f => {
           const fc = toGeojson(this.props.uuid, editor.value);
+          console.log();
           this.props.onLocationUpdate(fc, { shouldUpdateView: true });
         })
         .catch(e => null);
@@ -224,9 +225,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
             sideToolbar={sideToolbar}
           />
         );
-      case "list":
-        return <div {...attributes}>{children}</div>;
-      case "entry":
+      case "card":
         return (
           <Entry
             attributes={attributes}
@@ -250,13 +249,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         );
       }
       case "figure":
-        return (
-          <Figure
-            isFocused={isFocused}
-            attributes={attributes}
-            children={children}
-          />
-        );
+        return <Figure attributes={attributes} children={children} />;
 
       case "caption":
         return <Caption attributes={attributes} children={children} />;
@@ -298,46 +291,36 @@ const schema: any = {
     }
   },
   blocks: {
-    list: {
-      nodes: [{ match: { type: "entry" }, min: 0 }],
-      normalize: (editor, { code, node, child, index }) => {
-        //const node_map = ["location", "description"];
-        console.log("##normalize list ", code, node, child, index);
-      }
-    },
     figure: {
       nodes: [
         { match: { type: "image" }, min: 1, max: 1 },
         { match: { type: "caption" }, min: 1, max: 1 }
       ],
       normalize: (editor, { code, node, child, index }) => {
-        console.log("##normalize figure ", code, node, child, index);
-        //const node_map = ["image", "caption"];
-
-        switch (code) {
-          case "child_min_invalid": {
-            //            if (!child) return;
-            //var block = Block.create(node_map[index]);
-            //return editor.insertNodeByKey(node.key, node.nodes.size, block);
-          }
-        }
+        console.log("##normalize figure", code, node, child, index);
+        //   switch (code) {
+        //     case "child_max_invalid": {
+        //       return editor.splitBlock(2);
+        //     }
+        //   }
       }
     },
     image: {
-        isVoid: true,
+      isVoid: true
     },
-    entry: {
-      parent: "list",
-      //first: { type: "location" },
+    card: {
       nodes: [
         { match: { type: "location" }, min: 1, max: 1 },
         { match: { type: "description" }, min: 1 }
       ],
+      next: {
+        type: "overview"
+      },
 
       normalize: (editor, { code, node, child, index }) => {
         const node_map = ["location", "description"];
 
-        console.log("##normalize entry ", code, node, child, index);
+        console.log("##normalize location card ", code, node, child, index);
         switch (code) {
           case "child_type_invalid": {
             const type = node_map[index];
@@ -348,6 +331,10 @@ const schema: any = {
             return editor.insertNodeByKey(node.key, index, block);
             //return editor;
           }
+          case "next_sibling_type_invalid": {
+            var block = F.createOverview();
+            console.log("## ", node.toJS());
+            return editor.insertNodeByKey(node.key, index+1, block);          }
           case "child_max_invalid": {
             return editor;
           }

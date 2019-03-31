@@ -94,12 +94,11 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
 const ToolbarExpanded = (classes, toggle, insertImageClick, handlers, dataKey) => {
   return (
     <div className={classnames(classes.root, classes.active)}>
-      <Tooltip title="Add a location" aria-label="Add a location">
+      <Tooltip title="Add a location card" aria-label="Add a location card">
         <IconButton
           className={classes.menuButton}
           aria-label="New entry"
           onClick={() => {
-            console.log("#add new clicked");
             toggle();
             handlers.onAdd(dataKey);
           }}
