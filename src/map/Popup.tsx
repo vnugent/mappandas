@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IActiveFeature } from "src/types/CustomMapTypes";
+import { IActiveFeature } from "../types/CustomMapTypes";
 
 interface IAppProps {
   data: IActiveFeature | null;

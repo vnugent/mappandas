@@ -2,8 +2,9 @@ import * as React from "react";
 import { Typography } from "@material-ui/core";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 
-import * as classNames from "classnames";
+//import * as classNames from "classnames";
 import { FeatureCollection2 } from "@mappandas/yelapa";
+const classNames = require('classnames');
 
 import Social from "../Social";
 

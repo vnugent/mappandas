@@ -1,12 +1,14 @@
 import * as React from "react";
-import { IconButton, Tooltip } from "@material-ui/core";
+import { IconButton, Tooltip, Portal } from "@material-ui/core";
 import {
   AddCircleOutlined,
   CancelOutlined,
-  PhotoCameraOutlined
+  PhotoCameraOutlined,
+  LocationOnRounded,
 } from "@material-ui/icons";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 import classnames from "classnames";
+import ImageUploadButton from "./ImageUploadButton";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -18,9 +20,9 @@ const styles = (theme: Theme) =>
       marginTop: -12
     },
     active: {
-        background: "rgba(255,255,255,0.85)",
-        borderRadius: 5,
-        padding: 2
+      background: "rgba(255,255,255,0.85)",
+      borderRadius: 5,
+      padding: 2
     }
   });
 export interface SideToolbarProps {
@@ -30,18 +32,18 @@ export interface SideToolbarProps {
   handlers: {
     onAdd: (key: number) => void;
     onDelete: (key: number) => void;
-
   };
 }
 
 interface S {
   collapse: boolean;
+  openPhotoDialog: boolean;
 }
 
 class SideToolbar extends React.Component<SideToolbarProps, S> {
   constructor(props: SideToolbarProps) {
     super(props);
-    this.state = { collapse: true };
+    this.state = { collapse: true, openPhotoDialog: false };
   }
   toggle = () => this.setState({ collapse: !this.state.collapse });
 
@@ -50,7 +52,7 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
     const { collapse } = this.state;
     const focusBlock = editor.value.focusBlock;
     if (!focusBlock) {
-        return null;
+      return null;
     }
     const text = focusBlock.nodes.first().getFirstText().text;
     if (focusBlock.key !== dataKey || text) {
@@ -58,55 +60,58 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
       return null;
     }
     return (
-      <div
-        className={classes.toolFab}
-        contentEditable={false}
-      >
-        <Tooltip
-          title="Add a new location or image "
-          aria-label="Add a new location or image"
-          placement="bottom-end"
-        >
-          <IconButton color="secondary" onClick={this.toggle}>
-            {collapse ? (
-              <AddCircleOutlined fontSize="large" />
-            ) : (
-              <CancelOutlined fontSize="large" />
-            )}
-          </IconButton>
-        </Tooltip>
-        {!collapse && ToolbarExpanded(classes, this.toggle, handlers, dataKey)}
-      </div>
+      <>
+        {/* {this.state.openPhotoDialog && (
+          <Portal container={this.props.editor}>
+            <UploadDialog onClose={this.onUploadDlgClose} />
+          </Portal>
+        )} */}
+        <div className={classes.toolFab} contentEditable={false}>
+          <Tooltip
+            title="Add a new location or image "
+            aria-label="Add a new location or image"
+            placement="bottom-end"
+          >
+            <IconButton color="secondary" onClick={this.toggle}>
+              {collapse ? (
+                <AddCircleOutlined fontSize="large" />
+              ) : (
+                <CancelOutlined fontSize="large" />
+              )}
+            </IconButton>
+          </Tooltip>
+          {!collapse &&
+            ToolbarExpanded(classes, this.toggle, this.onUploadDlgOpen, handlers, dataKey)}
+        </div>
+      </>
     );
   }
+
+  onUploadDlgClose = () => this.setState({ openPhotoDialog: false });
+  onUploadDlgOpen = () =>
+    this.setState({ openPhotoDialog: true, collapse: true });
 }
-const ToolbarExpanded = (classes, toggle, handlers, dataKey) => {
+const ToolbarExpanded = (classes, toggle, insertImageClick, handlers, dataKey) => {
   return (
-    <div className={classnames(classes.root, classes.active)}
-    >
+    <div className={classnames(classes.root, classes.active)}>
       <Tooltip title="Add a location" aria-label="Add a location">
         <IconButton
           className={classes.menuButton}
           aria-label="New entry"
           onClick={() => {
-              console.log("#add new clicked");
-              //toggle();
-              handlers.onAdd(dataKey)}}
+            console.log("#add new clicked");
+            toggle();
+            handlers.onAdd(dataKey);
+          }}
         >
-          ==
+          <LocationOnRounded fontSize="large"/>
         </IconButton>
       </Tooltip>
-      <Tooltip
-        title="Add an image - coming soon!"
-        aria-label="Add an image - coming soon!"
-      >
-        <IconButton
-          className={classes.menuButton}
-          aria-label="Add an image"
-        >
-          <PhotoCameraOutlined fontSize="large" />
-        </IconButton>
-      </Tooltip>
+      <ImageUploadButton classes={classes} onUploaded={(file)=>{
+            toggle();
+            handlers.insertImage(dataKey, file);
+        }}>
+      </ImageUploadButton>
     </div>
   );
 };

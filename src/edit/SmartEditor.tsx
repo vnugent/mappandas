@@ -6,6 +6,8 @@ import * as _ from "underscore";
 
 import placeholderPlugins from "./placeholders";
 
+import * as F from "./Factory";
+
 import onEnter from "./onEnter";
 import onDash from "./onDash";
 import onBackspace from "./onBackspace";
@@ -13,7 +15,16 @@ import * as ToolbarHandler from "./handlers/toolbarHander";
 import SideToolbar from "./SideToolbar";
 import { geocoderLookupAndCache, toGeojson } from "./handlers/deserializers";
 
-import { Title, Overview, Entry, Location, Description } from "./slate-views";
+import {
+  Title,
+  Overview,
+  Entry,
+  Location,
+  Description,
+  Image,
+  Caption,
+  Figure
+} from "./slate-views";
 
 export interface IAppProps {
   uuid: string;
@@ -22,6 +33,7 @@ export interface IAppProps {
 
 export interface IAppState {
   value: any;
+  openPhotoDialog: boolean;
 }
 
 //const existingValue = localStorage.getItem("content");
@@ -38,7 +50,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
 
-    this.state = { value: initialValue };
+    this.state = { value: initialValue, openPhotoDialog: false };
     this.editorRef = React.createRef();
   }
 
@@ -177,7 +189,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   }
 
   renderNode = (props, editor, next) => {
-    const { attributes, children, node } = props;
+    const { attributes, children, node, isFocused } = props;
 
     const sideToolbar = (
       <SideToolbar
@@ -225,6 +237,30 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         );
       case "location":
         return <Location attributes={attributes} children={children} />;
+      case "image": {
+        const url = node.data.get("url");
+        const src = url ? url : node.data.get("src");
+        return (
+          <Image
+            src={src}
+            isSelected={isFocused}
+            attributes={attributes}
+            children={children}
+          />
+        );
+      }
+      case "figure":
+        return (
+          <Figure
+            isFocused={isFocused}
+            attributes={attributes}
+            children={children}
+          />
+        );
+
+      case "caption":
+        return <Caption attributes={attributes} children={children} />;
+
       default:
         return next();
     }
@@ -240,17 +276,23 @@ const initialValue = Value.fromJSON(initialValueAsJson);
 //const node_map = ["title", "overview", "list"];
 const schema: any = {
   document: {
-    nodes: [
-      { match: { type: "title" }, min: 1, max: 1 },
-      { match: { type: "overview" } },
-      { match: { type: "list" }, min: 0, max: 1 }
-    ],
+    last: { type: "overview" },
+
+    // nodes: [
+    // //   { match: { type: "title" }, min: 1, max: 1 },
+    //   //{ match: { type: "overview" } },
+    //   //{ match: { type: "list" }, min: 0, max: 1 }
+    // ],
     normalize: (editor, { code, node, child, index }) => {
       console.log("##normalize document ", code, node, child, index);
       switch (code) {
-        case "child_min_invalid": {
-          var title = Block.create("title");
-          return editor.insertNodeByKey(node.key, index, title).focus();
+        // case "child_min_invalid": {
+        //   var title = Block.create("title");
+        //   return editor.insertNodeByKey(node.key, index, title).focus();
+        // }
+        case "last_child_type_invalid": {
+          const block = F.createOverview();
+          return editor.insertNodeByKey(node.key, node.nodes.size, block);
         }
       }
     }
@@ -262,6 +304,27 @@ const schema: any = {
         //const node_map = ["location", "description"];
         console.log("##normalize list ", code, node, child, index);
       }
+    },
+    figure: {
+      nodes: [
+        { match: { type: "image" }, min: 1, max: 1 },
+        { match: { type: "caption" }, min: 1, max: 1 }
+      ],
+      normalize: (editor, { code, node, child, index }) => {
+        console.log("##normalize figure ", code, node, child, index);
+        //const node_map = ["image", "caption"];
+
+        switch (code) {
+          case "child_min_invalid": {
+            //            if (!child) return;
+            //var block = Block.create(node_map[index]);
+            //return editor.insertNodeByKey(node.key, node.nodes.size, block);
+          }
+        }
+      }
+    },
+    image: {
+        isVoid: true,
     },
     entry: {
       parent: "list",

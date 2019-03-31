@@ -13,7 +13,7 @@ export default class PandaGL extends CompositeLayer implements IProps {
 
   props: any;
 
-  static layername = "PandaGL";
+  static layerName = "PandaGL";
 
   static LIGHT_SETTINGS = {
     lightsPosition: [-125, 50.5, 5000, -122.8, 48.5, 8000],
@@ -28,6 +28,10 @@ export default class PandaGL extends CompositeLayer implements IProps {
     super(props);
   }
 
+  toString() {
+      console.log("Calling toString");
+      return "PandaGL";
+  }
   makeGeoJSONLayer(fc: FeatureCollection) {
     return new GeoJsonLayer({
       id: "panda-geojson-layer",

@@ -149,6 +149,7 @@ class App extends React.Component<IAppProps, IAppState> {
     const newVS = _viewstate.viewState
       ? _viewstate.viewState
       : { ...this.state.viewstate, ..._viewstate };
+    console.log("## new viewstate:", newVS);
     this.setState({ viewstate: newVS });
   };
 
@@ -326,16 +327,16 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   _locateMe = () => {
-    //return GeoHelper.getLatLngFromIP();
+    return GeoHelper.getLatLngFromIP();
     GeoHelper.getLatLngFromIP().then(latlng => {
       this.setState({
-        myLocation: latlng,
+        // myLocation: latlng,
         viewstate: { ...this.state.viewstate, ...latlng }
       });
     });
   };
 
-  onHover = _.debounce((evt: IActiveFeature) => {
+  onHover = _.debounce((evt: IActiveFeature | null) => {
     this.setState({ hoveredFeature: evt });
   }, 100);
 }
