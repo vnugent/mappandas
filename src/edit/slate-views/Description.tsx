@@ -31,7 +31,7 @@ class Description extends React.Component<IAppProps, IAppState> {
       <div className={classes.root} {...attributes}>
         {sideToolbar}
         <Typography
-          variant="h5"
+          variant="h6"
           color="textPrimary"
           style={{
             fontWeight: 400,

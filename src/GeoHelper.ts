@@ -2,7 +2,6 @@ import axios from "axios";
 
 import bbox from "@turf/bbox";
 import { FeatureCollection, BBox } from "geojson";
-import { FeatureCollection2 } from "@mappandas/yelapa";
 import { LatLng, Bbox0, IPanda } from "./types/CustomMapTypes";
 
 import * as ViewportUtils from "viewport-mercator-project";
@@ -14,22 +13,17 @@ export const DEFAULT_LATLNG: LatLng = {
   longitude: -122.4376
 };
 
-export const NEW_FC = (): FeatureCollection2 => ({
+export const NEW_FC = (): FeatureCollection => ({
   type: "FeatureCollection",
-  properties: {
-    uuid: uuidv1(),
-    title: "",
-    summary: []
-  },
   features: []
 });
 
-export const NEW_PANDA = (): IPanda => ({
-  uuid: uuidv1(),
-  geojson: NEW_FC(),
-  bbox: [0, 0, 0, 0],
-  description: ""
-});
+// export const NEW_PANDA = (): IPanda => ({
+//   uuid: uuidv1(),
+//   geojson: NEW_FC(),
+//   bbox: [0, 0, 0, 0],
+//   description: ""
+// });
 
 export const INITIAL_VIEWSTATE = () => ({
   altitude: 0,
@@ -108,27 +102,4 @@ export const bbox2Viewport = (bbox: BBox, width: number, height: number) => {
     bounds: [bbox.slice(0, 2), bbox.slice(2, 4)],
     padding: Math.min(width, height) * 0.2
   });
-};
-
-export const geojson2string = (fc: FeatureCollection2) => {
-  const { properties, features } = fc;
-
-  let s = "";
-  if (properties) {
-    const title = properties.title ? properties.title : null;
-    const summary = properties.summary ? properties.summary : null;
-    s = [title, summary].join("\n");
-  }
-
-  features.forEach(feature => {
-    const properties = feature.properties;
-    const name = properties ? properties.name : "";
-    const summary =
-      properties && properties.description
-        ? properties.description.join("\n")
-        : "";
-    s = s + "\n--\n" + [name, summary].join("\n");
-  });
-
-  return s;
 };

@@ -46,6 +46,7 @@ const styles = (theme: Theme) =>
 
 export interface IAppProps {
   classes?: any;
+  readonly: boolean;
   attributes: any;
   editor: any;
   handlers: {
@@ -68,15 +69,19 @@ class Entry extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { attributes, children, classes, editor } = this.props;
-    const { hoverClass } = this.state;
-    //const focusBlock = editor.value.focusBlock;
-    // parent is "this" entry
-    const parentOfinFocus = editor.value.document.getParent(
-      editor.value.focusBlock.key
-    );
 
-    const active = parentOfinFocus.key === attributes["data-key"];
+    const { attributes, children, classes, editor, readonly } = this.props;
+    const { hoverClass } = this.state;
+
+    if (!editor.value) {
+        return null;
+    }
+    const parentOfinFocus =
+      editor.value &&
+      editor.value.document.getParent(editor.value.focusBlock.key);
+
+    const active =
+      parentOfinFocus && parentOfinFocus.key === attributes["data-key"];
 
     const emptyLocationText =
       editor.value.focusBlock.getFirstText().text.trim() === "";
@@ -97,7 +102,7 @@ class Entry extends React.Component<IAppProps, IAppState> {
             Type a location (Ex. Portland) and hit Enter
           </span>
         )}
-        {hoverClass && (
+        {!readonly && hoverClass && (
           <Toolbar className={classes.toolbar} contentEditable={false}>
             <Tooltip
               title="Delete this location"

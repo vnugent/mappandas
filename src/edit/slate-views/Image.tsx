@@ -38,7 +38,6 @@ class Image extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { classes, src, isSelected, attributes, children } = this.props;
-    console.log("### image isSelected", isSelected);
     return (
       <div {...attributes} contentEditable={false}>
         <img
@@ -57,7 +56,6 @@ class Image extends React.Component<IAppProps, IAppState> {
   }
 
   onClick = event => {
-    console.log(event);
   };
   onMouseOver = event =>
     !this.props.isSelected && this.setState({ isHovered: true });

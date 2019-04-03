@@ -31,6 +31,7 @@ export default class ImageUploadButton extends React.Component<
     const file = e.target.files[0];
     if (file.size > 5242880) {
       // 5MB
+      alert("You tried to upload a file larger than 5MB");
       if (this.props.onError) this.props.onError("File must be less than 5MB");
       return;
     }
@@ -60,19 +61,19 @@ export default class ImageUploadButton extends React.Component<
           type="file"
           onChange={this._onUpload}
         />
-         <Tooltip title="Add an image" aria-label="Add an image">
-            <IconButton className={classes.menuButton} onClick={this.onClick} >
-              <CameraIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
+        <Tooltip title="Add an image" aria-label="Add an image">
+          <IconButton className={classes.menuButton} onClick={this.onClick}>
+            <CameraIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
       </span>
     );
   }
 
-  onClick = (e) => {
-      const fileElem = document.getElementById("upload-image-control");
-      if (fileElem) fileElem.click();
-  }
+  onClick = e => {
+    const fileElem = document.getElementById("upload-image-control");
+    if (fileElem) fileElem.click();
+  };
 }
 
 //export default withStyles(styles)(Upload);

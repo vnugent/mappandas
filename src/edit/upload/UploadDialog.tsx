@@ -27,7 +27,7 @@ class UploadDialog extends React.Component<IAppProps, IAppState> {
   }
 
   componentWillUnmount() {
-    if (this.state.preview) URL.revokeObjectURL(this.state.preview)
+    if (this.state.preview) URL.revokeObjectURL(this.state.preview);
   }
 
   public render() {

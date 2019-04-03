@@ -8,11 +8,9 @@ import addLocation from "../actions/addLocation";
 import { uploadImage } from "../ImageUtils";
 
 const onDelete = (key: number, uuid: string, fn, editor: any) => {
-  console.log("onDelete ref", key);
   const e = editor.removeNodeByKey(key);
   _.delay(f => {
-    const fc = toGeojson(uuid, e.value);
-    fn(fc, { shouldUpdateView: true });
+    fn(null, editor);
   }, 200);
 };
 
@@ -50,8 +48,7 @@ const insertImage = (editor, src, target) => {
         data: { url }
       });
     })
-    .catch(reason => console.log(reason));
-  console.log("## insert figure block", figure.toJS());
+    .catch(reason => console.log("Image upload error", reason));
   editor.insertBlock(figure);
 };
 

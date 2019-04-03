@@ -11,6 +11,13 @@ export type LatLng = { latitude: number; longitude: number };
  */
 export type Bbox0 = [number, number, number, number];
 
+export interface IPost {
+    uuid: string,
+    bbox: Bbox0;
+    userid: string;
+    content: any; // Slate 'value'
+}
+
 export interface IPanda {
   uuid: string;
   geojson: FeatureCollection2;

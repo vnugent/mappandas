@@ -18,7 +18,7 @@ import { AssignmentReturnOutlined as CopyIcon } from "@material-ui/icons";
 import { Close as CloseIcon } from "@material-ui/icons";
 import * as Validator from "validate.js";
 
-import { IPanda } from "./types/CustomMapTypes";
+import { IPost } from "./types/CustomMapTypes";
 import * as RestClient from "./RestClient";
 
 const styles = ({ palette, spacing }: Theme) =>
@@ -95,7 +95,7 @@ const DialogTitle = withStyles(styles)((props: Props) => {
 
 interface IProps {
   open: boolean;
-  panda: IPanda;
+  post: IPost;
   onClose: (any) => void;
   classes: any;
 }
@@ -149,7 +149,7 @@ class ShareScreen extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { classes, open, panda } = this.props;
+    const { classes, open, post } = this.props;
     const emailHelperText =
       this.state.isEmailValid || this.state.email.length == 0
         ? " "
@@ -172,7 +172,7 @@ class ShareScreen extends React.Component<IProps, IState> {
             label="Unique link"
             fullWidth={true}
             margin="normal"
-            value={`https://app.mappandas.com/p/${panda.uuid}`}
+            value={`https://app.mappandas.com/p/${post.uuid}`}
             onClick={this._copy}
             inputRef={this.urlFieldRef}
             InputProps={{
@@ -241,7 +241,7 @@ class ShareScreen extends React.Component<IProps, IState> {
   };
 
   _onSendEmailClick = () => {
-    const { uuid } = this.props.panda;
+    const { uuid } = this.props.post;
     // send email is really async. here we fake progress by setting
     // reseting progress by a timer
     this.setState({ sendingInProgress: true });

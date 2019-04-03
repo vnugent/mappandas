@@ -61,11 +61,6 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
     }
     return (
       <>
-        {/* {this.state.openPhotoDialog && (
-          <Portal container={this.props.editor}>
-            <UploadDialog onClose={this.onUploadDlgClose} />
-          </Portal>
-        )} */}
         <div className={classes.toolFab} contentEditable={false}>
           <Tooltip
             title="Add a new location or image "
@@ -94,6 +89,11 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
 const ToolbarExpanded = (classes, toggle, insertImageClick, handlers, dataKey) => {
   return (
     <div className={classnames(classes.root, classes.active)}>
+          <ImageUploadButton classes={classes} onUploaded={(file)=>{
+            toggle();
+            handlers.insertImage(dataKey, file);
+        }}>
+      </ImageUploadButton>
       <Tooltip title="Add a location card" aria-label="Add a location card">
         <IconButton
           className={classes.menuButton}
@@ -106,11 +106,6 @@ const ToolbarExpanded = (classes, toggle, insertImageClick, handlers, dataKey) =
           <LocationOnRounded fontSize="large"/>
         </IconButton>
       </Tooltip>
-      <ImageUploadButton classes={classes} onUploaded={(file)=>{
-            toggle();
-            handlers.insertImage(dataKey, file);
-        }}>
-      </ImageUploadButton>
     </div>
   );
 };

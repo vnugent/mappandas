@@ -17,9 +17,7 @@ const onBackspace = (event: any, editor: any, next) => {
     selection.isCollapsed
   ) {
     const prev = value.document.getPreviousSibling(value.startBlock.key);
-    console.log("prev", prev);
     if (prev && prev.type === "card") {
-      console.log("previous is a card. no op");
       event.preventDefault();
       return;
     }

@@ -23,7 +23,6 @@ const client = axios.create({
 });
 
 export const uploadImage = async imageData => {
-  console.log("Token", Config.CLOUDINARY_TOKEN);
   const payload = new FormData();
   payload.append("name", "file");
   payload.append("file", imageData);

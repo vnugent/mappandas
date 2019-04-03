@@ -3,7 +3,7 @@ import * as _ from "underscore";
 
 import * as F from "./Factory";
 
-const onEnter = ({ event, editor, next, onEntryUpdate }) => {
+const onEnter = ({ event, editor, next }) => {
   const { value } = editor;
   const root = value.document.nodes;
 
@@ -34,42 +34,6 @@ const onEnter = ({ event, editor, next, onEntryUpdate }) => {
       .moveToStartOfNode(newParagraph);
   }
 
-  if (type === "location") {
-    const selection = value.selection;
-    if (selection.focus.offset === 0 && selection.isCollapsed) {
-      console.log("#onEnter at beginning of location");
-      //editor.splitNod;
-      return next();
-    }
-
-    const loc = value.startBlock;
-    var desc = editor.value.document.getNextSibling(loc.key);
-    event.preventDefault();
-    if (onEntryUpdate) {
-      _.delay(
-        () =>
-          onEntryUpdate({
-            location: loc,
-            mDescription: List.of(desc)
-          }),
-        250
-      );
-    }
-    return editor.moveToStartOfNode(desc.nodes.first());
-  }
-
-  if (type === "description") {
-    // if (onEntryUpdate) {
-    //   const entry = editor.value.document.getParent(value.startBlock.key);
-    //   onEntryUpdate({
-    //     location: entry.nodes.first(),
-    //     mDescription: entry.nodes.slice(1)
-    //   });
-    // }
-    return next();
-  }
-
-  console.log("### Unexpected Type", type);
   return next();
 };
 
