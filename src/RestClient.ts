@@ -5,8 +5,8 @@ import { FeatureCollection2 } from "@mappandas/yelapa";
 import { RepeatOneSharp } from "@material-ui/icons";
 
 export const client = axios.create({
-  //baseURL: "https://api.mappandas.com"
-  baseURL: "http://localhost:5000"
+  baseURL: "https://api.mappandas.com"
+  //baseURL: "http://localhost:5000"
   /* other custom settings */
 });
 

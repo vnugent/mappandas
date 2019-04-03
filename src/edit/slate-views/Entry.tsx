@@ -12,7 +12,7 @@ const styles = (theme: Theme) =>
       marginBottom: theme.spacing.unit * 2,
       padding: theme.spacing.unit * 2,
       boxSizing: "border-box",
-      border: "2px dashed #b2ebf2"
+      border: "2px solid #b2ebf2"
     },
     hover: {
       backgroundColor: "#f5f5f5"

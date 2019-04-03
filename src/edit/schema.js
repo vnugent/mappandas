@@ -28,7 +28,7 @@ const schema = {
     card: {
       nodes: [
         { match: { type: "location" }, min: 1, max: 1 },
-        { match: { type: "description" }, min: 1 }
+        { match: [{ type: "description" }, { type: "figure" }], min: 1 }
       ],
       next: {
         type: "overview"
