@@ -3,7 +3,7 @@
     "nodes": [
       {
         "object": "block",
-        "type": "title",
+        "type": "overview",
         "nodes": [
           {
             "object": "text",

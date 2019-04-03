@@ -1,51 +1,64 @@
 {
-  "name": "mappanda",
+  "name": "new-cra",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mappandas/react-map-gl-geocoder": "^1.5.6",
     "@mappandas/yelapa": "^0.0.18",
     "@material-ui/core": "^3.6.2",
     "@material-ui/icons": "^3.0.1",
     "@turf/bbox": "^6.0.1",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
-    "deck.gl": "^6.3.2",
+    "cloudinary-react": "^1.1.0",
+    "deck.gl": "^6.4.8",
     "dotenv": "^6.2.0",
+    "geocoder": "^0.2.3",
     "geojson": "^0.5.0",
     "immutable": "^4.0.0-rc.12",
-    "nebula.gl": "^0.7.3",
-    "nebula.gl-react": "^0.7.3",
-    "react": "^16.8.3",
-    "react-dom": "^16.6.3",
-    "react-map-gl": "^4.0.5",
+    "nebula.gl": "^0.7.6",
+    "nebula.gl-react": "^0.7.6",
+    "react": "^16.8.5",
+    "react-dom": "^16.8.5",
+    "react-dropzone": "^10.0.6",
+    "react-map-gl": "^4.1.1",
+    "react-map-gl-geocoder": "^1.7.0",
     "react-router-dom": "^4.3.1",
-    "react-scripts-ts": "3.1.0",
     "react-swipeable-views": "^0.13.0",
-    "slate": "^0.44.10",
+    "slate": "^0.44.12",
     "slate-react": "^0.21.16",
     "slate-react-placeholder": "^0.1.13",
+    "superagent": "^4.1.0",
     "underscore": "^1.9.1",
     "uuid": "^3.3.2",
     "validate.js": "^0.12.0",
-    "viewport-mercator-project": "^6.1.0"
+    "viewport-mercator-project": "^6.1.1"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
   "devDependencies": {
     "@types/classnames": "^2.2.7",
-    "@types/geojson": "^7946.0.4",
-    "@types/jest": "^23.3.9",
-    "@types/material-ui": "^0.21.5",
-    "@types/node": "^10.12.10",
-    "@types/react": "^16.7.7",
-    "@types/react-dom": "^16.0.10",
+    "@types/geojson": "^7946.0.7",
+    "@types/jest": "^24.0.11",
+    "@types/material-ui": "^0.21.6",
+    "@types/node": "^11.12.0",
+    "@types/react": "^16.8.10",
+    "@types/react-dom": "^16.8.3",
     "@types/react-router-dom": "^4.3.1",
-    "@types/underscore": "^1.8.9",
-    "typescript": "^3.3.3333"
+    "@types/underscore": "^1.8.13",
+    "react-scripts": "^2.1.8",
+    "typescript": "^3.3.4000"
   }
 }

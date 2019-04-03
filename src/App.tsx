@@ -1,23 +1,18 @@
 import * as React from "react";
-import "./App.css";
 import {
   Route,
   Switch,
   withRouter,
   RouteComponentProps
 } from "react-router-dom";
-import {
-  //   Button,
-  //   Toolbar,
-  //   Tooltip,
-  Grid,
-  withStyles
-} from "@material-ui/core";
+import { Grid, withStyles } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
+import { FeatureCollection } from "geojson";
 
 import * as _ from "underscore";
+import { Value } from "slate";
 
-import { IPanda, LatLng, IActiveFeature } from "./types/CustomMapTypes";
+import { IPost, LatLng, IActiveFeature } from "./types/CustomMapTypes";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
 import DefaultURLHandler from "./DefaultURLHandler";
@@ -33,8 +28,12 @@ import LocateMe from "./LocateMe";
 import ScrollToTop from "./ScrollToTop";
 import Popup from "./map/Popup";
 import TextPane from "./TextPane";
-import PandaCardView from "./panda/PandaCardView";
 import TopLevelAppBar from "./AppBars";
+
+import { initialValue } from "./edit/slate-default";
+import { computeGeojson, documentToGeojson } from "./document2geojson";
+import SmartEditor from "./edit/SmartEditor";
+const uuidv1 = require("uuid/v1");
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -42,7 +41,7 @@ const styles = (theme: Theme) =>
       display: "flex",
       height: "100vh",
       maxHeight: "100%",
-      background: "white"
+      background: "#fafafa"
     },
     textPane: {
       width: "100%",
@@ -54,19 +53,27 @@ const styles = (theme: Theme) =>
     }
   });
 
+const NEW_POST = (): IPost => ({
+  uuid: uuidv1(),
+  bbox: [0, 0, 0, 0],
+  content: initialValue,
+  userid: uuidv1()
+});
+
 interface IAppProps extends RouteComponentProps {
   classes: any;
 }
 
 interface IAppState {
-  panda: IPanda;
-  editableJSON: FeatureCollection2;
+  post: IPost;
+  geojson: FeatureCollection;
   mode: string;
   share_screen: boolean;
   viewstate: any;
   mapStyle: string;
   myLocation: LatLng;
   hoveredFeature: IActiveFeature | null;
+  publishable: boolean;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -78,72 +85,45 @@ class App extends React.Component<IAppProps, IAppState> {
   }
 
   getState0 = (): IAppState => ({
-    panda: GeoHelper.NEW_PANDA(),
-    editableJSON: GeoHelper.NEW_FC(),
+    post: NEW_POST(),
+    geojson: GeoHelper.NEW_FC(),
     mode: "edit",
     share_screen: false,
     viewstate: GeoHelper.INITIAL_VIEWSTATE(),
     mapStyle: "light-v9",
     myLocation: GeoHelper.DEFAULT_LATLNG,
-    hoveredFeature: null
+    hoveredFeature: null,
+    publishable: false
   });
 
-  onShareButtonClick = () => {
-    const uri = `/p/${this.state.panda.uuid}`;
-    const { panda, editableJSON } = this.state;
-    panda.geojson = editableJSON;
-    panda.bbox = GeoHelper.bboxFromGeoJson(editableJSON);
-
-    restClient.create(panda);
-
-    localStorage.setItem(this.state.panda.uuid, GeoHelper.stringify(panda));
-    this.setState({ mode: "share", share_screen: true });
-    this.props.history.replace(uri);
-  };
+  getStateNewEdit = () => ({
+    post: NEW_POST(),
+    mode: "edit",
+    geojson: GeoHelper.NEW_FC(),
+    publishable: false
+  });
 
   onNewButtonClick = () => {
-    this.setState(
-      {
-        panda: GeoHelper.NEW_PANDA(),
-        editableJSON: GeoHelper.NEW_FC(),
-        mode: "edit"
-      },
-      () => {
-        this.props.history.push("/", { dontMoveMap: true });
-      }
-    );
+    this.setState(this.getStateNewEdit(), () => {
+      this.props.history.push("/", { dontMoveMap: true });
+    });
   };
 
   /**
-   * Handle new data from the backend (or possibly from local storage cache)
+   * Handle new data from the backend
    */
-  onDataLoaded = (data: IPanda, editable: boolean): void => {
-    const { width } = this.getMapDivDimensions();
-    const height = window.innerHeight;
-    const newViewstate = Object.assign(
-      this.state.viewstate,
-      GeoHelper.bbox2Viewport(data.bbox, width, height)
-    );
-
-    this.setState({
-      mode: "share",
-      panda: data,
-      editableJSON: data.geojson,
-      viewstate: newViewstate
-    });
+  onDataLoaded = (post: IPost, editable: boolean): void => {
+    if (post.content && post.content.document) {
+      this.setState({ post, mode: "share" });
+      const geojson = documentToGeojson(post.content.document);
+      this.updateStateFromGeojson(geojson);
+    }
   };
 
-  onEditUpdated = (geojson: FeatureCollection2) => {
-    const newPanda = this.state.panda;
-    newPanda.geojson = geojson;
-    newPanda.bbox = GeoHelper.bboxFromGeoJson(geojson);
-    this.setState({
-      editableJSON: geojson,
-      panda: newPanda
-    });
+  onInitialized = (_viewstate: any) => {
+    this.setState(this.getStateNewEdit());
+    this._locateMe();
   };
-
-  onInitialized = (_viewstate: any) => this._locateMe();
 
   onViewstateChanged = _viewstate => {
     const newVS = _viewstate.viewState
@@ -151,53 +131,6 @@ class App extends React.Component<IAppProps, IAppState> {
       : { ...this.state.viewstate, ..._viewstate };
     this.setState({ viewstate: newVS });
   };
-
-  onEditorUpdate = (
-    fc: FeatureCollection2,
-    options = {
-      shouldUpdateView: false
-    }
-  ) => {
-    if (fc.features.length === 0) {
-      this.setState({ editableJSON: fc });
-    } else {
-      const { shouldUpdateView } = options;
-      const { width, height } = this.getMapDivDimensions();
-      fc.bbox = GeoHelper.bboxFromGeoJson(fc);
-      const newViewstate =
-        shouldUpdateView && fc.bbox
-          ? Object.assign(
-              this.state.viewstate,
-              GeoHelper.bbox2Viewport(fc.bbox, width, height)
-            )
-          : this.state.viewstate;
-      this.setState({ editableJSON: fc, viewstate: newViewstate });
-    }
-  };
-
-  onCancelEdit = () =>
-    this.setState(
-      {
-        panda: GeoHelper.NEW_PANDA(),
-        editableJSON: GeoHelper.NEW_FC(),
-        mode: "view"
-      },
-      () => {
-        this.props.history.push("/", { dontMoveMap: true });
-      }
-    );
-
-  onUpload = (geojson: FeatureCollection2) => {
-    this.setState(
-      {
-        mode: "edit"
-      },
-      () => {
-        this.onEditUpdated(geojson);
-      }
-    );
-  };
-
   onShareScreenClose = event => {
     this.setState(
       { share_screen: false },
@@ -238,26 +171,27 @@ class App extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { classes } = this.props;
-    const { mode } = this.state;
+    const { mode, post } = this.state;
     return (
       <div className={classes.root}>
         <TopLevelAppBar
-          data={this.state.editableJSON}
+          readonly={mode === "share"}
+          isPublishable={this.state.publishable}
           onCreateNewClick={this.onNewButtonClick}
+          onPublishClick={this.onPublishClick}
         />
         <Grid spacing={0} container={true} alignContent="stretch">
           <Grid item xs={12} md={6}>
             <div id="text-pane-id" className={classes.textPane}>
-              {mode === "share" && (
-                <PandaCardView data={this.state.editableJSON} />
-              )}
-              {mode === "edit" && (
-                <TextPane
-                  data={this.state.editableJSON}
-                  onPublishButtonClick={this.onShareButtonClick}
-                  onEditorUpdate={this.onEditorUpdate}
+              <TextPane>
+                <SmartEditor
+                  uuid={post.uuid}
+                  content={post.content}
+                  readonly={mode === "share"}
+                  onLocationUpdate={this.onLocationUpdateHandler}
+                  onContentChange={this.onContentChange}
                 />
-              )}
+              </TextPane>
             </div>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -269,7 +203,7 @@ class App extends React.Component<IAppProps, IAppState> {
               }}
             >
               <MapNG
-                geojson={this.state.editableJSON}
+                geojson={this.state.geojson}
                 viewstate={this.state.viewstate}
                 onViewStateChanged={this.onViewstateChanged}
                 mapStyle={this.state.mapStyle}
@@ -285,7 +219,7 @@ class App extends React.Component<IAppProps, IAppState> {
             />
 
             <ShareScreen
-              panda={this.state.panda}
+              post={this.state.post}
               open={this.state.share_screen}
               onClose={this.onShareScreenClose}
             />
@@ -325,17 +259,48 @@ class App extends React.Component<IAppProps, IAppState> {
     );
   }
 
+  onPublishClick = () => {
+    const uri = `/p/${this.state.post.uuid}`;
+    const { post } = this.state;
+    restClient.createPost(post).then(uuid => {
+      this.setState({ share_screen: true });
+      this.props.history.replace(uri);
+    });
+  };
+
+  onContentChange = content => {
+    const newPost = { ...this.state.post, content };
+    this.setState({ post: newPost });
+  };
+
+  onLocationUpdateHandler = (location, editor) => {
+    computeGeojson(location, editor, this.updateStateFromGeojson);
+  };
+
+  updateStateFromGeojson = geojson => {
+    if (geojson.features.length === 0) {
+      this.setState({ geojson });
+    } else {
+      const { width, height } = this.getMapDivDimensions();
+      const bbox = GeoHelper.bboxFromGeoJson(geojson);
+      const newViewstate = Object.assign(
+        this.state.viewstate,
+        GeoHelper.bbox2Viewport(bbox, width, height)
+      );
+      this.setState({ geojson, viewstate: newViewstate });
+    }
+  };
+
   _locateMe = () => {
-    //return GeoHelper.getLatLngFromIP();
     GeoHelper.getLatLngFromIP().then(latlng => {
       this.setState({
-        myLocation: latlng,
+        // myLocation: latlng,
         viewstate: { ...this.state.viewstate, ...latlng }
       });
     });
   };
 
-  onHover = _.debounce((evt: IActiveFeature) => {
+  onHover = _.debounce((evt: IActiveFeature | null) => {
     this.setState({ hoveredFeature: evt });
   }, 100);
 }

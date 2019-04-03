@@ -26,20 +26,27 @@ const isEmpty = (type: string, node: any) => {
 };
 
 const isFirstLine = (editor: any, node: any) => {
-    const prev = editor.value.document.getPreviousSibling(node.key);
-    if (prev && prev.type === node.type) {
-        return false;
+  const prev = editor.value.document.getPreviousSibling(node.key);
+  if (prev && prev.type === node.type) {
+    return false;
+  }
+  return true;
+};
+
+const paragraphPlaceholder = new PlaceholderPlugin({
+    placeholder: "Tell your story...",
+    when: (editor, node) => {
+        return isEmpty("overview", node) && editor.value.document.nodes.size === 1;
     }
-    return true;
-}
-
-
+})
 
 const placeholderPlugins = createFor([
-   { type: "title", text: "Title" },
-  { type: "overview", text: "Tell your story" },
+  { type: "title", text: "Title" },
   { type: "location", text: "Location" },
-  { type: "description", text: "Description" }
+  { type: "description", text: "Description" },
+  { type: "caption", text: "Enter caption for image (optional)" }
 ]);
+
+placeholderPlugins.push(paragraphPlaceholder);
 
 export default placeholderPlugins;

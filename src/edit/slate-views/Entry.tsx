@@ -9,14 +9,17 @@ const styles = (theme: Theme) =>
     root: {
       zIndex: 2500,
       marginTop: theme.spacing.unit * 2,
+      marginBottom: theme.spacing.unit * 2,
       padding: theme.spacing.unit * 2,
-      boxSizing: "border-box"
+      boxSizing: "border-box",
+      border: "2px solid #b2ebf2"
     },
     hover: {
       backgroundColor: "#f5f5f5"
     },
     active: {
-      border: "1px dashed #b2ebf2"
+      border: "none",
+      boxShadow: "1px 2px 4px 2px gray"
     },
     suggestion: {
       marginTop: -38,
@@ -43,6 +46,7 @@ const styles = (theme: Theme) =>
 
 export interface IAppProps {
   classes?: any;
+  readonly: boolean;
   attributes: any;
   editor: any;
   handlers: {
@@ -65,17 +69,22 @@ class Entry extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { attributes, children, classes, editor } = this.props;
+
+    const { attributes, children, classes, editor, readonly } = this.props;
     const { hoverClass } = this.state;
-    //const focusBlock = editor.value.focusBlock;
-    // parent is "this" entry
-    const parentOfinFocus = editor.value.document.getParent(
-      editor.value.focusBlock.key
-    );
 
-    const active = parentOfinFocus.key === attributes["data-key"];
+    if (!editor.value) {
+        return null;
+    }
+    const parentOfinFocus =
+      editor.value &&
+      editor.value.document.getParent(editor.value.focusBlock.key);
 
-    const emptyLocationText = parentOfinFocus.getFirstText().text.trim() === "";
+    const active =
+      parentOfinFocus && parentOfinFocus.key === attributes["data-key"];
+
+    const emptyLocationText =
+      editor.value.focusBlock.getFirstText().text.trim() === "";
 
     return (
       <div
@@ -93,7 +102,7 @@ class Entry extends React.Component<IAppProps, IAppState> {
             Type a location (Ex. Portland) and hit Enter
           </span>
         )}
-        {hoverClass && (
+        {!readonly && hoverClass && (
           <Toolbar className={classes.toolbar} contentEditable={false}>
             <Tooltip
               title="Delete this location"

@@ -3,18 +3,19 @@ import DeckGL, { MapController, GeoJsonLayer } from "deck.gl";
 import { StaticMap } from "react-map-gl";
 import { Hidden, withWidth } from "@material-ui/core";
 
-import { FeatureCollection2 } from "@mappandas/yelapa";
 
-import Geocoder from "@mappandas/react-map-gl-geocoder";
+//import Geocoder from "@mappandas/react-map-gl-geocoder";
+import Geocoder from "react-map-gl-geocoder";
 
 import * as _ from "underscore";
 
 import * as Config from "./Config";
 import PandaGL from "./PandaGL";
 import { IActiveFeature } from "./types/CustomMapTypes";
+import { FeatureCollection } from "geojson";
 
 interface IProps {
-  geojson: FeatureCollection2;
+  geojson: FeatureCollection;
   mapStyle: string;
   viewstate: any;
   onViewStateChanged: (any) => void;
@@ -65,9 +66,12 @@ class MapNG extends React.Component<IProps, IState> {
 
   render() {
     const { geojson, mapStyle } = this.props;
-    const layers = [new PandaGL({ data: geojson.features })];
+    const layers =
+      geojson.features && geojson.features.length > 0
+        ? new PandaGL({ data: geojson.features })
+        : [];
     if (this.state.searchResultLayer) {
-      layers.push(this.state.searchResultLayer);
+      //layers.push(this.state.searchResultLayer);
     }
 
     return (

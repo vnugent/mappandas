@@ -4,10 +4,15 @@ import {
   Typography,
   Button,
   Toolbar,
+  Menu,
+  MenuItem,
   withStyles,
   createStyles,
-  Theme
+  Theme,
+  IconButton
 } from "@material-ui/core";
+import { MoreVert } from "@material-ui/icons";
+
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
 const styles = (theme: Theme) =>
@@ -23,7 +28,7 @@ const styles = (theme: Theme) =>
     appBar: {
       position: "fixed",
       boxShadow: "none",
-      backgroundColor: "white",
+      backgroundColor: "#fafafa",
       [theme.breakpoints.up("md")]: {
         width: "50%"
       },
@@ -31,7 +36,7 @@ const styles = (theme: Theme) =>
         width: "100%"
       },
       left: 0,
-      zIndex: 2000
+      zIndex: 1000
     },
     editorSubMenu: {
       display: "flex",
@@ -44,14 +49,17 @@ const styles = (theme: Theme) =>
       paddingRight: theme.spacing.unit * 3
     },
     button: {
-        marginLeft: theme.spacing.unit
+      //    marginLeft: theme.spacing.unit,
+      marginRight: theme.spacing.unit
     }
   });
 
 export interface IAppProps {
   classes?: any;
-  data: FeatureCollection2;
+  readonly: boolean;
+  isPublishable: boolean;
   onCreateNewClick: () => void;
+  onPublishClick: () => void;
 }
 
 export interface IEditorProps {
@@ -60,7 +68,9 @@ export interface IEditorProps {
   onPublishClick: () => void;
 }
 
-export interface IAppState {}
+export interface IAppState {
+  anchorEl: any;
+}
 
 class Editor extends React.Component<IEditorProps, IAppState> {
   constructor(props: IEditorProps) {
@@ -71,8 +81,13 @@ class Editor extends React.Component<IEditorProps, IAppState> {
     const { classes } = this.props;
     return (
       <div className={classes.editorSubMenu}>
-        <a href="https://app.mappandas.com/p/97cb72b0-4215-11e9-9cf2-afccc66ce6e3">Example one</a>&nbsp;&nbsp;
-        <a href="https://app.mappandas.com/p/85cf6470-47a8-11e9-962c-61a624428919">Example two</a>
+        <a href="https://app.mappandas.com/p/97cb72b0-4215-11e9-9cf2-afccc66ce6e3">
+          Example one
+        </a>
+        &nbsp;&nbsp;
+        <a href="https://app.mappandas.com/p/85cf6470-47a8-11e9-962c-61a624428919">
+          Example two
+        </a>
         <div style={{ flexGrow: 2 }} />
         <Button
           variant="contained"
@@ -91,9 +106,7 @@ class Editor extends React.Component<IEditorProps, IAppState> {
   isPublishable = () => {
     const { properties, features } = this.props.data;
     return (
-      properties.title ||
-      properties.summary.length > 1 ||
-      features.length > 0
+      properties.title || properties.summary.length > 1 || features.length > 0
     );
   };
 }
@@ -101,10 +114,20 @@ class Editor extends React.Component<IEditorProps, IAppState> {
 class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
+    this.state = {
+      anchorEl: null
+    };
   }
 
   public render() {
-    const { classes } = this.props;
+    const {
+      classes,
+      onCreateNewClick,
+      onPublishClick,
+      isPublishable,
+      readonly
+    } = this.props;
+    const { anchorEl } = this.state;
     return (
       <div className={classes.appBar}>
         <AppBar
@@ -114,7 +137,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
           }}
         >
           <Toolbar>
-            <Typography
+            {/* <Typography
               className={classes.title}
               variant="h6"
               color="inherit"
@@ -124,35 +147,63 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera;
               }}
             >
-              Map Pandas&nbsp;
+              MP&nbsp;
               <span style={{ fontColor: "#757575", fontSize: "0.8em" }}>
-                <sup>Beta</sup>
+                <sup>beta</sup>
               </span>
-            </Typography>
+            </Typography> */}
+            {!readonly && (
+              <Button
+                variant="outlined"
+                color="primary"
+                size="small"
+                className={classes.button}
+                disabled={isPublishable}
+                onClick={onPublishClick}
+              >
+                Ready to Publish
+              </Button>
+            )}
             <div className={classes.padding} />
             <Button
               variant="outlined"
-              color="primary"
-              size="small"
-              className={classes.button}
-              onClick={this.props.onCreateNewClick}
-            >
-              New Story
-            </Button>
-            <Button
-              variant="text"
               color="secondary"
               size="small"
               className={classes.button}
-              href="https://mappandas.com"
+              onClick={onCreateNewClick}
             >
-              About
+              New Story
             </Button>
+            <IconButton
+              aria-label="More"
+              aria-owns={open ? "long-menu" : undefined}
+              aria-haspopup="true"
+              color="default"
+              onClick={this.handleClick}
+            >
+              <MoreVert fontSize="small" />
+            </IconButton>
+            <Menu
+              id="simple-menu"
+              disableAutoFocusItem={true}
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={this.handleClose}
+            >
+              <MenuItem onClick={this.handleClose}> About </MenuItem>
+            </Menu>
           </Toolbar>
         </AppBar>
       </div>
     );
   }
+
+  handleClick = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
 }
 
 export default withStyles(styles)(TopLevelAppBar);

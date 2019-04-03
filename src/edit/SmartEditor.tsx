@@ -1,8 +1,10 @@
 import * as React from "react";
 import { Editor } from "slate-react";
-import { Block, Value } from "slate";
+import { Value } from "slate";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 import * as _ from "underscore";
+
+import schema from "./schema";
 
 import placeholderPlugins from "./placeholders";
 
@@ -11,34 +13,42 @@ import onDash from "./onDash";
 import onBackspace from "./onBackspace";
 import * as ToolbarHandler from "./handlers/toolbarHander";
 import SideToolbar from "./SideToolbar";
-import { geocoderLookupAndCache, toGeojson } from "./handlers/deserializers";
-
-import { Title, Overview, Entry, Location, Description } from "./slate-views";
+import { toGeojson } from "./handlers/deserializers";
+import { LocationPlugin } from "./plugins";
+import {
+  Title,
+  Overview,
+  Entry,
+  Location,
+  Description,
+  Image,
+  Caption,
+  Figure
+} from "./slate-views";
 
 export interface IAppProps {
   uuid: string;
-  onLocationUpdate: (fc: FeatureCollection2, options?: any) => void;
+  content: any;
+  readonly: boolean;
+  onLocationUpdate: (location, editor) => void;
+  onContentChange: (content) => void;
 }
 
-export interface IAppState {
-  value: any;
-}
-
-//const existingValue = localStorage.getItem("content");
+export interface IAppState {}
 
 const KEY_ENTER = "Enter";
 const KEY_DASH = "=";
 const KEY_BACKSPACE = "Backspace";
 
-const plugins = placeholderPlugins;
-
 class SmartEditor extends React.Component<IAppProps, IAppState> {
+  private timer: any;
   private editorRef: any;
   private toolbarHandler: any;
+  private plugins: any;
+
   constructor(props: IAppProps) {
     super(props);
 
-    this.state = { value: initialValue };
     this.editorRef = React.createRef();
   }
 
@@ -54,7 +64,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
   onKeyDown = (event, editor, next) => {
     //const { onEntryUpdate } = this.props;
-    const args = { event, editor, next, onEntryUpdate: this._onEntryUpdate };
+    const args = { event, editor, next };
     switch (event.key) {
       case KEY_ENTER:
         return onEnter(args);
@@ -64,18 +74,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         return onBackspace(event, editor, next);
     }
     return next();
-  };
-
-  _onEntryUpdate = data => {
-    const editor = this.editorRef;
-    if (editor) {
-      geocoderLookupAndCache(data, this.editorRef)
-        .then(f => {
-          const fc = toGeojson(this.props.uuid, editor.value);
-          this.props.onLocationUpdate(fc, { shouldUpdateView: true });
-        })
-        .catch(e => null);
-    }
   };
 
   _printNode = (nodes, depth) => {
@@ -98,23 +96,9 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     }
   };
 
-  onChange = (event, editor) => {
-    const { value } = event;
-    // console.log(" ===== onChange() ===== ");
-    // console.log("  ", event);
-    // console.log("  operation", event.operations.toJSON());
-    // console.log("   focusBlock", event.value.focusBlock.toJSON());
-    // console.log("    selection", this.editorRef.selection);
-    // console.log(" ====================== ");
-
-    // Check to see if the document has changed before saving.
-    if (value.document != this.state.value.document) {
-      this.props.onLocationUpdate(toGeojson(this.props.uuid, value));
-      const content = JSON.stringify(value.toJSON());
-      localStorage.setItem("content", content);
-    }
-
-    this.setState({ value });
+  onChange = ({ value }, editor) => {
+    if (this.props.readonly) return;
+    this.props.onContentChange(value);
   };
 
   printDebug = (e: any) => {
@@ -144,7 +128,13 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   };
 
   componentDidMount() {
-    // this.timer = setInterval(() => {
+    this.timer = setInterval(this.saveDraft, 12000);
+    if (!this.props.readonly) {
+      const locationPlugin = LocationPlugin({
+        handler: this.props.onLocationUpdate
+      });
+      this.plugins = [locationPlugin, placeholderPlugins];
+    }
     //   this.props.onLocationUpdate(
     //     toGeojson(this.props.uuid, this.editorRef.value)
     //   );
@@ -152,34 +142,34 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   }
 
   componentWillUnmount() {
-    //  clearInterval(this.timer);
+    clearInterval(this.timer);
   }
 
   public render() {
+    if (!this.props.content) return null;
     return (
       // <button onClick={this.printSelection}>Selection</button>
 
       //<button onClick={this.printDebug}>Document</button>
       <Editor
         ref={this.setRef}
+        readOnly={this.props.readonly}
         autoFocus={true}
-        defaultValue={this.state.value}
+        value={this.props.content}
         schema={schema}
-        plugins={plugins}
+        plugins={this.plugins}
         renderNode={this.renderNode}
         onKeyDown={this.onKeyDown}
         onChange={this.onChange}
-        onFocus={event => {
-          //console.log("#onFocus() ", event);
-        }}
+        onFocus={event => {}}
       />
     );
   }
 
   renderNode = (props, editor, next) => {
-    const { attributes, children, node } = props;
+    const { attributes, children, node, isFocused } = props;
 
-    const sideToolbar = (
+    const sideToolbar = !this.props.readonly && (
       <SideToolbar
         key={attributes["data-key"]}
         editor={editor}
@@ -212,86 +202,44 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
             sideToolbar={sideToolbar}
           />
         );
-      case "list":
-        return <div {...attributes}>{children}</div>;
-      case "entry":
+      case "card":
         return (
           <Entry
             attributes={attributes}
             children={children}
             handlers={this.toolbarHandler}
             editor={this.editorRef}
+            readonly={this.props.readonly}
           />
         );
       case "location":
         return <Location attributes={attributes} children={children} />;
+      case "image": {
+        const url = node.data.get("url");
+        const src = url ? url : node.data.get("src");
+        return (
+          <Image
+            src={src}
+            isSelected={isFocused}
+            attributes={attributes}
+            children={children}
+          />
+        );
+      }
+      case "figure":
+        return <Figure attributes={attributes} children={children} />;
+
+      case "caption":
+        return <Caption attributes={attributes} children={children} />;
+
       default:
         return next();
     }
   };
+
+  saveDraft = () => {
+    // no op at the moment
+  };
 }
-
-const initialValueAsJson = require("./value.json");
-
-// const initialValue = existingValue
-//   ? Value.fromJSON(JSON.parse(existingValue))
-//   : Value.fromJSON(initialValueAsJson);
-const initialValue = Value.fromJSON(initialValueAsJson);
-//const node_map = ["title", "overview", "list"];
-const schema: any = {
-  document: {
-    nodes: [
-      { match: { type: "title" }, min: 1, max: 1 },
-      { match: { type: "overview" } },
-      { match: { type: "list" }, min: 0, max: 1 }
-    ],
-    normalize: (editor, { code, node, child, index }) => {
-      console.log("##normalize document ", code, node, child, index);
-      switch (code) {
-        case "child_min_invalid": {
-          var title = Block.create("title");
-          return editor.insertNodeByKey(node.key, index, title).focus();
-        }
-      }
-    }
-  },
-  blocks: {
-    list: {
-      nodes: [{ match: { type: "entry" }, min: 0 }],
-      normalize: (editor, { code, node, child, index }) => {
-        //const node_map = ["location", "description"];
-        console.log("##normalize list ", code, node, child, index);
-      }
-    },
-    entry: {
-      parent: "list",
-      //first: { type: "location" },
-      nodes: [
-        { match: { type: "location" }, min: 1, max: 1 },
-        { match: { type: "description" }, min: 1 }
-      ],
-
-      normalize: (editor, { code, node, child, index }) => {
-        const node_map = ["location", "description"];
-
-        console.log("##normalize entry ", code, node, child, index);
-        switch (code) {
-          case "child_type_invalid": {
-            const type = node_map[index];
-            return editor.setNodeByKey(child.key, type);
-          }
-          case "child_min_invalid": {
-            var block = Block.create(node_map[index]);
-            return editor.insertNodeByKey(node.key, index, block);
-            //return editor;
-          }
-          case "child_max_invalid": {
-            return editor;
-          }
-        }
-      }
-    }
-  }
-};
 
 export default SmartEditor;

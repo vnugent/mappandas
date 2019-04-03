@@ -11,6 +11,9 @@ import App from "./App";
 import * as Config from "./Config";
 
 const theme = createMuiTheme({
+    typography: {
+        useNextVariants: true,
+      },
   palette: {
     primary: {
       main: "#ff9100"

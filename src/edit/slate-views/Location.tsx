@@ -12,21 +12,22 @@ export interface IAppProps {
   attributes: any;
 }
 
-export interface IAppState {
-}
+export interface IAppState {}
 
 class Location extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
 
-    this.state = {
-    };
+    this.state = {};
   }
 
   public render() {
     const { attributes, children, classes } = this.props;
     return (
-      <div className={classes.root} {...attributes}>
+      <div
+        className={classes.root}
+        {...attributes}
+      >
         <Typography
           variant="h4"
           color="textPrimary"

@@ -1,8 +1,9 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { Value } from "slate";
 
+import { initialValue } from "./edit/slate-default";
 import * as restClient from "./RestClient";
-import * as GeoHelper from "./GeoHelper";
 
 interface IShowPandaProps extends RouteComponentProps {
   onDataLoaded: Function;
@@ -30,39 +31,23 @@ export default class ShowPandaURLHandler extends React.Component<
     this.getGeojsonFromCacheOrRemote(uuid, editable);
   }
 
-  componentWillUnmount() {
-  }
+  componentWillUnmount() {}
   shouldComponentUpdate(
     nextProps: IShowPandaProps,
     nextState: IShowPandaState
   ) {
     const current = this.props.match["uuid"];
     const next = nextProps.match.params["uuid"];
-    console.log(
-      `ShowPandaURLHandler.shouldComponentUpdate()? ${current} -> ${next}`
-    );
     return current !== next;
   }
 
   getGeojsonFromCacheOrRemote = (uuid: string, editable: boolean) => {
-    const cache = localStorage.getItem(uuid);
-    if (!cache) {
-      console.log("Not found in cache");
-      restClient
-        .get(uuid)
-        .then(
-          payload =>
-            payload &&
-            this.props.onDataLoaded(
-              GeoHelper.parse(payload, { json: true }),
-              editable
-            )
-        );
-    } else {
-      const data = GeoHelper.parse(cache);
-      console.log("## found in cache", data);
-      this.props.onDataLoaded(data, editable);
-    }
+    restClient.get(uuid).then(post => {
+      const slateContent = Value.fromJSON(post.content);
+      post.content = Value.isValue(slateContent) ? slateContent : initialValue;
+
+      this.props.onDataLoaded(post, editable);
+    });
   };
 
   render() {
