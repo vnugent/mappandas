@@ -168,7 +168,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
   renderNode = (props, editor, next) => {
     const { attributes, children, node, isFocused } = props;
-
     const sideToolbar = !this.props.readonly && (
       <SideToolbar
         key={attributes["data-key"]}
@@ -190,6 +189,8 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         return (
           <Overview
             attributes={attributes}
+            node={node}
+            editor={editor}
             children={children}
             sideToolbar={sideToolbar}
           />
@@ -223,6 +224,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
             isSelected={isFocused}
             attributes={attributes}
             children={children}
+            readonly={this.props.readonly}
           />
         );
       }

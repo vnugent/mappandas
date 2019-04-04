@@ -25,8 +25,10 @@ const styles = (theme: Theme) =>
       overflowY: "auto"
     },
     slateWrapperHack: {
-      paddingLeft: theme.spacing.unit * 8,
-      paddingRight: theme.spacing.unit * 6,
+      [theme.breakpoints.up("md")]: {
+        paddingLeft: theme.spacing.unit * 8,
+        paddingRight: theme.spacing.unit * 6
+      },
       paddingBottom: theme.spacing.unit * 6,
       background: "#fafafa"
     }

@@ -24,10 +24,7 @@ class Location extends React.Component<IAppProps, IAppState> {
   public render() {
     const { attributes, children, classes } = this.props;
     return (
-      <div
-        className={classes.root}
-        {...attributes}
-      >
+      <div className={classes.root} {...attributes}>
         <Typography
           variant="h4"
           color="textPrimary"
@@ -36,6 +33,9 @@ class Location extends React.Component<IAppProps, IAppState> {
         >
           {children}
         </Typography>
+        <hr
+          style={{ width: "45px", marginLeft: 0, border: "1px solid #eeeeee" }}
+        />
       </div>
     );
   }

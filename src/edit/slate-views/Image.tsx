@@ -23,6 +23,7 @@ export interface IAppProps {
   src: any;
   isSelected: boolean;
   attributes: any;
+  readonly: boolean;
 }
 
 export interface IAppState {
@@ -37,15 +38,15 @@ class Image extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { classes, src, isSelected, attributes, children } = this.props;
+    const { classes, src, isSelected, attributes, readonly } = this.props;
     return (
       <div {...attributes} contentEditable={false}>
         <img
           src={src}
           className={classnames(
             classes.root,
-            !isSelected && this.state.isHovered && classes.hovered,
-            isSelected && classes.selected
+            !readonly &&!isSelected && this.state.isHovered && classes.hovered,
+            !readonly && isSelected && classes.selected
           )}
           onMouseOver={this.onMouseOver}
           onMouseOut={this.outMouseOut}
@@ -55,8 +56,7 @@ class Image extends React.Component<IAppProps, IAppState> {
     );
   }
 
-  onClick = event => {
-  };
+  onClick = event => {};
   onMouseOver = event =>
     !this.props.isSelected && this.setState({ isHovered: true });
   outMouseOut = () => this.setState({ isHovered: false });

@@ -17,12 +17,7 @@ const createFor = (placeholders: placeholder[]): any[] => {
 };
 
 const isEmpty = (type: string, node: any) => {
-  return (
-    node.type === type &&
-    node.text === "" &&
-    node.nodes.size === 1 &&
-    node.getTexts().size === 1
-  );
+  return node.type === type && node.text.trim() === "";
 };
 
 const isFirstLine = (editor: any, node: any) => {
@@ -34,11 +29,11 @@ const isFirstLine = (editor: any, node: any) => {
 };
 
 const paragraphPlaceholder = new PlaceholderPlugin({
-    placeholder: "Tell your story...",
-    when: (editor, node) => {
-        return isEmpty("overview", node) && editor.value.document.nodes.size === 1;
-    }
-})
+  placeholder: "Tell your story...",
+  when: (editor, node) => {
+    return isEmpty("overview", node) && editor.value.document.nodes.size === 1;
+  }
+});
 
 const placeholderPlugins = createFor([
   { type: "title", text: "Title" },
