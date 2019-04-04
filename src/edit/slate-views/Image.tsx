@@ -57,6 +57,7 @@ class Image extends React.Component<IAppProps, IAppState> {
   }
 
   onClick = event => {};
+
   onMouseOver = event =>
     !this.props.isSelected && this.setState({ isHovered: true });
   outMouseOut = () => this.setState({ isHovered: false });

@@ -229,7 +229,8 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
   handleClick = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
-  handleClose = e => {
+
+  handleClose = () => {
     this.setState({ anchorEl: null });
   };
 }
