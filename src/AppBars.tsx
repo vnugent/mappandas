@@ -1,7 +1,6 @@
 import * as React from "react";
 import {
   AppBar,
-  Typography,
   Button,
   Toolbar,
   Menu,
@@ -9,7 +8,8 @@ import {
   withStyles,
   createStyles,
   Theme,
-  IconButton
+  IconButton,
+  Divider
 } from "@material-ui/core";
 import { MoreVert } from "@material-ui/icons";
 
@@ -51,6 +51,10 @@ const styles = (theme: Theme) =>
     button: {
       //    marginLeft: theme.spacing.unit,
       marginRight: theme.spacing.unit
+    },
+    hamburgerMenuItem: {
+      paddingLeft: theme.spacing.unit * 6,
+      paddingRight: theme.spacing.unit * 6
     }
   });
 
@@ -152,6 +156,9 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 <sup>beta</sup>
               </span>
             </Typography> */}
+            <div className={classes.padding} />
+            {!readonly && 'Draft'}
+            <div className={classes.padding} />
             {!readonly && (
               <Button
                 variant="outlined"
@@ -161,19 +168,9 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 disabled={isPublishable}
                 onClick={onPublishClick}
               >
-                Ready to Publish
+                Publish
               </Button>
             )}
-            <div className={classes.padding} />
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="small"
-              className={classes.button}
-              onClick={onCreateNewClick}
-            >
-              New Story
-            </Button>
             <IconButton
               aria-label="More"
               aria-owns={open ? "long-menu" : undefined}
@@ -189,8 +186,39 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={this.handleClose}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
             >
-              <MenuItem onClick={this.handleClose}> About </MenuItem>
+              <MenuItem
+                className={classes.hamburgerMenuItem}
+                onClick={() => {
+                  this.setState({ anchorEl: null });
+                  onCreateNewClick();
+                }}
+              >
+                New story
+              </MenuItem>
+              <Divider />
+
+              <MenuItem
+                className={classes.hamburgerMenuItem}
+                onClick={this.handleClose}
+                component="a"
+                href="https://mappandas.com"
+              >
+                About
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                className={classes.hamburgerMenuItem}
+                onClick={this.handleClose}
+                component="a"
+                href="https://app.mappandas.com/p/3f8bb7b0-5659-11e9-8dfe-51c68035038c"
+              >
+                24 hours in Bogotá, Colombia
+              </MenuItem>
             </Menu>
           </Toolbar>
         </AppBar>
@@ -201,6 +229,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
   handleClick = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
+
   handleClose = () => {
     this.setState({ anchorEl: null });
   };

@@ -1,6 +1,4 @@
 import { CompositeLayer, GeoJsonLayer, IconLayer } from "deck.gl";
-import { Feature, FeatureCollection } from "geojson";
-import { featureCollection } from "@turf/helpers";
 
 export default class PandaGL extends CompositeLayer {
   static defaultProps;

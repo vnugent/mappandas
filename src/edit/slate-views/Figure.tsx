@@ -8,8 +8,10 @@ const styles = (theme: Theme) =>
       margin: 0,
       paddingTop: theme.spacing.unit * 4,
       paddingBottom: theme.spacing.unit * 4,
-      paddingLeft: theme.spacing.unit * 2,
-      paddingRight: theme.spacing.unit * 2
+      [theme.breakpoints.up("md")]: {
+        paddingLeft: theme.spacing.unit * 2,
+        paddingRight: theme.spacing.unit * 2
+      }
     }
   });
 

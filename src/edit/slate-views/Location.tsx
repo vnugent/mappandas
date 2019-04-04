@@ -36,6 +36,9 @@ class Location extends React.Component<IAppProps, IAppState> {
         >
           {children}
         </Typography>
+        <hr
+          style={{ width: "45px", marginLeft: 0, border: "1px solid #eeeeee" }}
+        />
       </div>
     );
   }
