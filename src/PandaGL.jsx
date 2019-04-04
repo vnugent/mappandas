@@ -75,14 +75,14 @@ export default class PandaGL extends CompositeLayer {
     const points = features.filter(
       f => f.geometry.type.toUpperCase() === "POINT"
     );
-    const polygons = features.filter(
-      f =>
-        f.geometry.type.toUpperCase() === "POLYGON" ||
-        f.geometry.type.toUpperCase() === "LINESTRING"
-    );
+    // const polygons = features.filter(
+    //   f =>
+    //     f.geometry.type.toUpperCase() === "POLYGON" ||
+    //     f.geometry.type.toUpperCase() === "LINESTRING"
+    // );
     return [
-      points.length > 0 && this.makePointLayer(points),
-      polygons.length > 0 && this.makeGeoJSONLayer(featureCollection(polygons))
+      points.length > 0 && this.makePointLayer(points)
+      //polygons.length > 0 && this.makeGeoJSONLayer(featureCollection(polygons))
     ];
   }
 }

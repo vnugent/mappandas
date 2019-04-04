@@ -20,7 +20,7 @@ const styles = (theme: Theme) =>
         paddingTop: theme.spacing.unit * 6
       },
       letterSpacing: "-0.6px",
-      fontWeight: 400,
+      fontWeight: 500,
       fontSize: "2.875em",
       lineHeight: "1.5em"
     }
