@@ -157,12 +157,12 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
               </span>
             </Typography> */}
             <div className={classes.padding} />
-            {!readonly && 'Draft'}
+            {!readonly && "Draft"}
             <div className={classes.padding} />
             {!readonly && (
               <Button
                 variant="outlined"
-                color="primary"
+                color="secondary"
                 size="small"
                 className={classes.button}
                 disabled={isPublishable}
@@ -175,7 +175,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
               aria-label="More"
               aria-owns={open ? "long-menu" : undefined}
               aria-haspopup="true"
-              color="default"
+              color="secondary"
               onClick={this.handleClick}
             >
               <MoreVert fontSize="small" />
@@ -218,6 +218,14 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 href="https://app.mappandas.com/p/3f8bb7b0-5659-11e9-8dfe-51c68035038c"
               >
                 24 hours in Bogotá, Colombia
+              </MenuItem>
+              <MenuItem
+                className={classes.hamburgerMenuItem}
+                onClick={this.handleClose}
+                component="a"
+                href="https://app.mappandas.com/p/78079160-56fc-11e9-96e0-19185548dc28"
+              >
+                Joe Spanish's feature listings
               </MenuItem>
             </Menu>
           </Toolbar>

@@ -104,6 +104,7 @@ class App extends React.Component<IAppProps, IAppState> {
   });
 
   onNewButtonClick = () => {
+    document.title = "MapPandas - Draft";
     this.setState(this.getStateNewEdit(), () => {
       this.props.history.push("/", { dontMoveMap: true });
     });
@@ -271,6 +272,10 @@ class App extends React.Component<IAppProps, IAppState> {
   onContentChange = content => {
     const newPost = { ...this.state.post, content };
     this.setState({ post: newPost });
+    const title = content.document.nodes.first().getFirstText().text;
+    if (title) {
+        document.title = "Draft - " + title.substring(0, 120) + "...";
+    }
   };
 
   onLocationUpdateHandler = (location, editor) => {
