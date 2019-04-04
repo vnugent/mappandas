@@ -32,7 +32,7 @@ class Description extends React.Component<IAppProps, IAppState> {
         {sideToolbar}
         <Typography
           variant="h6"
-          color="textPrimary"
+          color="textSecondary"
           style={{
             fontWeight: 400,
             fontFamily: "Georgia,Cambria,Times New Roman,Times,serif"
