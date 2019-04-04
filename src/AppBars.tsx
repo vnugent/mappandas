@@ -156,6 +156,9 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 <sup>beta</sup>
               </span>
             </Typography> */}
+            <div className={classes.padding} />
+            {!readonly && 'Draft'}
+            <div className={classes.padding} />
             {!readonly && (
               <Button
                 variant="outlined"
@@ -165,19 +168,9 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 disabled={isPublishable}
                 onClick={onPublishClick}
               >
-                Ready to Publish
+                Publish
               </Button>
             )}
-            <div className={classes.padding} />
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="small"
-              className={classes.button}
-              onClick={onCreateNewClick}
-            >
-              New Story
-            </Button>
             <IconButton
               aria-label="More"
               aria-owns={open ? "long-menu" : undefined}
@@ -200,6 +193,17 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
             >
               <MenuItem
                 className={classes.hamburgerMenuItem}
+                onClick={() => {
+                  this.setState({ anchorEl: null });
+                  onCreateNewClick();
+                }}
+              >
+                New story
+              </MenuItem>
+              <Divider />
+
+              <MenuItem
+                className={classes.hamburgerMenuItem}
                 onClick={this.handleClose}
                 component="a"
                 href="https://mappandas.com"
@@ -207,7 +211,6 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 About
               </MenuItem>
               <Divider />
-
               <MenuItem
                 className={classes.hamburgerMenuItem}
                 onClick={this.handleClose}
@@ -224,7 +227,6 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
   }
 
   handleClick = event => {
-    console.log(event.currentTarget);
     this.setState({ anchorEl: event.currentTarget });
   };
   handleClose = e => {
