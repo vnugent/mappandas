@@ -46,14 +46,7 @@ export default class ShowPandaURLHandler extends React.Component<
       const slateContent = Value.fromJSON(post.content);
       post.content = Value.isValue(slateContent) ? slateContent : initialValue;
       this.props.onDataLoaded(post, editable);
-      this.updateDocumentTitle(post);
     });
-  };
-
-  updateDocumentTitle = post => {
-    if (post.title) {
-      document.title = post.title.substring(0, 80);
-    }
   };
 
   render() {

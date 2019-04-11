@@ -123,7 +123,10 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onInitialized = (_viewstate: any) => {
-    this.setState(this.getStateNewEdit());
+    this.setState(
+      this.getStateNewEdit(),
+      () => (document.title = this.state.post.title)
+    );
     this._locateMe();
   };
 
@@ -264,7 +267,6 @@ class App extends React.Component<IAppProps, IAppState> {
   onPublishClick = () => {
     const uri = `/p/${this.state.post.uuid}`;
     const { post } = this.state;
-    if (post.title) document.title = post.title.substring(0, 80);
     restClient.createPost(post).then(uuid => {
       this.setState({ share_screen: true });
       this.props.history.replace(uri);
@@ -276,7 +278,7 @@ class App extends React.Component<IAppProps, IAppState> {
     const newPost = { ...this.state.post, content, title };
     this.setState({ post: newPost });
     if (title) {
-        document.title = "Draft - " + title.substring(0, 120);
+      document.title = "Draft - " + title.substring(0, 80);
     }
   };
 

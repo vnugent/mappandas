@@ -5,11 +5,13 @@ const port = process.env.PORT || 3000;
 const path = require("path");
 const fs = require("fs");
 
-const API_SERVER_ENV = process.env.API_SERVER;
+const SSR_API_SERVER = process.env.SSR_API_SERVER;
 const client = axios.create({
-  baseURL: API_SERVER_ENV ? API_SERVER_ENV : "http://localhost:8000"
+  baseURL: SSR_API_SERVER ? SSR_API_SERVER : "http://localhost:8000"
   /* other custom settings */
 });
+
+console.log("API server", client.defaults);
 
 app.get("/p/:uuid", function(request, response) {
   const headers = {
@@ -28,8 +30,8 @@ app.get("/p/:uuid", function(request, response) {
           const title = backendResponse.data["title"];
 
           result = data.replace(
-            /\$OG_TITLE/g,
-            title ? title.substring(0, 160) : "Telling story with maps"
+            /\$TITLE/g,
+            title ? title.substring(0, 160) : "Storytelling with maps"
           );
           response.send(result);
         } else {
