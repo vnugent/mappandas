@@ -15,6 +15,7 @@ export interface IPost {
     uuid: string,
     bbox: Bbox0;
     userid: string;
+    title: string;
     content: any; // Slate 'value'
 }
 
