@@ -1,12 +1,9 @@
 import axios from "axios";
-import { IPanda, IPost } from "./types/CustomMapTypes";
-import * as GeoHelper from "./GeoHelper";
-import { FeatureCollection2 } from "@mappandas/yelapa";
-import { RepeatOneSharp } from "@material-ui/icons";
+import { IPost } from "./types/CustomMapTypes";
+import * as Config from "./Config";
 
 export const client = axios.create({
-  baseURL: "https://api.mappandas.com"
-  //baseURL: "http://localhost:5000"
+  baseURL: Config.API_SERVER
   /* other custom settings */
 });
 
@@ -26,23 +23,6 @@ export const createPost = async (post: IPost): Promise<string> => {
   }
   return Promise.reject("Unable to create post");
 };
-
-// export const create = (data: IPanda | FeatureCollection2): void => {
-//   const headers = {
-//     "Content-Type": "application/json"
-//   };
-//   let newPanda;
-
-//   if (data.hasOwnProperty("uuid")) {
-//     newPanda = data as IPanda;
-//   } else {
-//     newPanda = GeoHelper.NEW_PANDA();
-//     newPanda.geojson = data as FeatureCollection2;
-//     newPanda.bbox = GeoHelper.bboxFromGeoJson(newPanda.geojson);
-//   }
-//   const restPayload = GeoHelper.stringify(newPanda);
-//   client.post(`/p/${newPanda.uuid}`, restPayload, { headers: headers });
-// };
 
 export const get = async (uuid: string): Promise<IPost> => {
   try {

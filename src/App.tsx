@@ -56,6 +56,7 @@ const styles = (theme: Theme) =>
 const NEW_POST = (): IPost => ({
   uuid: uuidv1(),
   bbox: [0, 0, 0, 0],
+  title: "",
   content: initialValue,
   userid: uuidv1()
 });
@@ -263,6 +264,7 @@ class App extends React.Component<IAppProps, IAppState> {
   onPublishClick = () => {
     const uri = `/p/${this.state.post.uuid}`;
     const { post } = this.state;
+    if (post.title) document.title = post.title.substring(0, 80);
     restClient.createPost(post).then(uuid => {
       this.setState({ share_screen: true });
       this.props.history.replace(uri);
@@ -270,11 +272,11 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onContentChange = content => {
-    const newPost = { ...this.state.post, content };
-    this.setState({ post: newPost });
     const title = content.document.nodes.first().getFirstText().text;
+    const newPost = { ...this.state.post, content, title };
+    this.setState({ post: newPost });
     if (title) {
-        document.title = "Draft - " + title.substring(0, 120) + "...";
+        document.title = "Draft - " + title.substring(0, 120);
     }
   };
 

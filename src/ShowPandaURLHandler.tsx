@@ -46,21 +46,13 @@ export default class ShowPandaURLHandler extends React.Component<
       const slateContent = Value.fromJSON(post.content);
       post.content = Value.isValue(slateContent) ? slateContent : initialValue;
       this.props.onDataLoaded(post, editable);
-      this.updateOGTags(post.content);
+      this.updateDocumentTitle(post);
     });
   };
 
-  updateOGTags = content => {
-    const title = content.document.nodes.first().getFirstText().text;
-    const ogTitle =
-    document && document.querySelector('meta[property="og:title"]');
-
-    if (title && title.length > 10) {
-      const str = title.substring(0, 120) + "...";
-
-      console.log("#ogtitale", ogTitle);
-      ogTitle && ogTitle.setAttribute("content", str);
-      document.title = str;
+  updateDocumentTitle = post => {
+    if (post.title) {
+      document.title = post.title.substring(0, 80);
     }
   };
 
