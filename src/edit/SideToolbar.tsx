@@ -4,7 +4,7 @@ import {
   AddCircleOutlined,
   CancelOutlined,
   PhotoCameraOutlined,
-  LocationOnRounded,
+  LocationOnRounded
 } from "@material-ui/icons";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 import classnames from "classnames";
@@ -54,8 +54,8 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
     if (!focusBlock) {
       return null;
     }
-    const text = focusBlock.nodes.first().getFirstText().text;
-    if (focusBlock.key !== dataKey || text) {
+    const text = focusBlock.text;
+    if (focusBlock.key !== dataKey || text || focusBlock.nodes.some(node => node.type === "link")) {
       // only show toolbar at focus and empty node
       return null;
     }
@@ -76,7 +76,13 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
             </IconButton>
           </Tooltip>
           {!collapse &&
-            ToolbarExpanded(classes, this.toggle, this.onUploadDlgOpen, handlers, dataKey)}
+            ToolbarExpanded(
+              classes,
+              this.toggle,
+              this.onUploadDlgOpen,
+              handlers,
+              dataKey
+            )}
         </div>
       </>
     );
@@ -86,14 +92,22 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
   onUploadDlgOpen = () =>
     this.setState({ openPhotoDialog: true, collapse: true });
 }
-const ToolbarExpanded = (classes, toggle, insertImageClick, handlers, dataKey) => {
+const ToolbarExpanded = (
+  classes,
+  toggle,
+  insertImageClick,
+  handlers,
+  dataKey
+) => {
   return (
     <div className={classnames(classes.root, classes.active)}>
-          <ImageUploadButton classes={classes} onUploaded={(file)=>{
-            toggle();
-            handlers.insertImage(dataKey, file);
-        }}>
-      </ImageUploadButton>
+      <ImageUploadButton
+        classes={classes}
+        onUploaded={file => {
+          toggle();
+          handlers.insertImage(dataKey, file);
+        }}
+      />
       <Tooltip title="Add a location card" aria-label="Add a location card">
         <IconButton
           className={classes.menuButton}
@@ -103,7 +117,7 @@ const ToolbarExpanded = (classes, toggle, insertImageClick, handlers, dataKey) =
             handlers.onAdd(dataKey);
           }}
         >
-          <LocationOnRounded fontSize="large"/>
+          <LocationOnRounded fontSize="large" />
         </IconButton>
       </Tooltip>
     </div>

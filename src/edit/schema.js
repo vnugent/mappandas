@@ -15,6 +15,14 @@ const schema = {
       }
     }
   },
+  inlines: {
+    link: {
+      //   isVoid: true
+    },
+    normalize: (editor, { code, node, child, index }) => {
+      console.log("##normalize inlines ", code, node, child, index);
+    }
+  },
   blocks: {
     figure: {
       nodes: [

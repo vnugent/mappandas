@@ -29,10 +29,10 @@ class Location extends React.Component<IAppProps, IAppState> {
         {...attributes}
       >
         <Typography
-          variant="h4"
+          variant="h5"
           color="textPrimary"
           gutterBottom
-          style={{ fontFamily: "serif", fontWeight: 600 }}
+          style={{ fontFamily: "Roboto, sans-serif", fontWeight: 500 }}
         >
           {children}
         </Typography>

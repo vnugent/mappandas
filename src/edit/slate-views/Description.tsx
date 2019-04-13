@@ -35,7 +35,9 @@ class Description extends React.Component<IAppProps, IAppState> {
           color="textSecondary"
           style={{
             fontWeight: 400,
-            fontFamily: "Georgia,Cambria,Times New Roman,Times,serif"
+            fontFamily: "Roboto, sans-serif",
+            lineHeight: 1.8,
+            letterSpacing: 0.8
           }}
         >
           {children}

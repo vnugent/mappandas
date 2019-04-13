@@ -60,7 +60,7 @@ class Overview extends React.Component<IAppProps, IAppState> {
 
   myIndex = () => {
     const { editor, node } = this.props;
-    return editor.value.document.nodes.indexOf(this.props.node);
+    return editor.value.document.nodes.indexOf(node);
   };
 }
 
