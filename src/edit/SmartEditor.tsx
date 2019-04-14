@@ -60,13 +60,13 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       toolbarProps: {
         top: -10000,
         left: -10000,
-        visible: false
+        visible: false,
+        showUrlInput: false
       },
       plugins: [
         locationPlugin,
         placeholderPlugins,
         linkifyPlugin({
-          wrapCommand: "wrapLink"
           //   renderComponent: args => {
           //     console.log("#arg", args);
           //     return <div>foo</div>;
@@ -140,7 +140,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     //console.log("#onChange()", value.toJS());
 
     this.props.onContentChange(value);
-    this.updateFloatingMenu();
+    _.delay(this.updateFloatingMenu, 20);
   };
 
   printDebug = (e: any) => {
@@ -218,6 +218,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         <FloatingToolbar
           editor={editor}
           toolbarProps={this.state.toolbarProps}
+          onLinkToolbarClick={this.onLinkToolbarClick}
         />
       </React.Fragment>
     );
@@ -302,7 +303,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
   renderMark = (props, editor, next) => {
     const { children, mark, attributes } = props;
-    console.log("rendermark()", mark.toJS(), children)
+    console.log("rendermark()", mark.toJS(), children);
     switch (mark.type) {
       case "highlight":
         return (
@@ -312,30 +313,63 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         );
       case "bold":
         return <strong {...attributes}>{children}</strong>;
-        case 'italic':
-        return <em {...attributes}>{children}</em>
+      case "italic":
+        return <em {...attributes}>{children}</em>;
+      case "link":
+        return <span {...attributes}>children</span>
       default:
         return next();
     }
   };
 
   updateFloatingMenu = () => {
+    const { toolbarProps } = this.state;
+
     const { content } = this.props;
     const { fragment, selection } = content;
-
-    if (selection.isBlurred || selection.isCollapsed || fragment.text === "") {
-      this.setState({ toolbarProps: { visible: false } });
+    if (
+      (selection.isBlurred && !toolbarProps.selection) ||
+      selection.isCollapsed ||
+      fragment.text === ""
+    ) {
+      this.setState({
+        toolbarProps: { visible: false, showUrlInput: false }
+      });
       return;
     }
-
-    const native = window.getSelection();
-    const range = native.getRangeAt(0);
-    const rect = range.getBoundingClientRect();
-    const toolbarProps = {
+    var rect;
+    if (toolbarProps.showUrlInput) {
+      rect = toolbarProps.rect; // re-use previous react
+    } else {
+      const native = window.getSelection();
+      const range = native.getRangeAt(0);
+      rect = range.getBoundingClientRect();
+    }
+    const newState = Object.assign(this.state.toolbarProps, {
       visible: true,
-      rect: range.getBoundingClientRect()
-    };
-    this.setState({ toolbarProps });
+      rect: rect,
+      selection: selection.setIsFocused(true)
+    });
+    this.setState({ toolbarProps: newState });
+  };
+
+  onLinkToolbarClick = () => {
+    const { toolbarProps } = this.state;
+    const newState = Object.assign(toolbarProps, {
+      showUrlInput: !toolbarProps.showUrlInput
+    });
+    this.setState(
+      {
+        toolbarProps: newState
+      },
+      () => {
+        if (!toolbarProps.showUrlInput && toolbarProps.selection) {
+          this.editorRef
+            .select(toolbarProps.selection)
+            .command("wrapLink", "mappandas.com");
+        }
+      }
+    );
   };
 
   saveDraft = () => {
