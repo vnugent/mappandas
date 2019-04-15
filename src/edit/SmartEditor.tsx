@@ -48,7 +48,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   private timer: any;
   private editorRef: any;
   private toolbarHandler: any;
-  private floatingToolbarRef: any;
 
   constructor(props: IAppProps) {
     super(props);
@@ -71,7 +70,15 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
           //     console.log("#arg", args);
           //     return <div>foo</div>;
           //   }
-        })
+        }),
+        {
+          commands: {
+            unwrapLink(editor) {
+              console.log("#unwrap link");
+              editor.unwrapInline("link");
+            }
+          }
+        }
         // {
         //   commands: {
         //     wrapLink(editor, href) {
@@ -89,7 +96,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     };
 
     this.editorRef = React.createRef();
-    this.floatingToolbarRef = React.createRef();
   }
 
   setRef = ref => {
@@ -316,7 +322,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       case "italic":
         return <em {...attributes}>{children}</em>;
       case "link":
-        return <span {...attributes}>children</span>
+        return <span {...attributes}>children</span>;
       default:
         return next();
     }
@@ -327,6 +333,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
     const { content } = this.props;
     const { fragment, selection } = content;
+
     if (
       (selection.isBlurred && !toolbarProps.selection) ||
       selection.isCollapsed ||
@@ -355,6 +362,16 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
   onLinkToolbarClick = () => {
     const { toolbarProps } = this.state;
+
+    // if (this.state.toolbarProps.showUrlInput) {
+    //     const { content } = this.props;
+    //     const { fragment, selection } = content;
+    //     if ( toolbarProps.selection) {
+    //       console.log("#refocus");
+    //       this.editorRef.focus().select(toolbarProps.selection);
+    //     }
+    //   }
+
     const newState = Object.assign(toolbarProps, {
       showUrlInput: !toolbarProps.showUrlInput
     });
@@ -363,11 +380,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         toolbarProps: newState
       },
       () => {
-        if (!toolbarProps.showUrlInput && toolbarProps.selection) {
-          this.editorRef
-            .select(toolbarProps.selection)
-            .command("wrapLink", "mappandas.com");
-        }
+
       }
     );
   };

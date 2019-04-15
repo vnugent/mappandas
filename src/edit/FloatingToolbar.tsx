@@ -66,7 +66,6 @@ class FloatingToolbar extends React.Component<IAppProps, IAppState> {
     const { classes, toolbarProps, editor } = this.props;
     const root = window.document.getElementById("root");
     const { showUrlInput, visible } = toolbarProps;
-    console.log("floating", visible, showUrlInput);
     return (
       <Portal container={root}>
         <div
@@ -93,10 +92,28 @@ class FloatingToolbar extends React.Component<IAppProps, IAppState> {
     );
   }
 
-  onBlur = event => this.props.onLinkToolbarClick();
+  _reselect = () => {
+    const { editor, toolbarProps } = this.props;
+    //editor.select(toolbarProps.selection);
+    this.props.onLinkToolbarClick();
+  };
+
+  onBlur = value => this.onLinkEnter(value);
 
   onLinkEnter = value => {
-    this.props.onLinkToolbarClick();
+    console.log("#val", value.length);
+    const { editor, toolbarProps } = this.props;
+
+    if (value.length === 0) {
+      this._reselect();
+      return;
+    }
+
+    editor
+      .select(toolbarProps.selection)
+      .command("wrapLink", value)
+      .moveToEnd();
+    //this.props.onLinkToolbarClick(false);
   };
 
   calculatePosition = p => {
@@ -116,30 +133,31 @@ class FloatingToolbar extends React.Component<IAppProps, IAppState> {
     const { editor } = this.props;
     const { value } = editor;
     const isActive = value.activeMarks.some(mark => mark.type === type);
-    const isLink =
+    console.log("#fragment", value.inlines && value.inlines.toJS());
+    const hasLink =
       type === "link" &&
-      value.focusBlock &&
-      value.focusBlock.nodes.some(node => node.data && node.data.has("url"));
+      value.inlines &&
+      value.inlines.some(node => node.data && node.data.has("url"));
 
     return (
       <IconButton
         className={classnames(
           classes.icon,
-          isActive || isLink ? classes.iconActive : ""
+          isActive || hasLink ? classes.iconActive : ""
         )}
-        onMouseDown={event => this.onClickMark(event, type)}
+        onMouseDown={event => this.onClickMark(event, type, hasLink)}
       >
         {icon}
       </IconButton>
     );
   };
 
-  onClickMark = (event, type) => {
+  onClickMark = (event, type, hasLink) => {
     const { editor } = this.props;
     event.preventDefault();
     if (type === "link") {
-      editor.toggleMark(type);
-      this.props.onLinkToolbarClick();
+      if (hasLink) editor.unwrapInline("link");
+      else this.props.onLinkToolbarClick();
     } else {
       editor.toggleMark(type);
     }
@@ -164,7 +182,7 @@ class UrlInput extends React.Component<
     return (
       <Input
         autoFocus={true}
-        onBlur={onBlur}
+        onBlur={() => onBlur(this.state.value)}
         className={classes.urlInput}
         value={this.state.value}
         placeholder="Paste or type a link ..."
