@@ -1,15 +1,26 @@
 import * as React from "react";
+import { Tooltip, Link as A } from "@material-ui/core";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 const styles = (theme: Theme) =>
   createStyles({
-    root: {}
+    root: {},
+    tooltip: {
+      fontSize: "1em",
+      padding: theme.spacing.unit,
+      color: theme.palette.common.black,
+      backgroundColor: "#ffff8d",
+      [theme.breakpoints.up("md")]: {
+        maxWidth: "400px"
+      }
+    }
   });
 
 export interface IAppProps {
   classes?: any;
   attributes: any;
   node: any;
+  readonly: boolean;
 }
 
 export interface IAppState {}
@@ -20,14 +31,27 @@ class Link extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { attributes, children, classes, node } = this.props;
+    const { attributes, children, classes, node, readonly } = this.props;
     const { data } = node;
+    var href: string;
+    try {
+      href = new URL(data.get("url")).href;
+    } catch (error) {
+      href = "http://" + data.get("url");
+    }
 
     return (
-      <a {...attributes} href={data.get("url")}>
-        {children}
-      </a>
-    ); 
+      <Tooltip
+        {...attributes}
+        interactive
+        title={readonly ? "" : <A color="inherit" href={href} underline="always">{href}</A>}
+        classes={{ tooltip: classes.tooltip }}
+      >
+        <A color="inherit" href={href} underline="always">
+          {children}
+        </A>
+      </Tooltip>
+    );
   }
 }
 

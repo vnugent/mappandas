@@ -4,7 +4,9 @@ import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 const styles = (theme: Theme) =>
   createStyles({
-    root: {}
+    root: {
+        padding: theme.spacing.unit * 2,
+    }
   });
 
 export interface IAppProps {

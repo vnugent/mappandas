@@ -1,8 +1,10 @@
 import * as React from "react";
-import { Portal, IconButton, Input } from "@material-ui/core";
+import { Portal, IconButton, InputBase } from "@material-ui/core";
 import { Link } from "@material-ui/icons";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 import classnames from "classnames";
+import * as _ from "underscore";
+import { isValueObject } from "immutable";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -12,8 +14,8 @@ const styles = (theme: Theme) =>
       position: "absolute",
       height: "40px",
       zIndex: 1,
-      top: "500px",
-      left: "500px",
+      top: "-10000px",
+      left: "-10000px",
       marginTop: "-6px",
       opacity: 0,
       backgroundColor: "#222",
@@ -33,13 +35,17 @@ const styles = (theme: Theme) =>
     },
     iconActive: {
       color: "#4caf50"
+    },
+    iconDisabled: {
+      cursor: "not-allowed",
+      color: "grey",
+      pointerEvents: "none"
     }
   });
 
 export interface IAppProps {
   classes?: any;
   editor: any;
-  onLinkToolbarClick: () => void;
   toolbarProps: {
     visible: boolean;
     showUrlInput: boolean;
@@ -65,7 +71,7 @@ class FloatingToolbar extends React.Component<IAppProps, IAppState> {
   public render() {
     const { classes, toolbarProps, editor } = this.props;
     const root = window.document.getElementById("root");
-    const { showUrlInput, visible } = toolbarProps;
+    const { showUrlInput } = this.state;
     return (
       <Portal container={root}>
         <div
@@ -77,14 +83,19 @@ class FloatingToolbar extends React.Component<IAppProps, IAppState> {
             <UrlInput
               classes={classes}
               editor={editor}
-              onBlur={this.onBlur}
-              onEnter={this.onLinkEnter}
+              onBlur={this.processInput}
+              onEnter={this.processInput}
             />
           ) : (
             <>
-              {this.renderMarkButton("bold", <Bold_Icon />, classes)}
-              {this.renderMarkButton("italic", <Italic_Icon />, classes)}
-              {this.renderMarkButton("link", <Link />, classes)}{" "}
+              {this.renderFormatButton("bold", <Bold_Icon />, classes)}
+              {this.renderFormatButton("italic", <Italic_Icon />, classes)}
+              {this.renderFormatButton(
+                "link",
+                <Link />,
+                classes,
+                this.onClickUrl
+              )}
             </>
           )}
         </div>
@@ -92,28 +103,34 @@ class FloatingToolbar extends React.Component<IAppProps, IAppState> {
     );
   }
 
-  _reselect = () => {
+  /**
+   * Hide URL Input box.  Supply a function to be run synchronously after hiding
+   */
+  hideUrlInput = postFn => {
     const { editor, toolbarProps } = this.props;
-    //editor.select(toolbarProps.selection);
-    this.props.onLinkToolbarClick();
+    this.setState({ showUrlInput: false }, postFn);
   };
 
-  onBlur = value => this.onLinkEnter(value);
+  reselectText = () => {
+    const { editor, toolbarProps } = this.props;
+    _.delay(() => {
+      editor.select(toolbarProps.selection);
+    }, 200);
+  };
 
-  onLinkEnter = value => {
-    console.log("#val", value.length);
+  processInput = value => {
     const { editor, toolbarProps } = this.props;
 
     if (value.length === 0) {
-      this._reselect();
-      return;
+      this.hideUrlInput(this.reselectText);
+    } else {
+      this.hideUrlInput(() => {
+        editor
+          .select(toolbarProps.selection)
+          .command("wrapLink", value)
+          .moveToEnd();
+      });
     }
-
-    editor
-      .select(toolbarProps.selection)
-      .command("wrapLink", value)
-      .moveToEnd();
-    //this.props.onLinkToolbarClick(false);
   };
 
   calculatePosition = p => {
@@ -129,11 +146,21 @@ class FloatingToolbar extends React.Component<IAppProps, IAppState> {
     };
   };
 
-  renderMarkButton = (type, icon, classes) => {
+  renderFormatButton = (
+    type,
+    icon,
+    classes,
+    onClick?: (event, type, hasLink) => void
+  ) => {
     const { editor } = this.props;
     const { value } = editor;
-    const isActive = value.activeMarks.some(mark => mark.type === type);
-    console.log("#fragment", value.inlines && value.inlines.toJS());
+    const shouldDisableLink = this.shouldDisableLink(type);
+    var isActive = false;
+    try {
+      isActive = value.activeMarks.some(mark => mark.type === type);
+    } catch (error) {
+        //TODO handle https://github.com/ianstormtaylor/slate/issues/2701
+    }
     const hasLink =
       type === "link" &&
       value.inlines &&
@@ -143,23 +170,84 @@ class FloatingToolbar extends React.Component<IAppProps, IAppState> {
       <IconButton
         className={classnames(
           classes.icon,
-          isActive || hasLink ? classes.iconActive : ""
+          isActive || hasLink ? classes.iconActive : "",
+          shouldDisableLink ? classes.iconDisabled : ""
         )}
-        onMouseDown={event => this.onClickMark(event, type, hasLink)}
+        onMouseDown={event =>
+          onClick
+            ? onClick(event, type, hasLink)
+            : this.onClickFormat(event, type)
+        }
       >
         {icon}
       </IconButton>
     );
   };
 
-  onClickMark = (event, type, hasLink) => {
+  shouldDisableLink = type => {
     const { editor } = this.props;
+    const { value } = editor;
+    const { fragment } = value;
+    return (
+      type === "link" &&
+      value.focusBlock &&
+      (value.focusBlock.type === "location" ||
+        this.multipleParagraphsSelected(fragment))
+    );
+  };
+
+  multipleParagraphsSelected = fragment => {
+    const { nodes } = fragment;
+    if (
+      nodes.size > 1 &&
+      nodes.some(node => node.type === "card" || node.type === "figure")
+    ) {
+      return true;
+    }
+
+    if (nodes.size === 1) {
+      const topLevelNode = nodes.first();
+      if (topLevelNode.type === "card") {
+        if (topLevelNode.nodes.some(node => node.type === "location")) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+
+    if (fragment.text.length > 500) {
+      // too much text
+      return true;
+    }
+
+    return false;
+  };
+
+  firstLine = () => {
+    const { editor } = this.props;
+    const { value } = editor;
+    const lineIndex = editor.value.document.nodes.indexOf(value.focusBlock);
+    return lineIndex === 0 ? true : false;
+  };
+
+  onClickFormat = (event, type) => {
     event.preventDefault();
-    if (type === "link") {
-      if (hasLink) editor.unwrapInline("link");
-      else this.props.onLinkToolbarClick();
+
+    const { editor } = this.props;
+    editor.toggleMark(type);
+  };
+
+  onClickUrl = (event, type, hasLink: boolean) => {
+    if (type !== "link") {
+      return;
+    }
+    event.preventDefault();
+
+    if (hasLink) {
+      this.props.editor.unwrapInline("link");
     } else {
-      editor.toggleMark(type);
+      this.setState({ showUrlInput: true });
     }
   };
 }
@@ -180,7 +268,7 @@ class UrlInput extends React.Component<
   render() {
     const { classes, onBlur } = this.props;
     return (
-      <Input
+      <InputBase
         autoFocus={true}
         onBlur={() => onBlur(this.state.value)}
         className={classes.urlInput}

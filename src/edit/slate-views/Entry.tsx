@@ -45,6 +45,8 @@ const styles = (theme: Theme) =>
   });
 
 export interface IAppProps {
+  isFocused: boolean;
+  node: any;
   classes?: any;
   readonly: boolean;
   attributes: any;
@@ -69,22 +71,23 @@ class Entry extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-
-    const { attributes, children, classes, editor, readonly } = this.props;
+    const {
+      attributes,
+      children,
+      classes,
+      editor,
+      readonly,
+      isFocused,
+      node
+    } = this.props;
     const { hoverClass } = this.state;
 
     if (!editor.value) {
-        return null;
-    }
-    const parentOfinFocus =
-      editor.value &&
-      editor.value.document.getParent(editor.value.focusBlock.key);
+      return null;
+    }    const { value } = editor;
 
-    const active =
-      parentOfinFocus && parentOfinFocus.key === attributes["data-key"];
-
-    const emptyLocationText =
-      editor.value.focusBlock.getFirstText().text.trim() === "";
+   
+    const emptyLocationText = node.text === "";
 
     return (
       <div
@@ -92,12 +95,12 @@ class Entry extends React.Component<IAppProps, IAppState> {
         className={classnames(
           classes.root,
           hoverClass,
-          active ? classes.active : ""
+          isFocused ? classes.active : ""
         )}
         onMouseOver={this.mouseOver}
         onMouseLeave={this.mouseLeave}
       >
-        {emptyLocationText && active && (
+        {emptyLocationText && isFocused && (
           <span className={classes.suggestion} contentEditable={false}>
             Type a location (Ex. Portland) and hit Enter
           </span>

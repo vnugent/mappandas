@@ -16,8 +16,15 @@ const styles = (theme: Theme) =>
       position: "absolute",
       display: "flex",
       zIndex: 1000,
-      marginLeft: -theme.spacing.unit * 8.5,
+      //left:"-20px",
+      left: -theme.spacing.unit * 8.5,
       marginTop: -12
+    },
+    tooltip: {
+      fontSize: "1em",
+      padding: theme.spacing.unit
+      //color: theme.palette.common.black,
+      //backgroundColor: "#ffff8d",
     },
     active: {
       background: "rgba(255,255,255,0.85)",
@@ -55,7 +62,11 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
       return null;
     }
     const text = focusBlock.text;
-    if (focusBlock.key !== dataKey || text || focusBlock.nodes.some(node => node.type === "link")) {
+    if (
+      focusBlock.key !== dataKey ||
+      text ||
+      focusBlock.nodes.some(node => node.type === "link")
+    ) {
       // only show toolbar at focus and empty node
       return null;
     }
@@ -66,6 +77,7 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
             title="Add a new location or image "
             aria-label="Add a new location or image"
             placement="bottom-end"
+            classes={{ tooltip: classes.tooltip }}
           >
             <IconButton color="secondary" onClick={this.toggle}>
               {collapse ? (
@@ -108,7 +120,11 @@ const ToolbarExpanded = (
           handlers.insertImage(dataKey, file);
         }}
       />
-      <Tooltip title="Add a location card" aria-label="Add a location card">
+      <Tooltip
+        title="Add a location card"
+        aria-label="Add a location card"
+        classes={{ tooltip: classes.tooltip }}
+      >
         <IconButton
           className={classes.menuButton}
           aria-label="New entry"

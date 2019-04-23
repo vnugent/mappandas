@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Editor } from "slate-react";
-import { Range } from "slate";
 import * as _ from "underscore";
 import { linkifyPlugin } from "@mercuriya/slate-linkify";
 
@@ -143,7 +142,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
   onChange = ({ value }) => {
     if (this.props.readonly) return;
-    //console.log("#onChange()", value.toJS());
 
     this.props.onContentChange(value);
     _.delay(this.updateFloatingMenu, 20);
@@ -224,7 +222,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         <FloatingToolbar
           editor={editor}
           toolbarProps={this.state.toolbarProps}
-          onLinkToolbarClick={this.onLinkToolbarClick}
         />
       </React.Fragment>
     );
@@ -241,17 +238,10 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       />
     );
     switch (node.type) {
-      case "title":
-        return (
-          <Title
-            attributes={attributes}
-            children={children}
-            sideToolbar={sideToolbar}
-          />
-        );
       case "overview":
         return (
           <Overview
+            isFocused={isFocused}
             attributes={attributes}
             node={node}
             editor={editor}
@@ -270,6 +260,8 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       case "card":
         return (
           <Entry
+            isFocused={isFocused}
+            node={node}
             attributes={attributes}
             children={children}
             handlers={this.toolbarHandler}
@@ -300,7 +292,14 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
       case "link":
         if (!node || node.text === "") return next();
-        return <Link attributes={attributes} children={children} node={node} />;
+        return (
+          <Link
+            attributes={attributes}
+            children={children}
+            node={node}
+            readonly={this.props.readonly}
+          />
+        );
 
       default:
         return next();
@@ -309,7 +308,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
   renderMark = (props, editor, next) => {
     const { children, mark, attributes } = props;
-    console.log("rendermark()", mark.toJS(), children);
     switch (mark.type) {
       case "highlight":
         return (
@@ -321,8 +319,13 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
         return <strong {...attributes}>{children}</strong>;
       case "italic":
         return <em {...attributes}>{children}</em>;
-      case "link":
-        return <span {...attributes}>children</span>;
+      //   case "link":
+      //     return (
+      //       <span {...attributes}>
+      //         {" "}
+      //         {" "}
+      //       </span>
+      //     );
       default:
         return next();
     }
@@ -333,7 +336,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
     const { content } = this.props;
     const { fragment, selection } = content;
-
     if (
       (selection.isBlurred && !toolbarProps.selection) ||
       selection.isCollapsed ||
@@ -344,45 +346,22 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       });
       return;
     }
+
     var rect;
-    if (toolbarProps.showUrlInput) {
+    if (toolbarProps.rect) {
       rect = toolbarProps.rect; // re-use previous react
     } else {
       const native = window.getSelection();
       const range = native.getRangeAt(0);
       rect = range.getBoundingClientRect();
     }
+
     const newState = Object.assign(this.state.toolbarProps, {
       visible: true,
       rect: rect,
       selection: selection.setIsFocused(true)
     });
     this.setState({ toolbarProps: newState });
-  };
-
-  onLinkToolbarClick = () => {
-    const { toolbarProps } = this.state;
-
-    // if (this.state.toolbarProps.showUrlInput) {
-    //     const { content } = this.props;
-    //     const { fragment, selection } = content;
-    //     if ( toolbarProps.selection) {
-    //       console.log("#refocus");
-    //       this.editorRef.focus().select(toolbarProps.selection);
-    //     }
-    //   }
-
-    const newState = Object.assign(toolbarProps, {
-      showUrlInput: !toolbarProps.showUrlInput
-    });
-    this.setState(
-      {
-        toolbarProps: newState
-      },
-      () => {
-
-      }
-    );
   };
 
   saveDraft = () => {
