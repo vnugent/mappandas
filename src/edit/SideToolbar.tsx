@@ -74,8 +74,8 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
       <>
         <div className={classes.toolFab} contentEditable={false}>
           <Tooltip
-            title="Add a new location or image "
-            aria-label="Add a new location or image"
+            title="Add a new drop pin or image "
+            aria-label="Add a new drop pin or image"
             placement="bottom-end"
             classes={{ tooltip: classes.tooltip }}
           >
@@ -121,8 +121,8 @@ const ToolbarExpanded = (
         }}
       />
       <Tooltip
-        title="Add a location card"
-        aria-label="Add a location card"
+        title="Add a drop pin"
+        aria-label="Add a drop pin"
         classes={{ tooltip: classes.tooltip }}
       >
         <IconButton

@@ -5,7 +5,7 @@ import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-        padding: theme.spacing.unit * 2,
+      padding: theme.spacing.unit * 2
     }
   });
 
@@ -26,10 +26,7 @@ class Location extends React.Component<IAppProps, IAppState> {
   public render() {
     const { attributes, children, classes } = this.props;
     return (
-      <div
-        className={classes.root}
-        {...attributes}
-      >
+      <div className={classes.root} {...attributes}>
         <Typography
           variant="h5"
           color="textPrimary"
