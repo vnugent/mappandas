@@ -11,17 +11,17 @@ const onBackspace = (event: any, editor: any, next) => {
       return;
     }
   }
-  if (
-    type === "overview" &&
-    selection.focus.offset === 0 &&
-    selection.isCollapsed
-  ) {
-    const prev = value.document.getPreviousSibling(value.startBlock.key);
-    if (prev && prev.type === "card") {
-      event.preventDefault();
-      return;
-    }
-  }
+//   if (
+//     type === "overview" &&
+//     selection.focus.offset === 0 &&
+//     selection.isCollapsed
+//   ) {
+//     const prev = value.document.getPreviousSibling(value.startBlock.key);
+//     if (prev && prev.type === "card") {
+//       event.preventDefault();
+//       return;
+//     }
+//   }
   return next();
 };
 

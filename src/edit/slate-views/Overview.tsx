@@ -27,6 +27,7 @@ const styles = (theme: Theme) =>
   });
 
 export interface IAppProps {
+  isFocused: boolean;
   classes?: any;
   attributes: any;
   sideToolbar: any;
@@ -44,8 +45,7 @@ class Overview extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { children, classes, attributes } = this.props;
-
+    const { children, classes, attributes, isFocused } = this.props;
     const firstLine = this.myIndex() === 0;
     return (
       <div
@@ -60,7 +60,7 @@ class Overview extends React.Component<IAppProps, IAppState> {
 
   myIndex = () => {
     const { editor, node } = this.props;
-    return editor.value.document.nodes.indexOf(this.props.node);
+    return editor.value.document.nodes.indexOf(node);
   };
 }
 

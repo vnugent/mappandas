@@ -8,18 +8,18 @@ const onEnter = ({ event, editor, next }) => {
   const root = value.document.nodes;
 
   const type = value.startBlock.type;
-  if (type === "title") {
-    const overview = root.find(v => v.type === "overview");
-    if (overview) {
-      const textNode = overview.getFirstText();
-      return editor.moveToRangeOfNode(textNode);
-    }
-
-    return editor.insertBlock(F.createOverview());
-  }
-  if (type === "overview") {
-    return next();
-  }
+//   if (type === "title") {
+//     const overview = root.find(v => v.type === "overview");
+//     if (overview) {
+//       const textNode = overview.getFirstText();
+//       return editor.moveToRangeOfNode(textNode);
+//     }
+//     return next();
+//     //return editor.insertBlock(F.createOverview());
+//   }
+//   if (type === "overview") {
+//     return next();
+//   }
 
   // insert new paragraph after Figure
   if (type === "caption" || type === "image") {

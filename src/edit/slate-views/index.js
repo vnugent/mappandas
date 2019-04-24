@@ -6,7 +6,7 @@ import Description from "./Description";
 import Image from "./Image";
 import Caption from "./Caption";
 import Figure from "./Figure";
-
+import Link from "./Link";
 export {
   Entry,
   Title,
@@ -15,5 +15,6 @@ export {
   Description,
   Image,
   Caption,
-  Figure
+  Figure,
+  Link
 };

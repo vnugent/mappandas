@@ -290,6 +290,7 @@ class App extends React.Component<IAppProps, IAppState> {
     if (geojson.features.length === 0) {
       this.setState({ geojson });
     } else {
+      console.log("#geojson", geojson);
       const { width, height } = this.getMapDivDimensions();
       const bbox = GeoHelper.bboxFromGeoJson(geojson);
       const newViewstate = Object.assign(

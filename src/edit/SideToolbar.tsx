@@ -4,7 +4,7 @@ import {
   AddCircleOutlined,
   CancelOutlined,
   PhotoCameraOutlined,
-  LocationOnRounded,
+  LocationOnRounded
 } from "@material-ui/icons";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 import classnames from "classnames";
@@ -16,8 +16,15 @@ const styles = (theme: Theme) =>
       position: "absolute",
       display: "flex",
       zIndex: 1000,
-      marginLeft: -theme.spacing.unit * 8.5,
+      //left:"-20px",
+      left: -theme.spacing.unit * 8.5,
       marginTop: -12
+    },
+    tooltip: {
+      fontSize: "1em",
+      padding: theme.spacing.unit
+      //color: theme.palette.common.black,
+      //backgroundColor: "#ffff8d",
     },
     active: {
       background: "rgba(255,255,255,0.85)",
@@ -54,8 +61,12 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
     if (!focusBlock) {
       return null;
     }
-    const text = focusBlock.nodes.first().getFirstText().text;
-    if (focusBlock.key !== dataKey || text) {
+    const text = focusBlock.text;
+    if (
+      focusBlock.key !== dataKey ||
+      text ||
+      focusBlock.nodes.some(node => node.type === "link")
+    ) {
       // only show toolbar at focus and empty node
       return null;
     }
@@ -63,9 +74,10 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
       <>
         <div className={classes.toolFab} contentEditable={false}>
           <Tooltip
-            title="Add a new location or image "
-            aria-label="Add a new location or image"
+            title="Add a new drop pin or image "
+            aria-label="Add a new drop pin or image"
             placement="bottom-end"
+            classes={{ tooltip: classes.tooltip }}
           >
             <IconButton color="secondary" onClick={this.toggle}>
               {collapse ? (
@@ -76,7 +88,13 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
             </IconButton>
           </Tooltip>
           {!collapse &&
-            ToolbarExpanded(classes, this.toggle, this.onUploadDlgOpen, handlers, dataKey)}
+            ToolbarExpanded(
+              classes,
+              this.toggle,
+              this.onUploadDlgOpen,
+              handlers,
+              dataKey
+            )}
         </div>
       </>
     );
@@ -86,15 +104,27 @@ class SideToolbar extends React.Component<SideToolbarProps, S> {
   onUploadDlgOpen = () =>
     this.setState({ openPhotoDialog: true, collapse: true });
 }
-const ToolbarExpanded = (classes, toggle, insertImageClick, handlers, dataKey) => {
+const ToolbarExpanded = (
+  classes,
+  toggle,
+  insertImageClick,
+  handlers,
+  dataKey
+) => {
   return (
     <div className={classnames(classes.root, classes.active)}>
-          <ImageUploadButton classes={classes} onUploaded={(file)=>{
-            toggle();
-            handlers.insertImage(dataKey, file);
-        }}>
-      </ImageUploadButton>
-      <Tooltip title="Add a location card" aria-label="Add a location card">
+      <ImageUploadButton
+        classes={classes}
+        onUploaded={file => {
+          toggle();
+          handlers.insertImage(dataKey, file);
+        }}
+      />
+      <Tooltip
+        title="Add a drop pin"
+        aria-label="Add a drop pin"
+        classes={{ tooltip: classes.tooltip }}
+      >
         <IconButton
           className={classes.menuButton}
           aria-label="New entry"
@@ -103,7 +133,7 @@ const ToolbarExpanded = (classes, toggle, insertImageClick, handlers, dataKey) =
             handlers.onAdd(dataKey);
           }}
         >
-          <LocationOnRounded fontSize="large"/>
+          <LocationOnRounded fontSize="large" />
         </IconButton>
       </Tooltip>
     </div>

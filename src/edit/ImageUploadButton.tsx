@@ -61,7 +61,11 @@ export default class ImageUploadButton extends React.Component<
           type="file"
           onChange={this._onUpload}
         />
-        <Tooltip title="Add an image" aria-label="Add an image">
+        <Tooltip
+          title="Add an image"
+          aria-label="Add an image"
+          classes={{ tooltip: classes.tooltip }}
+        >
           <IconButton className={classes.menuButton} onClick={this.onClick}>
             <CameraIcon fontSize="large" />
           </IconButton>

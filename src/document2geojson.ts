@@ -1,5 +1,6 @@
 import { Feature, FeatureCollection } from "geocoder";
 import { Block, Data } from "slate";
+import * as helpers from "@turf/helpers";
 
 import { geocoder_lookup1 } from "./Mapbox";
 
@@ -25,13 +26,13 @@ export const handleCurrentLocationUpdate = async (location, editor) => {
     // text hasn't changed
     return;
   }
-  console.log(" - location text has changed looking up", text);
-  const feature = await geocoder_lookup1(text);
-  console.log("   result ", feature);
+  console.log(" - Location text has changed. Looking up ", text);
+  const geocoderFeature = await geocoder_lookup1(text);
+  const feature = helpers.feature(geocoderFeature.geometry);
   const newLoc = Block.create({
     type: "location",
     nodes: location.nodes,
-    data: { text, feature }
+    data: { text, feature: JSON.stringify(feature) }
   });
   editor.setNodeByKey(location.key, newLoc);
   return Promise.resolve();
@@ -46,14 +47,12 @@ export const documentToGeojson = (document): FeatureCollection => {
   };
 };
 
-
-
 const listToFeatures = (cards): Feature[] => {
   return cards
     .filter(entry => entry.nodes.first().data.has("feature"))
     .map(entry => {
       const data = entry.nodes.first().data;
-      const feature = data.get("feature");
+      const feature = JSON.parse(data.get("feature"));
 
       feature.properties = {
         name: data.get("text"),
