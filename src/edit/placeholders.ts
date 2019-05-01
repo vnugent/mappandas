@@ -10,7 +10,7 @@ const createFor = (placeholders: placeholder[]): any[] => {
     return new PlaceholderPlugin({
       placeholder: placeholder.text,
       when: (editor, node) => {
-        return isEmpty(placeholder.type, node) && isFirstLine(editor, node);
+        return !editor.props.readOnly && isEmpty(placeholder.type, node) && isFirstLine(editor, node);
       }
     });
   });

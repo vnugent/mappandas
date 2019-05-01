@@ -274,7 +274,12 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onContentChange = content => {
-    const title = content.document.nodes.first().getFirstText().text;
+    // get text from first paragraph
+    var title = content.document.nodes.first().getFirstText().text;
+    if (!title) {
+        // not found so let's use whatever text available
+      title = content.document.text.substring(0, 200);
+    }
     const newPost = { ...this.state.post, content, title };
     this.setState({ post: newPost });
     if (title) {

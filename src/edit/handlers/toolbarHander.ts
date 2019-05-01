@@ -3,7 +3,6 @@ import { FeatureCollection2 } from "@mappandas/yelapa";
 import * as _ from "underscore";
 import { Block, Text } from "slate";
 
-import { toGeojson } from "./deserializers";
 import addLocation from "../actions/addLocation";
 import { uploadImage } from "../ImageUtils";
 
@@ -18,17 +17,18 @@ const onAdd = (key: number, editor: any) => {
   addLocation(editor);
 };
 
-const insertImageHandler = (key: number, imageData, editor: any) => {
+const insertImageHandler = (
+  key: number,
+  imageData,
+  editor: any,
+  uuid: string
+) => {
   //TODO
   // insert photo at key
-  editor.command(insertImage, imageData);
+  editor.command(insertImage, imageData, uuid);
 };
 
-const insertImage = (editor, src, target) => {
-  if (target) {
-    editor.select(target);
-  }
-
+const insertImage = (editor, src, uuid) => {
   const image = Block.create({
     type: "image",
     data: { src }
@@ -41,15 +41,23 @@ const insertImage = (editor, src, target) => {
     nodes: [image, caption]
   });
 
-  uploadImage(src)
+  const options = {
+    context: {
+      uuid: uuid
+    }
+  };
+  uploadImage(src, options)
     .then(url => {
-      editor.setNodeByKey(image.key, {
+      editor.insertBlock(figure).setNodeByKey(image.key, {
         type: "image",
         data: { url }
       });
     })
-    .catch(reason => console.log("Image upload error", reason));
-  editor.insertBlock(figure);
+    .catch(reason => {
+      window.alert(
+        "Oops... something went wrong while uploading the image. Please try again!"
+      );
+    });
 };
 
 export const create = (
@@ -61,6 +69,6 @@ export const create = (
     onAdd: (key: number) => onAdd(key, editor),
     onDelete: (key: number) => onDelete(key, uuid, fn, editor),
     insertImage: (key: number, imageData: any) =>
-      insertImageHandler(key, imageData, editor)
+      insertImageHandler(key, imageData, editor, uuid)
   };
 };
