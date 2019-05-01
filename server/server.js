@@ -28,7 +28,6 @@ app.get("/p/:uuid", function(request, response) {
       .then(backendResponse => {
         if (backendResponse.status === 200) {
           const title = backendResponse.data["title"];
-
           result = data.replace(
             /\$TITLE/g,
             title ? title.substring(0, 160) : "Storytelling with maps"

@@ -100,6 +100,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   setRef = ref => {
     this.editorRef = ref;
     if (!ref) return;
+
     this.toolbarHandler = ToolbarHandler.create(
       this.props.uuid,
       this.props.onLocationUpdate,
@@ -190,7 +191,9 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     clearInterval(this.timer);
   }
 
-  componentDidUpdate = () => {};
+  componentDidUpdate = () => {
+    //this.editorRef.setData({ uuid: this.props.uuid });
+  };
 
   public render() {
     if (!this.props.content) return null;
@@ -229,7 +232,8 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
   renderNode = (props, editor, next) => {
     const { attributes, children, node, isFocused } = props;
-    const sideToolbar = !this.props.readonly && (
+    const { readonly } = this.props;
+    const sideToolbar = !readonly && (
       <SideToolbar
         key={attributes["data-key"]}
         editor={editor}

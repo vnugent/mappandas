@@ -1,34 +1,33 @@
-import { useDropzone } from "react-dropzone";
 import axios from "axios";
 
 import * as Config from "../Config";
-
-export const loadPhotoFromDevice = (onSucess: any) => {
-  const { open } = useDropzone({
-    accept: "image/*",
-    multiple: false,
-    minSize: 16,
-    maxSize: 1024 * 500,
-    onDrop: acceptedFiles => {
-      if (acceptedFiles.length === 1) {
-        onSucess(acceptedFiles[0]);
-      }
-    }
-  });
-  open();
-};
 
 const client = axios.create({
   baseURL: "https://api.cloudinary.com/v1_1/mappandas"
 });
 
-export const uploadImage = async imageData => {
+export const uploadImage = async (imageData, options) => {
   const payload = new FormData();
   payload.append("name", "file");
   payload.append("file", imageData);
   payload.append("upload_preset", Config.CLOUDINARY_TOKEN);
+  payload.append("folder", "valencia");
+  const context = object2context(options.context);
+  options && options.context && payload.append("context", context);
 
   const res = await client.post("/image/upload", payload);
   if (res.status === 200) return res.data["secure_url"];
   return Promise.reject("Error uploading image");
+};
+
+/**
+ *  convert object to key=value separated by |
+ * @param context cloudinary context object (key:value)
+ */
+const object2context = context => {
+  return context
+    ? Object.keys(context)
+        .map(key => key + "=" + context[key])
+        .join("|")
+    : "";
 };
