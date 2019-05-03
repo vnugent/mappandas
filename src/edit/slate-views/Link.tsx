@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Tooltip, Link as A } from "@material-ui/core";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
+import * as Validator from "validate.js";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -33,18 +34,24 @@ class Link extends React.Component<IAppProps, IAppState> {
   public render() {
     const { attributes, children, classes, node, readonly } = this.props;
     const { data } = node;
-    var href: string;
-    try {
-      href = new URL(data.get("url")).href;
-    } catch (error) {
-      href = "http://" + data.get("url");
-    }
+    const urlText = data.get("url");
+
+    const isValid = isValidUrl(urlText);
+    const href = isValid ? urlText : "http://" + urlText;
 
     return (
       <Tooltip
         {...attributes}
         interactive
-        title={readonly ? "" : <A color="inherit" href={href} underline="always">{href}</A>}
+        title={
+          readonly ? (
+            ""
+          ) : (
+            <A color="inherit" target="_new" href={href} underline="always">
+              {href}
+            </A>
+          )
+        }
         classes={{ tooltip: classes.tooltip }}
       >
         <A color="inherit" href={href} underline="always">
@@ -54,5 +61,20 @@ class Link extends React.Component<IAppProps, IAppState> {
     );
   }
 }
+
+const isValidUrl = (urlText: string) => {
+  const msg = Validator.validate(
+    { website: urlText },
+    {
+      website: {
+        url: {
+          allowLocal: true,
+          schemes: [".+"]
+        }
+      }
+    }
+  );
+  return msg && true;
+};
 
 export default withStyles(styles)(Link);

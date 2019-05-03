@@ -215,7 +215,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 className={classes.hamburgerMenuItem}
                 onClick={this.handleClose}
                 component="a"
-                href="https://app.mappandas.com/p/3f8bb7b0-5659-11e9-8dfe-51c68035038c"
+                href="https://app.mappandas.com/p/eeddbed0-6c1a-11e9-b5fc-7bffb42812ac"
               >
                 24 hours in Bogotá, Colombia
               </MenuItem>
@@ -223,9 +223,9 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 className={classes.hamburgerMenuItem}
                 onClick={this.handleClose}
                 component="a"
-                href="https://app.mappandas.com/p/78079160-56fc-11e9-96e0-19185548dc28"
+                href="https://app.mappandas.com/p/0923a460-6c13-11e9-a958-3ddcfa2a9806"
               >
-                Joe Spanish's feature listings
+                Joe Spanish featured listings
               </MenuItem>
             </Menu>
           </Toolbar>
