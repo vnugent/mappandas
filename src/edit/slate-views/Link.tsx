@@ -74,7 +74,7 @@ const isValidUrl = (urlText: string) => {
       }
     }
   );
-  return msg && true;
+  return msg ? false: true;
 };
 
 export default withStyles(styles)(Link);
