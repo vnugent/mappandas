@@ -55,21 +55,17 @@ export const getLatLngFromIP = async (): Promise<LatLng> => {
 };
 
 export const bboxFromGeoJson = (geojson: FeatureCollection): Bbox0 => {
-  if (
-    geojson.features.length === 1 &&
-    geojson.features[0].geometry.type === "Point"
-  ) {
-    // turn a single point into a buffered box
-    const point = geojson.features[0].geometry.coordinates;
+  const _bbox = bbox(geojson);
+  if (_bbox[0] === _bbox[2] && _bbox[1] === _bbox[3]) {
+    // if all features are the same point bbox is single point
+    // we need to artifically create a small bboxor deck.gl will crash
     return [
-      point[0] - 0.005,
-      point[1] - 0.005,
-      point[0] + 0.005,
-      point[1] + 0.005
+        _bbox[0] - 0.005,
+        _bbox[1] - 0.005,
+        _bbox[2] + 0.005,
+        _bbox[3] + 0.005
     ];
   }
-
-  const _bbox = bbox(geojson);
   return [_bbox[0], _bbox[1], _bbox[2], _bbox[3]];
 };
 
