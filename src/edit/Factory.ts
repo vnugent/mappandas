@@ -21,3 +21,7 @@ export const createOverview = () =>
     type: "overview",
     nodes: List.of(Text.create({ type: "text" }))
   });
+
+export const createCanonical = () => Block.create({
+  type: "canonical"
+})

@@ -58,7 +58,10 @@ const NEW_POST = (): IPost => ({
   bbox: [0, 0, 0, 0],
   title: "",
   content: initialValue,
-  userid: uuidv1()
+  userid: uuidv1(),
+  meta: {
+    canonicalUrl: ""
+  }
 });
 
 interface IAppProps extends RouteComponentProps {
@@ -117,6 +120,7 @@ class App extends React.Component<IAppProps, IAppState> {
   onDataLoaded = (post: IPost, editable: boolean): void => {
     if (post.content && post.content.document) {
       this.setState({ post, mode: "share" });
+      updateDocTitle(post.content);
       const geojson = documentToGeojson(post.content.document);
       this.updateStateFromGeojson(geojson);
     }
@@ -274,17 +278,11 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onContentChange = content => {
-    // get text from first paragraph
-    var title = content.document.nodes.first().getFirstText().text;
-    if (!title) {
-        // not found so let's use whatever text available
-      title = content.document.text.substring(0, 200);
-    }
-    const newPost = { ...this.state.post, content, title };
+    const title = updateDocTitle(content);
+    const canonical = content.document.nodes.find(node => node.type === "canonical");
+    const meta = canonical && canonical.text ? { canonical: canonical.text } : {};
+    const newPost = { ...this.state.post, content, title, meta };
     this.setState({ post: newPost });
-    if (title) {
-      document.title = "Draft - " + title.substring(0, 80);
-    }
   };
 
   onLocationUpdateHandler = (location, editor) => {
@@ -295,7 +293,6 @@ class App extends React.Component<IAppProps, IAppState> {
     if (geojson.features.length === 0) {
       this.setState({ geojson });
     } else {
-      console.log("#geojson", geojson);
       const { width, height } = this.getMapDivDimensions();
       const bbox = GeoHelper.bboxFromGeoJson(geojson);
       const newViewstate = Object.assign(
@@ -318,6 +315,17 @@ class App extends React.Component<IAppProps, IAppState> {
   onHover = _.debounce((evt: IActiveFeature | null) => {
     this.setState({ hoveredFeature: evt });
   }, 100);
+}
+
+const updateDocTitle = (content) => {
+  // get text from first paragraph
+  var title = content.document.nodes.first().getFirstText().text;
+  if (!title) {
+    // not found so let's use whatever text available
+    title = content.document.text.substring(0, 200);
+  }
+  document.title = "Draft - " + title.substring(0, 80);
+  return title;
 }
 
 const RRApp = withRouter(App);

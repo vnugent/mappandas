@@ -12,7 +12,7 @@ import onDash from "./onDash";
 import onBackspace from "./onBackspace";
 import * as ToolbarHandler from "./handlers/toolbarHander";
 import SideToolbar from "./SideToolbar";
-import { LocationPlugin } from "./plugins";
+import { LocationPlugin, HtmlMetaPlugin } from "./plugins";
 import FloatingToolbar from "./FloatingToolbar";
 import {
   Title,
@@ -23,7 +23,8 @@ import {
   Image,
   Caption,
   Figure,
-  Link
+  Link,
+  CanonicalLink
 } from "./slate-views";
 
 export interface IAppProps {
@@ -54,6 +55,9 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     const locationPlugin = LocationPlugin({
       handler: this.props.onLocationUpdate
     });
+    const headerPlugin = HtmlMetaPlugin({
+      handler: this.props.onLocationUpdate
+    });
     this.state = {
       toolbarProps: {
         top: -10000,
@@ -63,6 +67,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       },
       plugins: [
         locationPlugin,
+        headerPlugin,
         placeholderPlugins,
         linkifyPlugin({
           //   renderComponent: args => {
@@ -304,7 +309,8 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
             readonly={this.props.readonly}
           />
         );
-
+      case "canonical":
+        return <CanonicalLink {...attributes} readonly={readonly} children={children} />
       default:
         return next();
     }

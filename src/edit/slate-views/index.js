@@ -7,6 +7,8 @@ import Image from "./Image";
 import Caption from "./Caption";
 import Figure from "./Figure";
 import Link from "./Link";
+import CanonicalLink from "./CanonicalLink";
+
 export {
   Entry,
   Title,
@@ -16,5 +18,6 @@ export {
   Image,
   Caption,
   Figure,
-  Link
+  Link,
+  CanonicalLink
 };

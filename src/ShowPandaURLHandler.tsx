@@ -31,7 +31,6 @@ export default class ShowPandaURLHandler extends React.Component<
     this.getGeojsonFromCacheOrRemote(uuid, editable);
   }
 
-  componentWillUnmount() {}
   shouldComponentUpdate(
     nextProps: IShowPandaProps,
     nextState: IShowPandaState
