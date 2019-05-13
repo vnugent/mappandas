@@ -1,3 +1,4 @@
 import LocationPlugin from "./LocationPlugin";
+import HtmlMetaPlugin from "./HtmlMetaPlugin";
 
-export {LocationPlugin};
+export {LocationPlugin, HtmlMetaPlugin};

@@ -215,6 +215,14 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 className={classes.hamburgerMenuItem}
                 onClick={this.handleClose}
                 component="a"
+                href="https://app.mappandas.com/p/7cc926e0-7331-11e9-bf02-255f99646d1a"
+              >
+                Top 5 Gluten Free / Plant-Based Cafes Vancouver>             
+              </MenuItem>
+              <MenuItem
+                className={classes.hamburgerMenuItem}
+                onClick={this.handleClose}
+                component="a"
                 href="https://app.mappandas.com/p/eeddbed0-6c1a-11e9-b5fc-7bffb42812ac"
               >
                 24 hours in Bogotá, Colombia

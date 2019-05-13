@@ -34,6 +34,8 @@ const schema = {
     image: {
       isVoid: true
     },
+    canonical: {
+    },
     card: {
       nodes: [
         { match: { type: "location" }, min: 1, max: 1 },
@@ -63,7 +65,11 @@ const schema = {
         }
       }
     }
-  }
+  },
+  // rules: {
+  //   nodes: [
+  //     { match: { type: "canonical" }, max: 1 }]
+  // }
 };
 
 export default schema;
