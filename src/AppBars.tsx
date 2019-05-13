@@ -217,7 +217,15 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 component="a"
                 href="https://app.mappandas.com/p/7cc926e0-7331-11e9-bf02-255f99646d1a"
               >
-                Top 5 Gluten Free / Plant-Based Cafes Vancouver>             
+                Top 5 Gluten Free / Plant-Based Cafes in Vancouver            
+              </MenuItem>
+              <MenuItem
+                className={classes.hamburgerMenuItem}
+                onClick={this.handleClose}
+                component="a"
+                href="https://app.mappandas.com/p/2a541f40-758f-11e9-8f52-a595fccd4a3f"
+              >
+                14 Once in a Lifetime Destinations            
               </MenuItem>
               <MenuItem
                 className={classes.hamburgerMenuItem}

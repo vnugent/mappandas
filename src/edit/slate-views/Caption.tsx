@@ -26,8 +26,6 @@ class Caption extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { classes, attributes, children } = this.props;
-    console.log("#children", children)
-
     return (
       <figcaption className={classes.root} {...attributes}>
         <Typography variant="caption">{children}</Typography>

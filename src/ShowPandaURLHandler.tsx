@@ -1,6 +1,7 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { Value } from "slate";
+const uuidv1 = require("uuid/v1");
 
 import { initialValue } from "./edit/slate-default";
 import * as restClient from "./RestClient";
@@ -9,7 +10,7 @@ interface IShowPandaProps extends RouteComponentProps {
   onDataLoaded: Function;
 }
 
-interface IShowPandaState {}
+interface IShowPandaState { }
 
 export const Context = React.createContext<IShowPandaState>({
   uuid: "",
@@ -19,7 +20,7 @@ export const Context = React.createContext<IShowPandaState>({
 export default class ShowPandaURLHandler extends React.Component<
   IShowPandaProps,
   IShowPandaState
-> {
+  > {
   constructor(props: IShowPandaProps) {
     super(props);
   }
@@ -44,6 +45,9 @@ export default class ShowPandaURLHandler extends React.Component<
     restClient.get(uuid).then(post => {
       const slateContent = Value.fromJSON(post.content);
       post.content = Value.isValue(slateContent) ? slateContent : initialValue;
+      if (editable) {
+        post.uuid = uuidv1();
+      }
       this.props.onDataLoaded(post, editable);
     });
   };
