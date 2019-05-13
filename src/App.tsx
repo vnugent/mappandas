@@ -119,8 +119,9 @@ class App extends React.Component<IAppProps, IAppState> {
    */
   onDataLoaded = (post: IPost, editable: boolean): void => {
     if (post.content && post.content.document) {
-      this.setState({ post, mode: "share" });
-      updateDocTitle(post.content);
+      const mode = editable ? "edit" : "share";
+      this.setState({ post, mode });
+      this.updateDocTitle(post.content);
       const geojson = documentToGeojson(post.content.document);
       this.updateStateFromGeojson(geojson);
     }
@@ -278,7 +279,7 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onContentChange = content => {
-    const title = updateDocTitle(content);
+    const title = this.updateDocTitle(content);
     const canonical = content.document.nodes.find(node => node.type === "canonical");
     const meta = canonical && canonical.text ? { canonical: canonical.text } : {};
     const newPost = { ...this.state.post, content, title, meta };
@@ -315,18 +316,20 @@ class App extends React.Component<IAppProps, IAppState> {
   onHover = _.debounce((evt: IActiveFeature | null) => {
     this.setState({ hoveredFeature: evt });
   }, 100);
+
+
+  updateDocTitle = (content) => {
+    // get text from first paragraph
+    var title = content.document.nodes.first().getFirstText().text;
+    if (!title) {
+      // not found so let's use whatever text available
+      title = content.document.text.substring(0, 200);
+    }
+    document.title = this.state.mode === "edit" ? "Draft - " : "" + title.substring(0, 80);
+    return title;
+  }
 }
 
-const updateDocTitle = (content) => {
-  // get text from first paragraph
-  var title = content.document.nodes.first().getFirstText().text;
-  if (!title) {
-    // not found so let's use whatever text available
-    title = content.document.text.substring(0, 200);
-  }
-  document.title = "Draft - " + title.substring(0, 80);
-  return title;
-}
 
 const RRApp = withRouter(App);
 export default withStyles(styles)(RRApp);
