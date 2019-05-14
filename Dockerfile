@@ -12,6 +12,6 @@ COPY src ./src
 COPY public ./public
 COPY server ./server
 
-RUN yarn install && yarn build && rm -rf node_modules src public build/static/js/*.map && cd server && yarn install
+RUN yarn install --silent --network-timeout 45000 --non-interactive && yarn build && rm -rf node_modules src public build/static/js/*.map && cd server && yarn install
 
 CMD [ "node", "./server/server.js" ]
