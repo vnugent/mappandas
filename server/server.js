@@ -13,15 +13,16 @@ const client = axios.create({
 
 console.log("API server", client.defaults.baseURL);
 
-app.get("/p/:uuid", function (request, response) {
+app.get("/p/:uuid", function(request, response) {
   const headers = {
     "Content-Type": "application/json"
   };
 
   const filePath = path.resolve(__dirname, "../build", "index.html");
-  fs.readFile(filePath, "utf8", function (err, html) {
+  fs.readFile(filePath, "utf8", function(err, html) {
     if (err) {
-      return console.log(err);
+      console.log(err);
+      return;
     }
     client
       .get(`/p/${request.params.uuid}`, headers)
@@ -32,11 +33,13 @@ app.get("/p/:uuid", function (request, response) {
           if (meta && meta.canonical) {
             output = setCanonical(html, meta.canonical);
           }
-          output = setTitles(output,
+          output = setTitles(
+            output,
             title ? title.substring(0, 80) : "Storytelling with maps"
           );
           response.send(output);
         } else {
+          console.log("API error: ", backendResponse.status);
           response.sendFile(filePath);
         }
       })
@@ -48,26 +51,19 @@ app.get("/p/:uuid", function (request, response) {
 
 app.use(express.static(path.resolve(__dirname, "../build")));
 
-app.get("*", function (request, response) {
+app.get("*", function(request, response) {
   const filePath = path.resolve(__dirname, "../build", "index.html");
   response.sendFile(filePath);
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
-
 const setCanonical = (html, link) => {
   if (!link) return html;
-  return html.replace(
-    /__CANONICAL_LINK__/g,
-    link
-  );
-}
+  return html.replace(/__CANONICAL_LINK__/g, link);
+};
 
 const setTitles = (html, title) => {
-  if (!link) return html;
-  return html.replace(
-    /__TITLE__/g,
-    title
-  );
-} 
+  if (!title) return html;
+  return html.replace(/__TITLE__/g, title);
+};
