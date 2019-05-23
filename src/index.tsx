@@ -5,6 +5,7 @@ import registerServiceWorker from "./registerServiceWorker";
 import { BrowserRouter } from "react-router-dom";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
+import Auth from "./Auth";
 
 import App from "./App";
 //@ts-ignore
@@ -28,7 +29,9 @@ ReactDOM.render(
   <BrowserRouter>
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
+      <Auth>
       <App />
+      </Auth>
     </MuiThemeProvider>
   </BrowserRouter>,
   document.getElementById("root") as HTMLElement

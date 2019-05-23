@@ -9,6 +9,7 @@
     "@mercuriya/slate-linkify": "^0.1.2",
     "@turf/bbox": "^6.0.1",
     "@turf/helpers": "^6.1.4",
+    "auth0-js": "^9.10.2",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "cloudinary-react": "^1.1.0",
