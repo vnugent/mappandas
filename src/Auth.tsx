@@ -37,13 +37,16 @@ class Auth extends React.Component<IProps, IState> {
   };
 
   logout = () => {
-    this.setState({
-      authenticated: false,
-      user: {
-        role: "visitor"
+    this.setState(
+      { 
+        authenticated: false,
+        user: {
+          role: "visitor"
+        },
+        accessToken: ""
       },
-      accessToken: ""
-    });
+      () => console.log("#logout")
+    );
   };
 
   handleAuthentication = () => {
@@ -59,6 +62,7 @@ class Auth extends React.Component<IProps, IState> {
   };
 
   setSession = data => {
+    console.log("#Auth0 session data ", data);
     const user = {
       id: data.sub,
       email: data.email,

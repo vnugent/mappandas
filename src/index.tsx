@@ -7,14 +7,15 @@ import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
 import Auth from "./Auth";
 
-import App from "./App";
+import Main from "./Main";
+//import App from "./App";
 //@ts-ignore
 import * as Config from "./Config";
 
 const theme = createMuiTheme({
-    typography: {
-        useNextVariants: true,
-      },
+  typography: {
+    useNextVariants: true
+  },
   palette: {
     primary: {
       main: "#ff9100"
@@ -30,7 +31,7 @@ ReactDOM.render(
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <Auth>
-      <App />
+        <Main />
       </Auth>
     </MuiThemeProvider>
   </BrowserRouter>,

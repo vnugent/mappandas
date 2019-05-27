@@ -1,10 +1,5 @@
 import * as React from "react";
-import {
-  Route,
-  Switch,
-  withRouter,
-  RouteComponentProps
-} from "react-router-dom";
+import { withRouter, RouteComponentProps } from "react-router-dom";
 import { Grid, withStyles } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
 import { FeatureCollection } from "geojson";
@@ -13,11 +8,7 @@ import * as _ from "underscore";
 import { Value } from "slate";
 
 import { IPost, LatLng, IActiveFeature } from "./types/CustomMapTypes";
-import { FeatureCollection2 } from "@mappandas/yelapa";
 
-import DefaultURLHandler from "./DefaultURLHandler";
-import LatLngURLHandler from "./LatLngURLHandler";
-import ShowPandaURLHandler from "./ShowPandaURLHandler";
 import * as GeoHelper from "./GeoHelper";
 import * as restClient from "./RestClient";
 //import LastN from "./Filters/LastN";
@@ -33,6 +24,7 @@ import TopLevelAppBar from "./AppBars";
 import { initialValue } from "./edit/slate-default";
 import { computeGeojson, documentToGeojson } from "./document2geojson";
 import SmartEditor from "./edit/SmartEditor";
+
 const uuidv1 = require("uuid/v1");
 
 const styles = (theme: Theme) =>
@@ -107,10 +99,11 @@ class App extends React.Component<IAppProps, IAppState> {
     publishable: false
   });
 
-  onNewButtonClick = () => {
+  onNewButtonClick = (clearURL?: boolean) => {
+    //TODO: warn user first
     document.title = "MapPandas - Draft";
     this.setState(this.getStateNewEdit(), () => {
-      this.props.history.push("/", { dontMoveMap: true });
+      clearURL && this.props.history.push("/p", { dontMoveMap: true });
     });
   };
 
@@ -120,10 +113,19 @@ class App extends React.Component<IAppProps, IAppState> {
   onDataLoaded = (post: IPost, editable: boolean): void => {
     if (post.content && post.content.document) {
       const mode = editable ? "edit" : "share";
-      this.setState({ post, mode });
+      if (editable) {
+        post.uuid = uuidv1();
+      }
       this.updateDocTitle(post.content);
       const geojson = documentToGeojson(post.content.document);
-      this.updateStateFromGeojson(geojson);
+
+      if (geojson.features.length > 0) {
+        const viewstate = this.calculateViewstate(geojson);
+        this.setState({ post, mode, geojson, viewstate });
+      } else {
+        this.setState({ post, mode, geojson });
+      }
+      //this.updateStateFromGeojson(geojson);
     }
   };
 
@@ -171,12 +173,31 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   componentDidMount() {
+    const uuid = this.props.match.params["uuid"];
+    console.log("#CDM", uuid);
+    if (uuid) {
+      const editable: boolean =
+        this.props.match.params["edit"] === "edit" ? true : false;
+      App.getGeojsonFromCacheOrRemote(uuid).then(post => {
+        this.onDataLoaded(post, editable);
+      });
+    } else {
+      this.onNewButtonClick();
+    }
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions);
   }
 
+  shouldComponentUpdate(nextProps , nextState) {
+    return true;
+  }
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log("#CDU ", prevProps.match["uuid"]);
+    console.log("#CDU update doc title here");
   }
 
   public render() {
@@ -187,7 +208,7 @@ class App extends React.Component<IAppProps, IAppState> {
         <TopLevelAppBar
           readonly={mode === "share"}
           isPublishable={this.state.publishable}
-          onCreateNewClick={this.onNewButtonClick}
+          onCreateNewClick={() => this.onNewButtonClick(true)}
           onPublishClick={this.onPublishClick}
         />
         <Grid spacing={0} container={true} alignContent="stretch">
@@ -233,36 +254,6 @@ class App extends React.Component<IAppProps, IAppState> {
               open={this.state.share_screen}
               onClose={this.onShareScreenClose}
             />
-            <Switch>
-              <Route
-                path="/@:lat?/:lng?/:zoom?"
-                render={props => (
-                  <LatLngURLHandler
-                    {...props}
-                    onLatLngChanged={this.onViewstateChanged}
-                  />
-                )}
-              />
-              <Route
-                path="/p/:uuid/:edit?"
-                render={props => (
-                  <ShowPandaURLHandler
-                    key={props.location.key}
-                    {...props}
-                    onDataLoaded={this.onDataLoaded}
-                  />
-                )}
-              />
-              } />
-              <Route
-                render={props => (
-                  <DefaultURLHandler
-                    {...props}
-                    onInitialized={this.onInitialized}
-                  />
-                )}
-              />
-            </Switch>
           </Grid>
         </Grid>
       </div>
@@ -280,14 +271,27 @@ class App extends React.Component<IAppProps, IAppState> {
 
   onContentChange = content => {
     const title = this.updateDocTitle(content);
-    const canonical = content.document.nodes.find(node => node.type === "canonical");
-    const meta = canonical && canonical.text ? { canonical: canonical.text } : {};
+    const canonical = content.document.nodes.find(
+      node => node.type === "canonical"
+    );
+    const meta =
+      canonical && canonical.text ? { canonical: canonical.text } : {};
     const newPost = { ...this.state.post, content, title, meta };
     this.setState({ post: newPost });
   };
 
   onLocationUpdateHandler = (location, editor) => {
     computeGeojson(location, editor, this.updateStateFromGeojson);
+  };
+
+  calculateViewstate = geojson => {
+    const { width, height } = this.getMapDivDimensions();
+    const bbox = GeoHelper.bboxFromGeoJson(geojson);
+    const newViewstate = Object.assign(
+      this.state.viewstate,
+      GeoHelper.bbox2Viewport(bbox, width, height)
+    );
+    return newViewstate;
   };
 
   updateStateFromGeojson = geojson => {
@@ -317,19 +321,38 @@ class App extends React.Component<IAppProps, IAppState> {
     this.setState({ hoveredFeature: evt });
   }, 100);
 
-
-  updateDocTitle = (content) => {
+  updateDocTitle = content => {
     // get text from first paragraph
     var title = content.document.nodes.first().getFirstText().text;
     if (!title) {
       // not found so let's use whatever text available
       title = content.document.text.substring(0, 200);
     }
-    document.title = this.state.mode === "edit" ? "Draft - " : "" + title.substring(0, 80);
+    document.title =
+      this.state.mode === "edit" ? "Draft - " : "" + title.substring(0, 80);
     return title;
-  }
-}
+  };
 
+  static getGeojsonFromCacheOrRemote = async (uuid: string) => {
+    const post = await restClient.get(uuid);
+    const slateContent = Value.fromJSON(post.content);
+    post.content = Value.isValue(slateContent) ? slateContent : initialValue;
+    return post;
+    //   if (editable) {
+    //     post.uuid = uuidv1();
+    //   }
+  };
+
+  static getGeojsonFromCacheOrRemote2 = async (
+    uuid: string
+  ): Promise<IPost> => {
+    return restClient.get(uuid).then(post => {
+      const slateContent = Value.fromJSON(post.content);
+      post.content = Value.isValue(slateContent) ? slateContent : initialValue;
+      return post;
+    });
+  };
+}
 
 const RRApp = withRouter(App);
 export default withStyles(styles)(RRApp);

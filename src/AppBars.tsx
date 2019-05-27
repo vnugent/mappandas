@@ -62,7 +62,7 @@ export interface IAppProps {
   classes?: any;
   readonly: boolean;
   isPublishable: boolean;
-  onCreateNewClick: () => void;
+  onCreateNewClick: (clearURL?: boolean) => void;
   onPublishClick: () => void;
 }
 
@@ -195,7 +195,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 className={classes.hamburgerMenuItem}
                 onClick={() => {
                   this.setState({ anchorEl: null });
-                  onCreateNewClick();
+                  onCreateNewClick(true);
                 }}
               >
                 New story
@@ -217,7 +217,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 component="a"
                 href="https://app.mappandas.com/p/7cc926e0-7331-11e9-bf02-255f99646d1a"
               >
-                Top 5 Gluten Free / Plant-Based Cafes in Vancouver            
+                Top 5 Gluten Free / Plant-Based Cafes in Vancouver
               </MenuItem>
               <MenuItem
                 className={classes.hamburgerMenuItem}
@@ -225,7 +225,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 component="a"
                 href="https://app.mappandas.com/p/2a541f40-758f-11e9-8f52-a595fccd4a3f"
               >
-                14 Once in a Lifetime Destinations            
+                14 Once in a Lifetime Destinations
               </MenuItem>
               <MenuItem
                 className={classes.hamburgerMenuItem}

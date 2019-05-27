@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Toolbar, IconButton, Tooltip } from "@material-ui/core";
-import { CloseRounded } from "@material-ui/icons";
+import { CloseRounded, AddLocation } from "@material-ui/icons";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
 import classnames from "classnames";
 
@@ -84,9 +84,9 @@ class Entry extends React.Component<IAppProps, IAppState> {
 
     if (!editor.value) {
       return null;
-    }    const { value } = editor;
+    }
+    const { value } = editor;
 
-   
     const emptyLocationText = node.text === "";
 
     return (
@@ -107,6 +107,18 @@ class Entry extends React.Component<IAppProps, IAppState> {
         )}
         {!readonly && hoverClass && (
           <Toolbar className={classes.toolbar} contentEditable={false}>
+            <Tooltip
+              title="Add location detail"
+              aria-label="Add location detail"
+            >
+              <IconButton
+                className={classes.menuButton}
+                aria-label="Detail"
+                onClick={this.onDelete}
+              >
+                <AddLocation fontSize="small" />
+              </IconButton>
+            </Tooltip>
             <Tooltip
               title="Delete this location"
               aria-label="Delete thiS location"

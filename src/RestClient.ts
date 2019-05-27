@@ -62,3 +62,17 @@ export const getLastN = async (limit: number): Promise<Array<any>> => {
   console.log("getLastN() error");
   return [{}];
 };
+
+export const getPostsByUser = async (userid: string): Promise<Array<any>> => {
+  try {
+    const response = await client.get<Array<any>>(`/posts_by_user/${userid}`);
+    if (response.status === 200 && response.data) {
+       return response.data;
+    }
+    return Promise.reject(
+      "Unable to retrieve data from backend. http code: " + response.status
+    );
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
