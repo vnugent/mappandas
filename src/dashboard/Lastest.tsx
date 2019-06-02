@@ -82,7 +82,7 @@ class Latest extends React.Component<IAppProps, IAppState> {
       role: authUser.role,
       perform: "post:modify",
       data: {
-        userId: authUser.textId,
+        userId: authUser.id,
         postOwnerId: this.props.ownerId
       }
     });

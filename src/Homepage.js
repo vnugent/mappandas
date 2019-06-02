@@ -1,26 +1,24 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 
 import { AuthConsumer } from "./authContext";
 import { Login, Logout } from "./Login";
+import withAuth from "./withAuth";
 
-const HomePage = () => (
-  <AuthConsumer>
-    {({ authenticated }) =>
-      authenticated ? (
-        <Redirect to="/dashboard" />
-      ) : (
-        // <Redirect to="/u/2019" />
-        <div>
-          <h2>Welcome to React RBAC Tutorial.</h2>
+const HomePage = ({ auth }) => {
+  console.log("#HomePage ", auth);
+  return auth.isAuthenticated() ? (
+    <Redirect to="/dashboard" />
+  ) : (
+    // <Redirect to="/u/2019" />
+    <div>
+      <h2>Welcome to React RBAC Tutorial.</h2>
 
-          <Login />
+      <Login />
 
-          <Logout />
-        </div>
-      )
-    }
-  </AuthConsumer>
-);
+      <Logout />
+    </div>
+  );
+};
 
-export default HomePage;
+export default withRouter(withAuth(HomePage));

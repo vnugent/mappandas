@@ -1,10 +1,13 @@
 import * as React from "react";
-import { withRouter, RouteComponentProps } from "react-router-dom";
-import { Theme, withStyles, createStyles } from "@material-ui/core";
+import { withRouter, Redirect, RouteComponentProps } from "react-router-dom";
+import { Theme, withStyles, createStyles, Tabs, Tab } from "@material-ui/core";
 
 import Latest from "./Lastest";
+import Profile from "./Profile";
+
 import ResponsiveLayout from "../ResponsiveLayout";
-import { AuthConsumer } from "../authContext";
+import withAuth from "../withAuth";
+import Can from "../Can";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -12,52 +15,56 @@ const styles = (theme: Theme) =>
       // display: "flex",
       // alignItems: "center"
       paddingBottom: theme.spacing.unit * 4
+    },
+    tabs: {
+      borderBottom: "1px solid #e8e8e8",
+      textTransform: "none"
     }
   });
 
 export interface IAppProps extends RouteComponentProps {
   classes: any;
+  auth: any;
 }
 
-export interface IAppState {}
+export interface IAppState {
+  tabIndex: number;
+}
 
 class Dashboard extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      tabIndex: 0
+    };
   }
+
+  handleChange = (event, newValue) => {
+    this.setState({ tabIndex: newValue });
+  };
 
   public render() {
-    const { classes } = this.props;
+    const { classes, auth } = this.props;
+    const { tabIndex } = this.state;
     return (
-      <AuthConsumer>
-        {({ user }) => {
-          const textId = this.plainUserId(user);
-          if (textId) {
-            user.textId = textId;
-          }
-          return (
-            <div className={classes.root}>
-              Dashboard
-              <ResponsiveLayout>
-                <Latest authUser={user} ownerId={textId} />
-              </ResponsiveLayout>
-            </div>
-          );
-        }}
-      </AuthConsumer>
+      <div className={classes.root}>
+        Dashboard
+        <ResponsiveLayout>
+          <Tabs value={tabIndex} onChange={this.handleChange}>
+            <Tab label="Lastest" />
+            <Tab label="Profile" />
+          </Tabs>
+          {tabIndex === 0 && (
+            <Latest authUser={auth.user} ownerId={auth.user.id} />
+          )}
+          {tabIndex === 1 && (
+            <Profile authUser={auth.user} updateAuthUserAPI={auth.updateUser} />
+          )}
+        </ResponsiveLayout>
+      </div>
     );
   }
-
-  plainUserId = user => {
-    const { id } = user;
-    if (id) {
-      const ss = id.split("|");
-      return ss.length === 2 ? ss[1] : null;
-    }
-    return null;
-  };
 }
 
-export default withStyles(styles)(withRouter(Dashboard));
+export default withStyles(styles)(withRouter(withAuth(Dashboard)));
