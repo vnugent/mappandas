@@ -5,9 +5,10 @@ const uuidv1 = require("uuid/v1");
 
 import { initialValue } from "./edit/slate-default";
 import * as restClient from "./RestClient";
+import Editor from "./Editor";
 
 interface IShowPandaProps extends RouteComponentProps {
-  onDataLoaded: Function;
+  editNew: boolean;
 }
 
 interface IShowPandaState { }
@@ -26,33 +27,59 @@ export default class ShowPandaURLHandler extends React.Component<
   }
 
   componentDidMount() {
-    const uuid = this.props.match.params["uuid"];
-    const editable: boolean =
-      this.props.match.params["edit"] === "edit" ? true : false;
-    this.getGeojsonFromCacheOrRemote(uuid, editable);
   }
 
-  shouldComponentUpdate(
-    nextProps: IShowPandaProps,
-    nextState: IShowPandaState
-  ) {
-    const current = this.props.match["uuid"];
-    const next = nextProps.match.params["uuid"];
-    return current !== next;
+  // shouldComponentUpdate(
+  //   nextProps: IShowPandaProps,
+  //   nextState: IShowPandaState
+  // ) {
+  //   console.log("#shouldcomponentupdate()")
+  //   const current = this.props.match["uuid"];
+  //   const next = nextProps.match.params["uuid"];
+  //   return current !== next;
+  // }
+
+  componentDidUpdate(preProps: IShowPandaProps) {
+    console.log("#ShowPanda.CDU()")
+    // const prevLayout = parseLayout(prevUrlParams.get("layout"));
+
+    // const urlParams = new URLSearchParams(this.props.location.search);
+
+
+    // if (layout !== prevLayout) {
+    //   //this.props.updateLayout(layout);
+    //   const uuid = this.props.match.params["uuid"];
+
+
+    // }
   }
 
-  getGeojsonFromCacheOrRemote = (uuid: string, editable: boolean) => {
-    restClient.get(uuid).then(post => {
-      const slateContent = Value.fromJSON(post.content);
-      post.content = Value.isValue(slateContent) ? slateContent : initialValue;
-      if (editable) {
-        post.uuid = uuidv1();
-      }
-      this.props.onDataLoaded(post, editable);
-    });
-  };
 
   render() {
-    return null;
+    const { editNew } = this.props;
+    const key = this.props.location.key || uuidv1();
+    const uuid = this.parseUUID();
+    const layout = this.parseLayout();
+    const editable = this.parseEditable()
+    return <Editor {...!editNew && { key: key }} urlKey={key} uuid={uuid} layout={layout} editNew={editNew} editable={editNew || editable} />;
+  }
+
+  parseUUID = () => {
+    const uuid = this.props.match.params["uuid"];
+    return uuid ? uuid : uuidv1();
+  }
+
+  parseEditable = () => this.props.match.params["edit"] === "edit" ? true : false;
+
+  parseLayout = () => {
+    const rawParam = new URLSearchParams(this.props.location.search).get("layout");
+
+    const param = rawParam ? rawParam.toLowerCase() : "column";
+    if (param === "classic" || param === "map" || param === "column") {
+      return param;
+    }
+    return "column";
   }
 }
+
+

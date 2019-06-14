@@ -75,37 +75,37 @@ class MapNG extends React.Component<IProps, IState> {
     }
 
     return (
-      <DeckGL
-        initialViewState={this.props.viewstate}
-        {...this.props.viewstate}
-        layers={layers}
-        controller={{
-          type: MapController,
-          dragRotate: false,
-          doubleClickZoom: true
-        }}
-        onViewStateChange={this.props.onViewStateChanged}
-        onLayerHover={this._onHover}
-      >
-        <ResponsiveGeocoder
-          className="geocoder-container"
-          mapRef={this.mapRef}
-          onResult={this.handleOnResult}
-          onViewportChange={this.props.onViewStateChanged}
-          mapboxApiAccessToken={Config.MAPBOX_TOKEN}
-          position="top-left"
-          divId="search-container"
-          flyTo={false}
-        />
-        <StaticMap
-          reuseMaps
-          mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
-          viewState={this.props.viewstate}
-          preventStyleDiffing={true}
-          mapboxApiAccessToken={Config.MAPBOX_TOKEN}
-          ref={this.mapRef}
-        />
-      </DeckGL>
+        <DeckGL
+          initialViewState={this.props.viewstate}
+          {...this.props.viewstate}
+          layers={layers}
+          controller={{
+            type: MapController,
+            dragRotate: false,
+            doubleClickZoom: true
+          }}
+          onViewStateChange={this.props.onViewStateChanged}
+          onLayerHover={this._onHover}
+        >
+          <ResponsiveGeocoder
+            className="geocoder-container"
+            mapRef={this.mapRef}
+            onResult={this.handleOnResult}
+            onViewportChange={this.props.onViewStateChanged}
+            mapboxApiAccessToken={Config.MAPBOX_TOKEN}
+            position="top-left"
+            divId="search-container"
+            flyTo={false}
+          />
+          <StaticMap
+            reuseMaps
+            mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
+            viewState={this.props.viewstate}
+            preventStyleDiffing={true}
+            mapboxApiAccessToken={Config.MAPBOX_TOKEN}
+            ref={this.mapRef}
+          />
+        </DeckGL>
     );
   }
 }

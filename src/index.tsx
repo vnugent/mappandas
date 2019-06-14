@@ -6,9 +6,10 @@ import { BrowserRouter } from "react-router-dom";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
 
-import App from "./App";
+import App from "./Editor";
 //@ts-ignore
 import * as Config from "./Config";
+import Main from "./Main";
 
 const theme = createMuiTheme({
     typography: {
@@ -28,7 +29,7 @@ ReactDOM.render(
   <BrowserRouter>
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <Main />
     </MuiThemeProvider>
   </BrowserRouter>,
   document.getElementById("root") as HTMLElement

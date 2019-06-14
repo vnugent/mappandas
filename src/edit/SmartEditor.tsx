@@ -31,6 +31,7 @@ export interface IAppProps {
   uuid: string;
   content: any;
   readonly: boolean;
+  layout: string;
   onLocationUpdate: (location, editor) => void;
   onContentChange: (content) => void;
 }
@@ -149,11 +150,13 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   onChange = ({ value }) => {
     if (this.props.readonly) return;
 
-    this.props.onContentChange(value);
-    _.delay(this.updateFloatingMenu, 20);
+    if (this.props.content !== value) {
+      this.props.onContentChange(value);
+      _.delay(this.updateFloatingMenu, 20);
+    }
   };
 
-  printDebug = (e: any) => {
+  printDebug = () => {
     const document = this.editorRef.value
       ? this.editorRef.value.document
       : undefined;
@@ -180,28 +183,37 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   };
 
   componentDidMount() {
+    console.log("#SmartEditor.CDM()", this.props.layout);
     this.timer = setInterval(this.saveDraft, 12000);
   }
 
-  //   shouldComponentUpdate(nextProps: IAppProps, nextState: IAppState) {
-  //     const { uuid, readonly, content } = this.props;
-  //     return (
-  //       uuid !== nextProps.uuid ||
-  //       readonly !== nextProps.readonly ||
-  //       content !== nextProps.content
-  //     );
-  //   }
+  // shouldComponentUpdate(nextProps: IAppProps, nextState: IAppState) {
+  //   const { uuid, readonly, content, layout } = this.props;
+  //   return (
+  //     uuid !== nextProps.uuid ||
+  //     readonly !== nextProps.readonly ||
+  //     content !== nextProps.content || layout !== nextProps.layout
+  //   );
+  // }
 
   componentWillUnmount() {
     clearInterval(this.timer);
   }
 
-  componentDidUpdate = () => {
+  componentDidUpdate = (prevProps: IAppProps) => {
+
+    if (this.props.layout !== prevProps.layout) {
+      console.log(" -- layout has changed");
+
+//      _.delay(this.forceUpdate, 200);
+
+    }
     //this.editorRef.setData({ uuid: this.props.uuid });
   };
 
   public render() {
-    if (!this.props.content) return null;
+    const { content, layout } = this.props;
+    if (!content) return null;
     return (
       // <button onClick={this.printSelection}>Selection</button>
 
@@ -250,6 +262,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       case "overview":
         return (
           <Overview
+            key={attributes["data-key"]}
             isFocused={isFocused}
             attributes={attributes}
             node={node}
@@ -269,6 +282,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
       case "card":
         return (
           <Entry
+            key={attributes["data-key"]}
             isFocused={isFocused}
             node={node}
             attributes={attributes}

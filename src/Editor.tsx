@@ -1,10 +1,4 @@
 import * as React from "react";
-import {
-  Route,
-  Switch,
-  withRouter,
-  RouteComponentProps
-} from "react-router-dom";
 import { Grid, withStyles } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
 import { FeatureCollection } from "geojson";
@@ -29,6 +23,7 @@ import ScrollToTop from "./ScrollToTop";
 import Popup from "./map/Popup";
 import TextPane from "./TextPane";
 import TopLevelAppBar from "./AppBars";
+import LayoutManager from "./LayoutManager";
 
 import { initialValue } from "./edit/slate-default";
 import { computeGeojson, documentToGeojson } from "./document2geojson";
@@ -49,6 +44,7 @@ const styles = (theme: Theme) =>
       paddingTop: "80px",
       paddingBottom: theme.spacing.unit * 3,
       boxSizing: "border-box",
+      display: "flex",
       alignItems: "stretch"
     }
   });
@@ -64,8 +60,13 @@ const NEW_POST = (): IPost => ({
   }
 });
 
-interface IAppProps extends RouteComponentProps {
+interface IAppProps {
+  urlKey: string;
   classes: any;
+  uuid: string;
+  editNew: boolean;
+  editable: boolean;
+  layout: string;  // column | classic | map 
 }
 
 interface IAppState {
@@ -80,7 +81,7 @@ interface IAppState {
   publishable: boolean;
 }
 
-class App extends React.Component<IAppProps, IAppState> {
+class Editor extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
     this.state = {
@@ -91,13 +92,13 @@ class App extends React.Component<IAppProps, IAppState> {
   getState0 = (): IAppState => ({
     post: NEW_POST(),
     geojson: GeoHelper.NEW_FC(),
-    mode: "edit",
+    mode: this.props.editable ? "edit" : "share",
     share_screen: false,
     viewstate: GeoHelper.INITIAL_VIEWSTATE(),
     mapStyle: "light-v9",
     myLocation: GeoHelper.DEFAULT_LATLNG,
     hoveredFeature: null,
-    publishable: false
+    publishable: false,
   });
 
   getStateNewEdit = () => ({
@@ -110,16 +111,17 @@ class App extends React.Component<IAppProps, IAppState> {
   onNewButtonClick = () => {
     document.title = "MapPandas - Draft";
     this.setState(this.getStateNewEdit(), () => {
-      this.props.history.push("/", { dontMoveMap: true });
+      //this.props.history.push("/", { dontMoveMap: true });
     });
   };
 
   /**
    * Handle new data from the backend
    */
-  onDataLoaded = (post: IPost, editable: boolean): void => {
+  onDataLoaded = (post: IPost): void => {
     if (post.content && post.content.document) {
-      const mode = editable ? "edit" : "share";
+
+      const mode = this.props.editable ? "edit" : "share";
       this.setState({ post, mode });
       this.updateDocTitle(post.content);
       const geojson = documentToGeojson(post.content.document);
@@ -128,9 +130,13 @@ class App extends React.Component<IAppProps, IAppState> {
   };
 
   onInitialized = (_viewstate: any) => {
-    this.setState(
-      this.getStateNewEdit(),
-      () => (document.title = this.state.post.title)
+    this.updateDimensions();
+    this.setState({
+      ...this.getStateNewEdit()
+    },
+      () => {
+        document.title = this.state.post.title;
+      }
     );
     this._locateMe();
   };
@@ -167,10 +173,20 @@ class App extends React.Component<IAppProps, IAppState> {
       //height = div.clientHeight;
     }
     const height = window.innerHeight;
+    //console.log("#mapDivDimensions", width, height);
     return { width, height };
   };
 
   componentDidMount() {
+    const { uuid, editNew } = this.props;
+    if (!editNew) {
+      getGeojsonFromCacheOrRemote(uuid).then(post => {
+        this.onDataLoaded(post);
+      });
+    } else {
+      this.onNewButtonClick();
+    };
+
     this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions);
   }
@@ -179,92 +195,94 @@ class App extends React.Component<IAppProps, IAppState> {
     window.removeEventListener("resize", this.updateDimensions);
   }
 
+  shouldComponentUpdate(nextProps) {
+    return true;
+  }
+
+  componentDidUpdate(prevProps: IAppProps) {
+    const {layout} = this.props;
+    if (layout === "map" || layout === "column") {
+      this.updateDimensions();
+    }
+
+    if (this.props.layout !== prevProps.layout) {
+      //this.onDataLoaded(this.state.post);
+
+      // this.forceUpdate(() => {
+      //   console.log("#forceUpdate()")
+      // });
+    }
+  }
+
+  // componentDidUpdate(prevProps: IAppProps, prevSta) {
+  //   console.log("#Editor.CDU() ", prevProps, this.props);
+
+  //   const prevUrlParams = new URLSearchParams(prevProps.location.search);
+  //   const prevLayout = parseLayout(prevUrlParams.get("layout"));
+
+  //   const urlParams = new URLSearchParams(this.props.location.search);
+  //   const layout = parseLayout(urlParams.get("layout"));
+
+
+  //   if (layout !== prevLayout) {
+  //     this.setState({ layout });
+  //     //this.props.updateLayout(layout);
+  //     const uuid = this.props.match.params["uuid"];
+
+  //     //this.getGeojsonFromCacheOrRemote(uuid, false, layout);
+
+  //   }
+  // }
+
   public render() {
-    const { classes } = this.props;
+    const { classes, layout, urlKey, editable } = this.props;
     const { mode, post } = this.state;
     return (
-      <div className={classes.root}>
+      <div className={classes.root} key={this.props.urlKey}>
         <TopLevelAppBar
-          readonly={mode === "share"}
+          readonly={!editable}
+          layout={layout}
           isPublishable={this.state.publishable}
           onCreateNewClick={this.onNewButtonClick}
           onPublishClick={this.onPublishClick}
         />
-        <Grid spacing={0} container={true} alignContent="stretch">
-          <Grid item xs={12} md={6}>
-            <div id="text-pane-id" className={classes.textPane}>
-              <TextPane>
-                <SmartEditor
-                  uuid={post.uuid}
-                  content={post.content}
-                  readonly={mode === "share"}
-                  onLocationUpdate={this.onLocationUpdateHandler}
-                  onContentChange={this.onContentChange}
-                />
-              </TextPane>
-            </div>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <div
-              id="mapng"
-              style={{
-                padding: 0,
-                position: "relative"
-              }}
-            >
-              <MapNG
-                geojson={this.state.geojson}
-                viewstate={this.state.viewstate}
-                onViewStateChanged={this.onViewstateChanged}
-                mapStyle={this.state.mapStyle}
-                onHover={this.onHover}
-              />
-              <Popup data={this.state.hoveredFeature} />
-            </div>
-            <LocateMe onClick={this._locateMe} />
-            <ScrollToTop />
-            <Switcher
-              currentStyle={this.state.mapStyle}
-              onChange={this.onMapStyleChange}
-            />
 
-            <ShareScreen
-              post={this.state.post}
-              open={this.state.share_screen}
-              onClose={this.onShareScreenClose}
-            />
-            <Switch>
-              <Route
-                path="/@:lat?/:lng?/:zoom?"
-                render={props => (
-                  <LatLngURLHandler
-                    {...props}
-                    onLatLngChanged={this.onViewstateChanged}
-                  />
-                )}
-              />
-              <Route
-                path="/p/:uuid/:edit?"
-                render={props => (
-                  <ShowPandaURLHandler
-                    key={props.location.key}
-                    {...props}
-                    onDataLoaded={this.onDataLoaded}
-                  />
-                )}
-              />
-              } />
-              <Route
-                render={props => (
-                  <DefaultURLHandler
-                    {...props}
-                    onInitialized={this.onInitialized}
-                  />
-                )}
-              />
-            </Switch>
-          </Grid>
-        </Grid>
+        <LayoutManager layout={layout} {...this.props} editor={<TextPane key={this.props.urlKey}
+        >
+          <SmartEditor
+            //key={post.uuid+layout}
+            key={urlKey}
+            uuid={post.uuid}
+            content={post.content}
+            readonly={!editable}
+            layout={layout}
+            onLocationUpdate={this.onLocationUpdateHandler}
+            onContentChange={this.onContentChange}
+          />
+        </TextPane>
+        }
+          map={
+            <MapNG
+              geojson={this.state.geojson}
+              viewstate={this.state.viewstate}
+              onViewStateChanged={this.onViewstateChanged}
+              mapStyle={this.state.mapStyle}
+              onHover={this.onHover}
+            />}
+        />
+        <Popup data={this.state.hoveredFeature} />
+        {/* <LocateMe onClick={this._locateMe} /> */}
+        <ScrollToTop />
+        {/* <Switcher
+          currentStyle={this.state.mapStyle}
+          onChange={this.onMapStyleChange}
+        /> */}
+
+        <ShareScreen
+          post={this.state.post}
+          open={this.state.share_screen}
+          onClose={this.onShareScreenClose}
+        />
       </div>
     );
   }
@@ -274,7 +292,7 @@ class App extends React.Component<IAppProps, IAppState> {
     const { post } = this.state;
     restClient.createPost(post).then(uuid => {
       this.setState({ share_screen: true });
-      this.props.history.replace(uri);
+      //this.props.history.replace(uri);
     });
   };
 
@@ -328,8 +346,18 @@ class App extends React.Component<IAppProps, IAppState> {
     document.title = this.state.mode === "edit" ? "Draft - " : "" + title.substring(0, 80);
     return title;
   }
+
 }
 
+const getGeojsonFromCacheOrRemote = async (uuid: string) => {
+  const post = await restClient.get(uuid);
+  const slateContent = Value.fromJSON(post.content);
+  post.content = Value.isValue(slateContent) ? slateContent : initialValue;
+  return post;
+  //   if (editable) {
+  //     post.uuid = uuidv1();
+  //   }
+};
 
-const RRApp = withRouter(App);
-export default withStyles(styles)(RRApp);
+
+export default withStyles(styles)(Editor);

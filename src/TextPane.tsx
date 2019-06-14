@@ -11,8 +11,10 @@ const styles = (theme: Theme) =>
     container: {
       display: "flex",
       flexDirection: "column",
-      height: "100%",
-      width: "100%"
+      height: "100vh",
+      width: "100%",
+      paddingTop: "80px",
+      alignItems: "stretch"
     },
     footer: {
       alignSelf: "flex-end",
@@ -21,8 +23,10 @@ const styles = (theme: Theme) =>
       flexShrink: 3
     },
     scrollableEditor: {
+      flexBasis: "auto",
       paddingBottom: theme.spacing.unit * 8,
-      overflowY: "auto"
+      overflowY: "auto",
+      webkitOverflowScrolling: "auto"
     },
     slateWrapperHack: {
       [theme.breakpoints.up("md")]: {
