@@ -830,7 +830,14 @@
   dependencies:
     regenerator-runtime "^0.12.0"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.2.0":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.3.1":
+  version "7.4.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.4.5.tgz#582bb531f5f9dc67d2fcb682979894f75e253f12"
+  integrity sha512-TuI4qpWZP6lGOGIuGWtp9sPluqYICmbk8T/1vpSysqJxRPkudh/ofFWyqdcMsDf2s7KvDL4/YHgKyvcS3g9CJQ==
+  dependencies:
+    regenerator-runtime "^0.13.2"
+
+"@babel/runtime@^7.1.2", "@babel/runtime@^7.2.0":
   version "7.4.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.4.2.tgz#f5ab6897320f16decd855eed70b705908a313fe8"
   integrity sha512-7Bl2rALb7HpvXFL7TETNzKSAeBVCPHELzc0C//9FCxN8nsiueWSJBqaF+2oIJScyILStASR/Cx5WMkXGYTiJFA==
@@ -875,44 +882,142 @@
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha512-5a6wqoJV/xEdbRNKVo6I4hO3VjyDq//8q2f9I6PBAvMesJHFauXDorcNCsr9RzvsZnaWi5NYCcfyqP1QeFHFbw==
 
-"@deck.gl/core@^6.4.8":
-  version "6.4.8"
-  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-6.4.8.tgz#2fe28ec7039684c0c197435421e6d95a0faabb51"
-  integrity sha512-7EqmQlagQPldNHa4630EfPj/S5IZ8zgrOr+Cm/GOqjDLfM4tRhmmnwpzNOxNLl78QjdqEnp3WJ6q8TezygcLYw==
+"@deck.gl/aggregation-layers@7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@deck.gl/aggregation-layers/-/aggregation-layers-7.1.4.tgz#229f956d5c20e8f1a403b6a020e1b116ce550c6d"
+  integrity sha512-s76NxPePj4UOJmr3yXFQ3PneCkl3cU2GZLGgPmml71aQhG5iHjRw0CY0WGONJfvHds7UfNTtyCOAel9CGuAE4w==
   dependencies:
+    d3-hexbin "^0.2.1"
+
+"@deck.gl/core@7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@deck.gl/core/-/core-7.1.4.tgz#d4d110ffb6cc413a2b46ac9a647a530c4049c6e2"
+  integrity sha512-bAP4hE3Gr81ZVWdLSCFi9wo+xVl2QeElwvcL2APZisUDYYSuIosK5nnwH11az7UTIVIEiSwtKufGKg4fUzSu5Q==
+  dependencies:
+    "@luma.gl/core" "^7.1.0"
     gl-matrix "^3.0.0"
-    luma.gl "^6.4.2"
     math.gl "^2.3.0"
-    mjolnir.js "^2.0.3"
-    probe.gl "^2.0.1"
+    mjolnir.js "^2.1.2"
+    probe.gl "^3.0.1"
     seer "^0.2.4"
     viewport-mercator-project "^6.1.0"
 
-"@deck.gl/experimental-layers@>=6.0.3":
-  version "6.4.8"
-  resolved "https://registry.yarnpkg.com/@deck.gl/experimental-layers/-/experimental-layers-6.4.8.tgz#da26d412648f5fca6595573ee3c0b33d9371e448"
-  integrity sha512-V7aexRrPaOmE4QROcXmIGMjLHloGCpDk1LWkV7rVSVzQqVJqHzM/8hCJssNnWNAigKTLT8La+UZ63iqZ5jgHag==
+"@deck.gl/geo-layers@7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@deck.gl/geo-layers/-/geo-layers-7.1.4.tgz#bd8b1d41de3e9dd4f47ab5b01111277ff3b4ad9b"
+  integrity sha512-uHDz1g1U63O+7gOSitbYP+P/8LbYIfg07Ow7Z/mXZLKYjm2upP7x5FRTqS6QWoq3X2SmQEBBLeRCaG8L4Nf7xA==
   dependencies:
-    "@deck.gl/core" "^6.4.8"
-    "@deck.gl/layers" "^6.4.8"
+    h3-js "^3.4.3"
+    s2-geometry "^1.2.10"
 
-"@deck.gl/layers@^6.4.8":
-  version "6.4.8"
-  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-6.4.8.tgz#83f5b941a9a9f9bbb5a643d2a8e140901a88ab0c"
-  integrity sha512-/e8jIm6+g0mJTfC7TFdWgfiwNnD9+A0AH/UrNjk9HHayMAQHT+QKbzdO2K5yoPpvNbqtPXb1EhAMQU6ofHHnUw==
+"@deck.gl/google-maps@7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@deck.gl/google-maps/-/google-maps-7.1.4.tgz#d5a51ae55ec2b4f2fac963e646b0672391ae9d78"
+  integrity sha512-M9lBG4O8C9iQOXi1zbcNyy3iQq96QRzCtpRcCuS+yURb1sBV3ZD6YBmRTX3MRTDSnWwb9B7yHpkal81dA8SulA==
+
+"@deck.gl/json@7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@deck.gl/json/-/json-7.1.4.tgz#5e71f2e53286048c7540e3e1dd85b91348e2599f"
+  integrity sha512-LPahirj1L25ut1JXzV6UnJb5rqjVjNJp7HRcw36PJ8qB1KMgeyjCRDI1eB6hPo72fXiSi815IBlvF2rkMio3Zg==
   dependencies:
-    "@deck.gl/core" "^6.4.8"
+    d3-dsv "^1.0.8"
+
+"@deck.gl/layers@7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@deck.gl/layers/-/layers-7.1.4.tgz#dd66df5d2c62b41b8ac22e4800327c61973fa77c"
+  integrity sha512-sI3afnEitHdNjU6kHd+zTPEnugFTzpaZsANcvMmUmmy9DOZcv8KzCbKWOSYvMm2cBLg/t49BU26kDj2Immu9SQ==
+  dependencies:
+    "@loaders.gl/core" "^1.0.3"
+    "@loaders.gl/images" "^1.0.3"
     "@mapbox/tiny-sdf" "^1.1.0"
-    d3-hexbin "^0.2.1"
     earcut "^2.0.6"
 
-"@deck.gl/react@^6.4.8":
-  version "6.4.8"
-  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-6.4.8.tgz#57618ee4a3002c6ead9d40eb3c7eb85d4b5472ae"
-  integrity sha512-wwZlS4dgXkT07M8P9n2iz8IsoXsk0FlbJ8ELR1nNmL4P/x11WqEG2Zw2N7qExHJbbgO7Bz3CJU5eYjiHalCcwg==
+"@deck.gl/mapbox@7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@deck.gl/mapbox/-/mapbox-7.1.4.tgz#c61c0da16da93e57ba6e072784e5a5266be70fe8"
+  integrity sha512-AfUapuStnkwbp3plScZ4P/JfqaqZG+pTLi9oHTFjaJpPqPWIESN8LnViAetRpESX1byZRVx5sEPId7M5iyW4lg==
+
+"@deck.gl/mesh-layers@7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@deck.gl/mesh-layers/-/mesh-layers-7.1.4.tgz#3fcf3afc795255dec2a52a83a16e0cc42efa35f6"
+  integrity sha512-+MkPMaI84R8rOFhzrcbpg8UtCfGfigEsaNsEe1rn8I/R0gbBruoLlK6zzKRZnAhOByw8vm1deIEwncp1EHH/Cg==
   dependencies:
-    "@deck.gl/core" "^6.4.8"
+    "@loaders.gl/core" "^1.0.3"
+    "@loaders.gl/images" "^1.0.3"
+
+"@deck.gl/react@7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-7.1.4.tgz#4a2c7939738f41697ae75cf51ddfeaf66ea808fe"
+  integrity sha512-/Fwf3YBkq//YXiQnKEueAGtIOa+gCf9jtK5ts5xUwBlwLcjMn9rsMN+poXedvMTnBEzxH7zlDzAzkU63nQWckA==
+  dependencies:
     prop-types "^15.6.0"
+
+"@loaders.gl/core@^1.0.3":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/core/-/core-1.1.1.tgz#4a1ccb8b1db0bb9aab41b49e6f73131ac183041c"
+  integrity sha512-n48UBuodfBuTHnnqeCE6Yb5z2edJMn1E78Y6MSR2BfyISOpiG3gzNcyGfVcWT60fkzpJUQbETbPiWBHlN2/q5w==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
+
+"@loaders.gl/images@^1.0.3":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/images/-/images-1.1.1.tgz#631e5e7f39c24a4a6371c8b0be697b02a6d9e32f"
+  integrity sha512-BVzsZWO3A/3CA6Em7/ypumtwQdxrdRqO5XEdqVq5wzNRw/Dby3y3dnpMmJ7e/mbTdM41MpYkwhyzyORSyMWzEA==
+
+"@luma.gl/constants@7.1.1", "@luma.gl/constants@^7.0.0", "@luma.gl/constants@^7.0.0-alpha.3":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@luma.gl/constants/-/constants-7.1.1.tgz#f966fad9069722974e1b7bcae2fcd7a2444090dc"
+  integrity sha512-F+lkZzMJNPvGeTCkOezyHafAb48ottMx10PYx3j1rsKFBM2v1LgBHnV1I37xjkrx8PMhdb/2zMg80nRrniudGw==
+
+"@luma.gl/core@^7.1.0":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@luma.gl/core/-/core-7.1.1.tgz#cc9fde5845c2e76b1b1f7a38c6e50ceb49f5bcd1"
+  integrity sha512-C39SmKXiDLyACnYXe5d09Gwh5f011xkNQ8RsE6ffWVGCTWIIb9rK9z1g0L6JuViV/xmWco/sO1SdMQ8uLjC8Zw==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@luma.gl/constants" "7.1.1"
+    "@luma.gl/shadertools" "7.1.1"
+    "@luma.gl/webgl" "7.1.1"
+    "@luma.gl/webgl-state-tracker" "7.1.1"
+    "@luma.gl/webgl2-polyfill" "7.1.1"
+    math.gl "^2.3.0"
+    probe.gl "^3.0.2"
+    seer "^0.2.4"
+
+"@luma.gl/shadertools@7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@luma.gl/shadertools/-/shadertools-7.1.1.tgz#084f6bd18632784ef20d20c4265a167179da6336"
+  integrity sha512-Mr+6LiMUGfnrD9wYEQBa51Far3G33wxNXbl6kGHq4wgyewlpAHPfTuzqLig2o44G7VvGm/BCCAjvr6yXeluUIw==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    math.gl "^2.3.0"
+
+"@luma.gl/webgl-state-tracker@7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@luma.gl/webgl-state-tracker/-/webgl-state-tracker-7.1.1.tgz#ffe37273db771d8c73c2ad3acc2933fffa93d388"
+  integrity sha512-eF63OgMwkt9+XKH9LZ/SIzsZDZiLISfc+jNvRKmT1UyKbxQLJ99V8D9d6tF8GFAl1/0To3d4hdTce2HmjwhXsg==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@luma.gl/constants" "7.1.1"
+
+"@luma.gl/webgl2-polyfill@7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@luma.gl/webgl2-polyfill/-/webgl2-polyfill-7.1.1.tgz#ae75512e01e3ccf4cf675f87cdaf238afe7f8267"
+  integrity sha512-UJxDVG4tojuStNi43ERxFiojgkTHi5ScbuL0Msr8id7X7L9UmeCiQ4H6p9m002yy5swCsJlWg/Y8oEtUA5jhqw==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@luma.gl/constants" "7.1.1"
+
+"@luma.gl/webgl@7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@luma.gl/webgl/-/webgl-7.1.1.tgz#6e227d93f6948af639a7399653018aa42c6ca91a"
+  integrity sha512-2FkkSFdsE6TeA5dTez/pz44rQEoe8dAmyF+z2jsIrHWtIS+pW16L6R/iGwmwqGrEWgYbFkhihrHI21teNM633g==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@luma.gl/constants" "7.1.1"
+    "@luma.gl/webgl-state-tracker" "7.1.1"
+    "@luma.gl/webgl2-polyfill" "7.1.1"
+    probe.gl "^3.0.2"
 
 "@mapbox/geojson-area@0.2.2":
   version "0.2.2"
@@ -962,9 +1067,9 @@
   integrity sha1-ioP5M1x4YO/6Lu7KJUMyqgru2PI=
 
 "@mapbox/tiny-sdf@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/tiny-sdf/-/tiny-sdf-1.1.0.tgz#b0b8f5c22005e6ddb838f421ffd257c1f74f9a20"
-  integrity sha512-dnhyk8X2BkDRWImgHILYAGgo+kuciNYX30CUKj/Qd5eNjh54OWM/mdOS/PWsPeN+3abtN+QDGYM4G220ynVJKA==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@mapbox/tiny-sdf/-/tiny-sdf-1.1.1.tgz#16a20c470741bfe9191deb336f46e194da4a91ff"
+  integrity sha512-Ihn1nZcGIswJ5XGbgFAvVumOgWpvIjBX9jiRlIl46uQG9vJOF51ViBYHF95rEZupuyQbEmhLaDPLQlU7fUTsBg==
 
 "@mapbox/unitbezier@^0.0.0":
   version "0.0.0"
@@ -1066,6 +1171,44 @@
   dependencies:
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
+
+"@nebula.gl/edit-modes@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@nebula.gl/edit-modes/-/edit-modes-0.13.0.tgz#24e71985763cc646a9252ffb2d96ec4cac71646d"
+  integrity sha512-Xiz5xayyBBTj9XmmKMRDjpUatb3QijUpV+SjH3uRRgW+ZmKXn4aqlRYu/5I2JUSaRPA9bhBQu8Sr9euUp/XibQ==
+
+"@nebula.gl/layers@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@nebula.gl/layers/-/layers-0.13.0.tgz#c967919b76f0048f94165801e10ec03bd5763046"
+  integrity sha512-ZUbNX+KyiB89qc8tuzJU81anrlMGEHW6JyxH8PQxCAzAhr4SfoyMFBIUCs8ePA9s3agwfQHLbwphGC7zyp7Wtw==
+  dependencies:
+    "@nebula.gl/edit-modes" "^0.13.0"
+    "@turf/bbox" ">=4.0.0"
+    "@turf/bbox-polygon" ">=4.0.0"
+    "@turf/bearing" ">=4.0.0"
+    "@turf/boolean-point-in-polygon" ">=4.0.0"
+    "@turf/buffer" ">=4.0.0"
+    "@turf/center" ">=4.0.0"
+    "@turf/centroid" ">=4.0.0"
+    "@turf/circle" ">=4.0.0"
+    "@turf/destination" ">=4.0.0"
+    "@turf/difference" ">=4.0.0"
+    "@turf/distance" ">=4.0.0"
+    "@turf/ellipse" ">=4.0.0"
+    "@turf/helpers" ">=4.0.0"
+    "@turf/intersect" ">=4.0.0"
+    "@turf/line-intersect" ">=4.0.0"
+    "@turf/nearest-point-on-line" ">=4.0.0"
+    "@turf/point-to-line-distance" ">=4.0.0"
+    "@turf/polygon-to-line" ">=4.0.0"
+    "@turf/transform-rotate" ">=4.0.0"
+    "@turf/transform-scale" ">=4.0.0"
+    "@turf/transform-translate" ">=4.0.0"
+    "@turf/union" ">=4.0.0"
+    cubic-hermite-spline "^1.0.1"
+    geojson-types "^2.0.1"
+    global ">=4.3.0"
+    viewport-mercator-project ">=5.0.0"
 
 "@nodelib/fs.stat@^1.1.2":
   version "1.1.3"
@@ -3095,6 +3238,11 @@ comma-separated-tokens@^1.0.0:
   dependencies:
     trim "0.0.1"
 
+commander@2:
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
+  integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
+
 commander@2.17.x:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
@@ -3611,6 +3759,15 @@ d3-array@1:
   resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-1.2.4.tgz#635ce4d5eea759f6f605863dbcfc30edc737f71f"
   integrity sha512-KHW6M86R+FUPYGb3R5XiYjXPq7VzwxZ22buHhAEVG5ztoEcZZMLov530mmccaqA1GghZArjQV46fuc8kUqhhHw==
 
+d3-dsv@^1.0.8:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/d3-dsv/-/d3-dsv-1.1.1.tgz#aaa830ecb76c4b5015572c647cc6441e3c7bb701"
+  integrity sha512-1EH1oRGSkeDUlDRbhsFytAXU6cAmXFzc52YUe6MRlPClmWb85MP1J5x+YJRzya4ynZWnbELdSAvATFW/MbxaXw==
+  dependencies:
+    commander "2"
+    iconv-lite "0.4"
+    rw "1"
+
 d3-geo@1.7.1:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/d3-geo/-/d3-geo-1.7.1.tgz#44bbc7a218b1fd859f3d8fd7c443ca836569ce99"
@@ -3687,14 +3844,20 @@ decamelize@^2.0.0:
   dependencies:
     xregexp "4.0.0"
 
-deck.gl@>=6.0.5, deck.gl@^6.4.8:
-  version "6.4.8"
-  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-6.4.8.tgz#4b8b873e4314c15667551c3139f8e0bb9b37403e"
-  integrity sha512-AQHnRI4IAbl6ruhNC1nySu6l1g8rfxMY6sH//nL2C+IH8UsBEHm8bf7nbIC3iXCMnLMkYJfq6DxLTM/yeE8/wA==
+deck.gl@7.1.4, deck.gl@>=6.0.5:
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/deck.gl/-/deck.gl-7.1.4.tgz#0ec4f37ac392c82456e73dacfb5c0a4f82b8c476"
+  integrity sha512-Q1KauxWEYMgRVJXWXR2mHx1bZ9GvvQewB0krGUeUbMgElunNie9+S/q+7bI+Q1Wm98Ic+H3ZDJipO+her9dXGA==
   dependencies:
-    "@deck.gl/core" "^6.4.8"
-    "@deck.gl/layers" "^6.4.8"
-    "@deck.gl/react" "^6.4.8"
+    "@deck.gl/aggregation-layers" "7.1.4"
+    "@deck.gl/core" "7.1.4"
+    "@deck.gl/geo-layers" "7.1.4"
+    "@deck.gl/google-maps" "7.1.4"
+    "@deck.gl/json" "7.1.4"
+    "@deck.gl/layers" "7.1.4"
+    "@deck.gl/mapbox" "7.1.4"
+    "@deck.gl/mesh-layers" "7.1.4"
+    "@deck.gl/react" "7.1.4"
 
 decode-uri-component@^0.2.0:
   version "0.2.0"
@@ -4300,10 +4463,10 @@ eslint@5.12.0:
     table "^5.0.2"
     text-table "^0.2.0"
 
-esm@^3.0.84:
-  version "3.2.20"
-  resolved "https://registry.yarnpkg.com/esm/-/esm-3.2.20.tgz#44f125117863427cdece7223baa411fc739c1939"
-  integrity sha512-NA92qDA8C/qGX/xMinDGa3+cSPs4wQoFxskRrSnDo/9UloifhONFm4sl4G+JsyCqM007z2K+BfQlH5rMta4K1Q==
+esm@~3.0.84:
+  version "3.0.84"
+  resolved "https://registry.yarnpkg.com/esm/-/esm-3.0.84.tgz#bb108989f4673b32d4f62406869c28eed3815a63"
+  integrity sha512-SzSGoZc17S7P+12R9cg21Bdb7eybX25RnIeRZ80xZs+VZ3kdQKzqTp2k4hZJjR7p9l0186TTXSgrxzlMDBktlw==
 
 espree@^5.0.0:
   version "5.0.1"
@@ -4465,11 +4628,6 @@ expand-range@^1.8.1:
   integrity sha1-opnv/TNf4nIeuujiV+x5ZE/IUzc=
   dependencies:
     fill-range "^2.1.0"
-
-expect.js@~0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/expect.js/-/expect.js-0.2.0.tgz#1028533d2c1c363f74a6796ff57ec0520ded2be1"
-  integrity sha1-EChTPSwcNj90pnlv9X7AUg3tK+E=
 
 expect@^23.6.0:
   version "23.6.0"
@@ -4927,6 +5085,11 @@ fsevents@^1.2.3, fsevents@^1.2.7:
     nan "^2.9.2"
     node-pre-gyp "^0.10.0"
 
+fsevents@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.0.7.tgz#382c9b443c6cbac4c57187cdda23aa3bf1ccfc2a"
+  integrity sha512-a7YT0SV3RB+DjYcppwVDLtn13UQnmg0SWZS7ezZD0UjnLwXmy8Zm21GMVGLaFGimIqcvyMQaOJBrop8MyOp1kQ==
+
 function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
@@ -4967,14 +5130,14 @@ geocoder@^0.2.3:
     xml2js "0.2.0"
 
 geojson-rbush@3.x:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/geojson-rbush/-/geojson-rbush-3.1.1.tgz#dd40bdd26e92813d888d7b489e8d2980695a49b4"
-  integrity sha512-Bl6U75yDCsERl2P6PiBkvxIoXsSv5SEEiDJy+a7JarcEe17jEm8zamAmi82KLRcIlcuRZxgeVCl1xw5UkxOREw==
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/geojson-rbush/-/geojson-rbush-3.1.2.tgz#577d6ec70ba986d4e60b741f1df5147faeb82c97"
+  integrity sha512-grkfdg3HIeTjwTfiJe5FT8+fGU3fABCc+vRJDBwdQz9kkLF0Sbif2gs2JUzjewwgmnvLGy9fInySDeADoNuk7w==
   dependencies:
     "@turf/bbox" "*"
     "@turf/helpers" "6.x"
     "@turf/meta" "6.x"
-    rbush "*"
+    rbush "^2.0.0"
 
 geojson-types@^2.0.1:
   version "2.0.1"
@@ -5099,12 +5262,12 @@ global-prefix@^3.0.0:
     which "^1.3.1"
 
 global@>=4.3.0:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/global/-/global-4.3.2.tgz#e76989268a6c74c38908b1305b10fc0e394e9d0f"
-  integrity sha1-52mJJopsdMOJCLEwWxD8DjlOnQ8=
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/global/-/global-4.4.0.tgz#3e7b105179006a323ed71aafca3e9c57a5cc6406"
+  integrity sha512-wv/LAoHdRE3BeTGz53FAamhGlPLhlssK45usmGFThIi4XqnBmjKQ16u+RNbP7WvigRZDxUsM0J3gcQ5yicaL0w==
   dependencies:
     min-document "^2.19.0"
-    process "~0.5.1"
+    process "^0.11.10"
 
 globals@^11.1.0, globals@^11.7.0:
   version "11.11.0"
@@ -5162,6 +5325,11 @@ gzip-size@5.0.0:
   dependencies:
     duplexer "^0.1.1"
     pify "^3.0.0"
+
+h3-js@^3.4.3:
+  version "3.4.3"
+  resolved "https://registry.yarnpkg.com/h3-js/-/h3-js-3.4.3.tgz#7a9fe281fbd962c56954aab3955032ae08ceb241"
+  integrity sha512-rr+kkErW7DqDlFN1KikjjDEurQxaPb0dJHpcijSzr+/WDjMYK7F9/Qr412HNSG5BkbG8XXK9CbPHVjDI85GYUA==
 
 hammerjs@^2.0.8:
   version "2.0.8"
@@ -5508,17 +5676,17 @@ hyphenate-style-name@^1.0.2:
   resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.3.tgz#097bb7fa0b8f1a9cf0bd5c734cf95899981a9b48"
   integrity sha512-EcuixamT82oplpoJ2XU4pDtKGWQ7b00CD9f1ug9IaQ3p1bkHMiKCZ9ut9QDI6qsa6cpUuB+A/I+zLtdNK4n2DQ==
 
+iconv-lite@0.4, iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
+  version "0.4.24"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
+  integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
+  dependencies:
+    safer-buffer ">= 2.1.2 < 3"
+
 iconv-lite@0.4.23:
   version "0.4.23"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.23.tgz#297871f63be507adcfbfca715d0cd0eed84e9a63"
   integrity sha512-neyTUVFtahjf0mB3dZT77u+8O0QB89jFdnBkd5P1JgYPbPaia3gXXOVL2fq8VyU2gMMD7SaN7QukTB/pmXYvDA==
-  dependencies:
-    safer-buffer ">= 2.1.2 < 3"
-
-iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
-  version "0.4.24"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
-  integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
@@ -7000,6 +7168,11 @@ loglevel@^1.4.1:
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.6.1.tgz#e0fc95133b6ef276cdc8887cdaf24aa6f156f8fa"
   integrity sha1-4PyVEztu8nbNyIh82vJKpvFW+Po=
 
+long@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/long/-/long-3.2.0.tgz#d821b7138ca1cb581c172990ef14db200b5c474b"
+  integrity sha1-2CG3E4yhy1gcFymQ7xTbIAtcR0s=
+
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.2.0, loose-envify@^1.3.1, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
@@ -7026,17 +7199,6 @@ lru-cache@^5.1.1:
   integrity sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==
   dependencies:
     yallist "^3.0.2"
-
-luma.gl@^6.4.2:
-  version "6.4.3"
-  resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-6.4.3.tgz#e27c8201cf8f97d39fa90c6340a9014dadfd738f"
-  integrity sha512-1KrupHSZ9H0+OO9AS1d6WGxIX9u0jQh38tSuoXN9sOt3XYH0nJDzNPes37UPaz0m/7Lj2UKc6sJnTC8+u41nfQ==
-  dependencies:
-    "@babel/runtime" "^7.0.0"
-    math.gl "^2.3.0"
-    probe.gl "^2.0.1"
-    seer "^0.2.4"
-    webgl-debug "^2.0.0"
 
 make-dir@^2.0.0:
   version "2.1.0"
@@ -7072,10 +7234,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mapbox-gl@~0.53.0:
-  version "0.53.1"
-  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-0.53.1.tgz#08a956d8da54b04bc7f29ab1319bddb9c97ddedf"
-  integrity sha512-dTtW/qlkUowKGlqOhE8fqII2Tj4lcokvlZwUDLnkjy4uQ9zMFnVBULGeSzzTVkj9HtQZ3Zbey10/jmoVPV9t5w==
+mapbox-gl@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-1.0.0.tgz#646df3e1812899f4331ab8ea695b182f4a4ea7d9"
+  integrity sha512-+sfg6e3Ud6G9PNcdA56r6U0j2SJEQrnTTx/V8xt0xedIN9hrGIceKIukWz+tAgrw0KS5GKi6ThkWXPuwcGi36g==
   dependencies:
     "@mapbox/geojson-rewind" "^0.4.0"
     "@mapbox/geojson-types" "^1.0.2"
@@ -7088,7 +7250,7 @@ mapbox-gl@~0.53.0:
     "@mapbox/whoots-js" "^3.1.0"
     csscolorparser "~1.0.2"
     earcut "^2.1.5"
-    esm "^3.0.84"
+    esm "~3.0.84"
     geojson-vt "^3.2.1"
     gl-matrix "^3.0.0"
     grid-index "^1.1.0"
@@ -7124,9 +7286,9 @@ math-random@^1.0.1:
   integrity sha512-rUxjysqif/BZQH2yhd5Aaq7vXMSx9NdEsQcyA07uEzIvxgI7zIr33gGsh+RU0/XjmQpCW7RsVof1vlkvQVCK5A==
 
 math.gl@^2.3.0:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/math.gl/-/math.gl-2.3.1.tgz#4099e0e34f03dbc458e57945583badb3a517ce8f"
-  integrity sha512-364xFXawzGCp46BmaEcKMAYgDLsaSqXO3ki4XAh+8aJAFNcdJFeORpoZFRLdZMZzwdOepwfcc+rk3LhDNJZF1Q==
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/math.gl/-/math.gl-2.3.3.tgz#69d07904507145c639835aefcd0ec5e790cd3046"
+  integrity sha512-wZhx7574KHUpJVMzkaQ559zfn3R8iB0BOilwNrfL/fOLQfPo2TPWsKX96PdfS4svKA2XIGi3yfizrv2Redcv0g==
   dependencies:
     "@babel/runtime" "^7.0.0"
     gl-matrix "^3.0.0"
@@ -7393,10 +7555,10 @@ mixin-object@^2.0.1:
     for-in "^0.1.3"
     is-extendable "^0.1.1"
 
-mjolnir.js@^2.0.3, mjolnir.js@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/mjolnir.js/-/mjolnir.js-2.1.0.tgz#e8a4727e86d8f9352d6b6fe9cdc6faab0dcff15e"
-  integrity sha512-XVvwByhXGvgWJs/mFsekE1cmg3l/KrRIqaJ5oO5DFEyG//NbQssPIuFOjKrZYQ4rFkRZRq+FN4EcecUPSGR89g==
+mjolnir.js@^2.1.1, mjolnir.js@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/mjolnir.js/-/mjolnir.js-2.1.2.tgz#db89819c418b6f3d200b1c51386fc7487f98bd5a"
+  integrity sha512-OjvkNzTCdJd/I7XxgIomNozYS6me6OWY+t8I6SZlINaFmNmgAW3I5x+Hd8sgA+WxAjFvBf576lD7N1MGo89/WA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     hammerjs "^2.0.8"
@@ -7480,19 +7642,20 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-nebula.gl-react@^0.7.6:
-  version "0.7.6"
-  resolved "https://registry.yarnpkg.com/nebula.gl-react/-/nebula.gl-react-0.7.6.tgz#51c0a73ff5f21c1f8e4c59e9a185003c46c756fb"
-  integrity sha512-Qmd1wf2Tf8rxAGct0vmIjhLHQ9t08KiwzBO7Hcai2DA0Y6dGRh3XpJ55kztcF7K6TiJlDTQ6xYAqBA4ngQrGsQ==
+nebula.gl-react@0.10.5:
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/nebula.gl-react/-/nebula.gl-react-0.10.5.tgz#9095c854a710e83dd9ad756aeb112bc456127fea"
+  integrity sha512-ShPaGkPod65r7xzE1yFc3D+90kgqCSj7XDEJrA7P0Z5GYF4jImPgVVIQc48SZvKE8zXxm3a7qrGGOnEewjJn0Q==
   dependencies:
-    nebula.gl "0.7.6"
+    nebula.gl "0.10.5"
+    supercluster "^6.0.1"
 
-nebula.gl@0.7.6, nebula.gl@^0.7.6:
-  version "0.7.6"
-  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.7.6.tgz#4857dedd7228e330224592e0db7ff68e1216fba3"
-  integrity sha512-m2MYSJDyw6jlFg3w/YpX1sjaIqleJkXDycpuuXrHR2+hW1i7cE1TUEmNVazSzLJC0z+CM6+4cBwh7Ktp8AsqqQ==
+nebula.gl@0.10.5:
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.10.5.tgz#f4de5faa037b5d7f4ed8ff9a09b00b73073d8543"
+  integrity sha512-JM0BlTcSF+FrdmAQ18YUGZJux6QkNdlN4he7CXvIqkN3pfWjAyeS7irUmgECpVSUeaVxBwlsRRcen/L+LOSQfg==
   dependencies:
-    "@deck.gl/experimental-layers" ">=6.0.3"
+    "@luma.gl/constants" "^7.0.0-alpha.3"
     "@turf/bbox" ">=4.0.0"
     "@turf/bbox-polygon" ">=4.0.0"
     "@turf/bearing" ">=4.0.0"
@@ -7519,7 +7682,40 @@ nebula.gl@0.7.6, nebula.gl@^0.7.6:
     deck.gl ">=6.0.5"
     geojson-types "^2.0.1"
     global ">=4.3.0"
-    supercluster ">=2.3.0"
+    viewport-mercator-project ">=5.0.0"
+
+nebula.gl@0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/nebula.gl/-/nebula.gl-0.13.0.tgz#a768335018c465e8044795391017af6ce360fff0"
+  integrity sha512-guQfa2o1epN2SkYuFMa9y7mtudI+TlOryABzipV4s04hsQOwQ9i/bqAcMtEb2gAuAP95yk+ANttxaJv7+DDGfQ==
+  dependencies:
+    "@luma.gl/constants" "^7.0.0"
+    "@nebula.gl/layers" "^0.13.0"
+    "@turf/bbox" ">=4.0.0"
+    "@turf/bbox-polygon" ">=4.0.0"
+    "@turf/bearing" ">=4.0.0"
+    "@turf/boolean-point-in-polygon" ">=4.0.0"
+    "@turf/buffer" ">=4.0.0"
+    "@turf/center" ">=4.0.0"
+    "@turf/centroid" ">=4.0.0"
+    "@turf/circle" ">=4.0.0"
+    "@turf/destination" ">=4.0.0"
+    "@turf/difference" ">=4.0.0"
+    "@turf/distance" ">=4.0.0"
+    "@turf/ellipse" ">=4.0.0"
+    "@turf/helpers" ">=4.0.0"
+    "@turf/intersect" ">=4.0.0"
+    "@turf/line-intersect" ">=4.0.0"
+    "@turf/nearest-point-on-line" ">=4.0.0"
+    "@turf/point-to-line-distance" ">=4.0.0"
+    "@turf/polygon-to-line" ">=4.0.0"
+    "@turf/transform-rotate" ">=4.0.0"
+    "@turf/transform-scale" ">=4.0.0"
+    "@turf/transform-translate" ">=4.0.0"
+    "@turf/union" ">=4.0.0"
+    cubic-hermite-spline "^1.0.1"
+    geojson-types "^2.0.1"
+    global ">=4.3.0"
     viewport-mercator-project ">=5.0.0"
 
 needle@^2.2.1:
@@ -8950,10 +9146,10 @@ private@^0.1.6, private@^0.1.8:
   resolved "https://registry.yarnpkg.com/private/-/private-0.1.8.tgz#2381edb3689f7a53d653190060fcf822d2f368ff"
   integrity sha512-VvivMrbvd2nKkiG38qjULzlc+4Vx4wm/whI9pQD35YrARNnhxeiRktSOhSukRLFNlzg6Br/cJPet5J/u19r/mg==
 
-probe.gl@^2.0.1:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/probe.gl/-/probe.gl-2.1.0.tgz#4b5c0c2b4397a0d000f773036d74c0e0fd0f5879"
-  integrity sha512-15qr6m/UxJoSatwhDBUnvdPPNfM8j4tHzr7PuXHMVK/sZvc/f4Lo6/4rgHz5iBF5mXRsOtsOGFDsqzAyBQCk+g==
+probe.gl@^3.0.1, probe.gl@^3.0.2:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/probe.gl/-/probe.gl-3.0.3.tgz#e4d13bbd38c5895b54b4740e72468e65d66ae584"
+  integrity sha512-nkE+rh4m2JRQqorW327X7rVogknVmNvgrtcDG4F3OxckAIHSi4l/PUPy6GVaI6PIUJC7CYx4WYwcdgh4RUJe7A==
   dependencies:
     "@babel/runtime" "^7.0.0"
 
@@ -8966,11 +9162,6 @@ process@^0.11.10:
   version "0.11.10"
   resolved "https://registry.yarnpkg.com/process/-/process-0.11.10.tgz#7332300e840161bda3e69a1d1d91a7d4bc16f182"
   integrity sha1-czIwDoQBYb2j5podHZGn1LwW8YI=
-
-process@~0.5.1:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/process/-/process-0.5.2.tgz#1638d8a8e34c2f440a91db95ab9aeb677fc185cf"
-  integrity sha1-FjjYqONML0QKkduVq5rrZ3/Bhc8=
 
 progress@^2.0.0:
   version "2.0.3"
@@ -9004,7 +9195,7 @@ prompts@^0.1.9:
     kleur "^2.0.1"
     sisteransi "^0.1.1"
 
-prop-types@^15.5.4, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
+prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -9181,7 +9372,7 @@ raw-body@2.3.3:
     iconv-lite "0.4.23"
     unpipe "1.0.0"
 
-rbush@*:
+rbush@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/rbush/-/rbush-2.0.2.tgz#bb6005c2731b7ba1d5a9a035772927d16a614605"
   integrity sha512-XBOuALcTm+O/H8G90b6pzu6nX6v2zCKiFG4BJho8a+bY6AER6t8uQUZdi5bomQc0AprCWhEGa7ncAbbRap0bRA==
@@ -9303,15 +9494,15 @@ react-map-gl-geocoder@^1.7.0:
     prop-types "^15.6.2"
     viewport-mercator-project "6.1.1"
 
-react-map-gl@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-4.1.1.tgz#354baa5e5b4afbf21b4252983e44804b10a112d4"
-  integrity sha512-GvbaGLD5AGFDmhHPC0vMVITjNZbGHrXJjzZPKSP/2OiCzQA5JOt9hivJ4N/hkU82XhO9FzQtLk0p1SEmYdnO2A==
+react-map-gl@5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-5.0.3.tgz#d48279da5f9c7ac9e674388abe3d40b32206408b"
+  integrity sha512-lvnSId2IQ8GQmOb97MSNFECiH39uq8nYn86WVLN0NtGmlalXDGyMlXi6pqnWE45mGqfY3nuu3cgh+J6ekMze7w==
   dependencies:
     "@babel/runtime" "^7.0.0"
-    mapbox-gl "~0.53.0"
-    mjolnir.js "^2.1.0"
-    prop-types "^15.5.7"
+    mapbox-gl "^1.0.0"
+    mjolnir.js "^2.1.1"
+    prop-types "^15.7.2"
     react-virtualized-auto-sizer "^1.0.2"
     viewport-mercator-project "^6.1.0"
 
@@ -9516,16 +9707,6 @@ readable-stream@^3.0.6, readable-stream@^3.1.1:
     inherits "^2.0.3"
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
-
-readable-stream@~1.1.0:
-  version "1.1.14"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.1.14.tgz#7cf4c54ef648e3813084c636dd2079e166c081d9"
-  integrity sha1-fPTFTvZI44EwhMY23SB54WbAgdk=
-  dependencies:
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "0.0.1"
-    string_decoder "~0.10.x"
 
 readdirp@^2.2.1:
   version "2.2.1"
@@ -9895,7 +10076,7 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rw@^1.3.3:
+rw@1, rw@^1.3.3:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/rw/-/rw-1.3.3.tgz#3f862dfa91ab766b14885ef4d01124bfda074fb4"
   integrity sha1-P4Yt+pGrdmsUiF700BEkv9oHT7Q=
@@ -9906,6 +10087,13 @@ rxjs@^6.1.0, rxjs@^6.4.0:
   integrity sha512-Z9Yfa11F6B9Sg/BK9MnqnQ+aQYicPLtilXBp2yUtDt2JRCE0h26d33EnfO3ZxoNxG0T92OUucP3Ct7cpfkdFfw==
   dependencies:
     tslib "^1.9.0"
+
+s2-geometry@^1.2.10:
+  version "1.2.10"
+  resolved "https://registry.yarnpkg.com/s2-geometry/-/s2-geometry-1.2.10.tgz#c6ff22f3eccafd0eea491b60b44c141b9887acab"
+  integrity sha1-xv8i8+zK/Q7qSRtgtEwUG5iHrKs=
+  dependencies:
+    long "^3.2.0"
 
 safe-buffer@5.1.2, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
@@ -9991,9 +10179,9 @@ schema-utils@^1.0.0:
     ajv-keywords "^3.1.0"
 
 seer@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/seer/-/seer-0.2.4.tgz#6b8a81d09bfe6b3b3ad0268971a65e7f7405135c"
-  integrity sha512-d+X19YtDXXK3giW0xYO7DTzLfSqsFoq9gFr0j1g3SqyX63uhbQnZ/UZIJ1Xcr24I3e4JLKqg85q8bbpAOkKNGw==
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/seer/-/seer-0.2.5.tgz#f0975153741f4d1c3916a144eef4738458bcb05a"
+  integrity sha512-//0Zwt0x97KQhIWrp4oq9AVNvGA2ctCx4dmFddpkORjRr6bW+hyC8eOhWBVIhiU3uHv1XLU1dekfFKOi28RGHA==
 
 select-hose@^2.0.0:
   version "2.0.0"
@@ -10127,16 +10315,13 @@ shallow-clone@^1.0.0:
     mixin-object "^2.0.1"
 
 sharkdown@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/sharkdown/-/sharkdown-0.1.0.tgz#61d4fe529e75d02442127cc9234362265099214f"
-  integrity sha1-YdT+Up510CRCEnzJI0NiJlCZIU8=
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/sharkdown/-/sharkdown-0.1.1.tgz#64484bd0f08f347f8319e9ff947a670f6b48b1b2"
+  integrity sha512-exwooSpmo5s45lrexgz6Q0rFQM574wYIX3iDZ7RLLqOb7IAoQZu9nxlZODU972g19sR69OIpKP2cpHTzU+PHIg==
   dependencies:
     cardinal "~0.4.2"
-    expect.js "~0.2.0"
     minimist "0.0.5"
     split "~0.2.10"
-    stream-spigot "~2.1.2"
-    through "~2.3.4"
 
 shebang-command@^1.2.0:
   version "1.2.0"
@@ -10542,13 +10727,6 @@ stream-shift@^1.0.0:
   resolved "https://registry.yarnpkg.com/stream-shift/-/stream-shift-1.0.0.tgz#d5c752825e5367e786f78e18e445ea223a155952"
   integrity sha1-1cdSgl5TZ+eG944Y5EXqIjoVWVI=
 
-stream-spigot@~2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/stream-spigot/-/stream-spigot-2.1.2.tgz#7de145e819f8dd0db45090d13dcf73a8ed3cc035"
-  integrity sha1-feFF6Bn43Q20UJDRPc9zqO08wDU=
-  dependencies:
-    readable-stream "~1.1.0"
-
 string-length@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/string-length/-/string-length-2.0.0.tgz#d40dbb686a3ace960c1cffca562bf2c45f8363ed"
@@ -10589,11 +10767,6 @@ string_decoder@^1.0.0, string_decoder@^1.1.1:
   integrity sha512-6YqyX6ZWEYguAxgZzHGL7SsCeGx3V2TtOTqZz1xSTSWnqsbWwbptafNyvf/ACquZUXV3DANr5BDIwNYe1mN42w==
   dependencies:
     safe-buffer "~5.1.0"
-
-string_decoder@~0.10.x:
-  version "0.10.31"
-  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
-  integrity sha1-YuIDvEF2bGwoyfyEMB2rHFMQ+pQ=
 
 string_decoder@~1.1.1:
   version "1.1.1"
@@ -10694,7 +10867,7 @@ suggestions@^1.3.2:
     fuzzy "^0.1.1"
     xtend "^4.0.0"
 
-supercluster@>=2.3.0, supercluster@^6.0.1:
+supercluster@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/supercluster/-/supercluster-6.0.1.tgz#4c0177d96daa195d58a5bad9f55dbf12fb727a4c"
   integrity sha512-NTth/FBFUt9mwW03+Z6Byscex+UHu0utroIe6uXjGu9PrTuWtW70LYv9I1vPSYYIHQL74S5zAkrXrHEk0L7dGA==
@@ -10851,7 +11024,7 @@ through2@^2.0.0:
     readable-stream "~2.3.6"
     xtend "~4.0.1"
 
-through@2, through@^2.3.6, through@~2.3.4:
+through@2, through@^2.3.6:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
@@ -10894,9 +11067,9 @@ tinyqueue@^1.2.0:
   integrity sha512-Qz9RgWuO9l8lT+Y9xvbzhPT2efIUIFd69N7eF7tJ9lnQl0iLj1M7peK7IoUGZL9DJHw9XftqLreccfxcQgYLxA==
 
 tinyqueue@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/tinyqueue/-/tinyqueue-2.0.0.tgz#8c40ceddd977bf133ffb35e903e0abe99d9d4e97"
-  integrity sha512-CuwAcoAyhS73YgUpTVWI6t/t2mo9zfqbxTbnu4B1U6QPPhq3mxMxywSbo3cWykan4cBkXBfE8F7qulYrNcsHyQ==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/tinyqueue/-/tinyqueue-2.0.3.tgz#64d8492ebf39e7801d7bd34062e29b45b2035f08"
+  integrity sha512-ppJZNDuKGgxzkHihX8v9v9G5f+18gzaTfrukGrq6ueg0lmH4nqVnA2IPG0AEH3jKEk2GRJCUhDoqpoiw3PHLBA==
 
 tlds@^1.203.1:
   version "1.203.1"
@@ -11430,11 +11603,6 @@ web-namespaces@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/web-namespaces/-/web-namespaces-1.1.2.tgz#c8dc267ab639505276bae19e129dbd6ae72b22b4"
   integrity sha512-II+n2ms4mPxK+RnIxRPOw3zwF2jRscdJIUE9BfkKHm4FYEg9+biIoTMnaZF5MpemE3T+VhMLrhbyD4ilkPCSbg==
-
-webgl-debug@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/webgl-debug/-/webgl-debug-2.0.1.tgz#dc11bea3d947764bce061fdb5a23109c13787c95"
-  integrity sha512-G7BOpMmqdc31X1nb3eqwVxw/v1MNV/ulgw7Bs+7+a/sn+fC0d0OiMkerA55C6+3BL2vULyJ3kZLPcEL5GbXzhw==
 
 webidl-conversions@^4.0.2:
   version "4.0.2"

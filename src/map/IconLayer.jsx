@@ -1,0 +1,29 @@
+import { IconLayer } from '@deck.gl/layers';
+
+export const makeIconLayer = (features, onHoverFn) => {
+    const points = features.filter(
+        f => f.geometry.type.toUpperCase() === "POINT"
+    );
+    return new IconLayer({
+        id: "panda-icon-layer",
+        data: points,
+        pickable: true,
+        iconAtlas: "/icon-atlas.png",
+        iconMapping: {
+            marker: {
+                x: 0,
+                y: 0,
+                width: 128,
+                height: 128,
+                anchorY: 128,
+                mask: true
+            }
+        },
+        sizeScale: 3,
+        getPosition: d => d.geometry.coordinates,
+        getIcon: d => "marker",
+        getSize: 15,
+        getColor: d => [255, 128, 0],
+        onHover: onHoverFn ? onHoverFn : null
+    });
+}

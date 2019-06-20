@@ -11,8 +11,10 @@ import {
   IconButton,
   Divider
 } from "@material-ui/core";
-import { MoreVert } from "@material-ui/icons";
+import { MoreVert, VerticalSplit, ViewStream, Place } from "@material-ui/icons";
 
+import { withRouter, RouteComponentProps } from "react-router-dom";
+import classnames from "classnames";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
 const styles = (theme: Theme) =>
@@ -29,14 +31,20 @@ const styles = (theme: Theme) =>
       position: "fixed",
       boxShadow: "none",
       backgroundColor: "#fafafa",
-      [theme.breakpoints.up("md")]: {
+      left: 0,
+      zIndex: 1000,
+      width: "100%"
+    },
+    stdWidth: {
+      width: "100%"
+    },
+    responsiveWidth: {
+      [theme.breakpoints.up("sm")]: {
         width: "50%"
       },
-      [theme.breakpoints.down("md")]: {
+      [theme.breakpoints.down("sm")]: {
         width: "100%"
       },
-      left: 0,
-      zIndex: 1000
     },
     editorSubMenu: {
       display: "flex",
@@ -58,10 +66,11 @@ const styles = (theme: Theme) =>
     }
   });
 
-export interface IAppProps {
+export interface IAppProps extends RouteComponentProps {
   classes?: any;
   readonly: boolean;
   isPublishable: boolean;
+  layout: string;
   onCreateNewClick: () => void;
   onPublishClick: () => void;
 }
@@ -126,6 +135,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
   public render() {
     const {
       classes,
+      layout,
       onCreateNewClick,
       onPublishClick,
       isPublishable,
@@ -133,7 +143,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
     } = this.props;
     const { anchorEl } = this.state;
     return (
-      <div className={classes.appBar}>
+      <div className={classnames(classes.appBar)} >
         <AppBar
           position="sticky"
           style={{
@@ -175,7 +185,8 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
               aria-label="More"
               aria-owns={open ? "long-menu" : undefined}
               aria-haspopup="true"
-              color="secondary"
+              color="default"
+              style={{ background: "#00acc1" }}
               onClick={this.handleClick}
             >
               <MoreVert fontSize="small" />
@@ -192,6 +203,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
               }}
             >
               <MenuItem
+                key="new"
                 className={classes.hamburgerMenuItem}
                 onClick={() => {
                   this.setState({ anchorEl: null });
@@ -201,8 +213,11 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 New story
               </MenuItem>
               <Divider />
+              {this.layoutSubmenu()}
+              <Divider />
 
               <MenuItem
+                key="about"
                 className={classes.hamburgerMenuItem}
                 onClick={this.handleClose}
                 component="a"
@@ -217,7 +232,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 component="a"
                 href="https://app.mappandas.com/p/7cc926e0-7331-11e9-bf02-255f99646d1a"
               >
-                Top 5 Gluten Free / Plant-Based Cafes in Vancouver            
+                Top 5 Gluten Free / Plant-Based Cafes in Vancouver
               </MenuItem>
               <MenuItem
                 className={classes.hamburgerMenuItem}
@@ -225,7 +240,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
                 component="a"
                 href="https://app.mappandas.com/p/2a541f40-758f-11e9-8f52-a595fccd4a3f"
               >
-                14 Once in a Lifetime Destinations            
+                14 Once in a Lifetime Destinations
               </MenuItem>
               <MenuItem
                 className={classes.hamburgerMenuItem}
@@ -250,6 +265,28 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
     );
   }
 
+
+
+  layoutSubmenu = () => {
+    const { classes, layout } = this.props;
+    const menuItems = [
+      { key: "column", content: this.format(layout === "column", "Column layout"), icon: <VerticalSplit color="secondary" /> },
+      { key: "map", content: this.format(layout === "map", "Map layout"), icon: <Place color="secondary" /> },
+      { key: "classic", content: this.format(layout === "classic", "Classic layout"), icon: < ViewStream color="secondary" /> }
+    ]
+    return (menuItems.map(item => <MenuItem
+      key={item.key}
+      className={classes.hamburgerMenuItem}
+      onClick={() => this.handleLayout(item.key)}
+    >{item.icon}&nbsp;{item.content}
+    </MenuItem>)
+    );
+  }
+
+  format = (active: boolean, text: string) => {
+    return (active ? (<b>{text}</b>) : text)
+  };
+
   handleClick = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
@@ -257,8 +294,19 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
   handleClose = () => {
     this.setState({ anchorEl: null });
   };
+
+  handleLayout = (key: string) =>
+    (this.setState({ anchorEl: null }, () => {
+      //const this.props.locati
+      this.props.history.push("?layout=" + key)
+    })
+    )
+
+
 }
 
-export default withStyles(styles)(TopLevelAppBar);
+
+
+export default withStyles(styles)(withRouter(TopLevelAppBar));
 const EditorAppBar = withStyles(styles)(Editor);
 export { EditorAppBar };

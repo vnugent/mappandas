@@ -1,13 +1,9 @@
 import * as React from "react";
-import {
-  Route,
-  Switch,
-  withRouter,
-  RouteComponentProps
-} from "react-router-dom";
 import { Grid, withStyles } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
 import { FeatureCollection } from "geojson";
+import { withRouter, RouteComponentProps } from "react-router-dom";
+
 
 import * as _ from "underscore";
 import { Value } from "slate";
@@ -15,9 +11,6 @@ import { Value } from "slate";
 import { IPost, LatLng, IActiveFeature } from "./types/CustomMapTypes";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
-import DefaultURLHandler from "./DefaultURLHandler";
-import LatLngURLHandler from "./LatLngURLHandler";
-import ShowPandaURLHandler from "./ShowPandaURLHandler";
 import * as GeoHelper from "./GeoHelper";
 import * as restClient from "./RestClient";
 //import LastN from "./Filters/LastN";
@@ -29,6 +22,7 @@ import ScrollToTop from "./ScrollToTop";
 import Popup from "./map/Popup";
 import TextPane from "./TextPane";
 import TopLevelAppBar from "./AppBars";
+import LayoutManager from "./LayoutManager";
 
 import { initialValue } from "./edit/slate-default";
 import { computeGeojson, documentToGeojson } from "./document2geojson";
@@ -49,6 +43,7 @@ const styles = (theme: Theme) =>
       paddingTop: "80px",
       paddingBottom: theme.spacing.unit * 3,
       boxSizing: "border-box",
+      display: "flex",
       alignItems: "stretch"
     }
   });
@@ -65,7 +60,12 @@ const NEW_POST = (): IPost => ({
 });
 
 interface IAppProps extends RouteComponentProps {
+  urlKey: string;
   classes: any;
+  uuid: string;
+  editNew: boolean;
+  editable: boolean;
+  layout: string;  // column | classic | map 
 }
 
 interface IAppState {
@@ -76,11 +76,12 @@ interface IAppState {
   viewstate: any;
   mapStyle: string;
   myLocation: LatLng;
-  hoveredFeature: IActiveFeature | null;
+  hoveredData: any;
   publishable: boolean;
+  dataLoaded: boolean;
 }
 
-class App extends React.Component<IAppProps, IAppState> {
+class Editor extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
     super(props);
     this.state = {
@@ -91,13 +92,14 @@ class App extends React.Component<IAppProps, IAppState> {
   getState0 = (): IAppState => ({
     post: NEW_POST(),
     geojson: GeoHelper.NEW_FC(),
-    mode: "edit",
+    mode: this.props.editable ? "edit" : "share",
     share_screen: false,
     viewstate: GeoHelper.INITIAL_VIEWSTATE(),
     mapStyle: "light-v9",
     myLocation: GeoHelper.DEFAULT_LATLNG,
-    hoveredFeature: null,
-    publishable: false
+    hoveredData: null,
+    publishable: false,
+    dataLoaded: false
   });
 
   getStateNewEdit = () => ({
@@ -108,39 +110,46 @@ class App extends React.Component<IAppProps, IAppState> {
   });
 
   onNewButtonClick = () => {
-    document.title = "MapPandas - Draft";
-    this.setState(this.getStateNewEdit(), () => {
-      this.props.history.push("/", { dontMoveMap: true });
-    });
+    //document.title = "MapPandas - Draft";
+    //_.delay(this._locateMe, 300);
+    // this.setState(this.getStateNewEdit(), () => {
+    //   //this.props.history.push("/", { dontMoveMap: true });
+    // });
+    this.initializeForNew();
+    this.props.history.push("/new?layout=" + this.props.layout, { dontMoveMap: true });
   };
 
   /**
    * Handle new data from the backend
    */
-  onDataLoaded = (post: IPost, editable: boolean): void => {
+  onDataLoaded = (post: IPost): void => {
     if (post.content && post.content.document) {
-      const mode = editable ? "edit" : "share";
-      this.setState({ post, mode });
+
+      const mode = this.props.editable ? "edit" : "share";
+      this.setState({ post, mode} );
       this.updateDocTitle(post.content);
       const geojson = documentToGeojson(post.content.document);
-      this.updateStateFromGeojson(geojson);
+      _.delay(() => this.updateStateFromGeojson(geojson), 1000);
     }
   };
 
-  onInitialized = (_viewstate: any) => {
-    this.setState(
-      this.getStateNewEdit(),
-      () => (document.title = this.state.post.title)
+  initializeForNew = () => {
+    this.updateDimensions();
+    this.setState({
+      ...this.getStateNewEdit()
+    },
+      () => {
+        document.title = this.state.post.title;
+      }
     );
-    this._locateMe();
+    _.delay(this._locateMe, 300);
+
   };
 
-  onViewstateChanged = _viewstate => {
-    const newVS = _viewstate.viewState
-      ? _viewstate.viewState
-      : { ...this.state.viewstate, ..._viewstate };
-    this.setState({ viewstate: newVS });
+  onViewstateChanged = ({ viewState }) => {
+    this.setState({ viewstate: viewState })
   };
+
   onShareScreenClose = event => {
     this.setState(
       { share_screen: false },
@@ -150,13 +159,13 @@ class App extends React.Component<IAppProps, IAppState> {
 
   onMapStyleChange = (style: string) => this.setState({ mapStyle: style });
 
-  updateDimensions = _.debounce(() => {
+  updateDimensions = () => {
     const { width, height } = this.getMapDivDimensions();
     const newViewport = Object.assign({}, this.state.viewstate);
     newViewport.width = width;
     newViewport.height = height;
     this.setState({ viewstate: newViewport });
-  }, 400);
+  };
 
   getMapDivDimensions = () => {
     const div = document.getElementById("mapng");
@@ -167,11 +176,23 @@ class App extends React.Component<IAppProps, IAppState> {
       //height = div.clientHeight;
     }
     const height = window.innerHeight;
+    //console.log("#mapDivDimensions", width, height);
     return { width, height };
   };
 
   componentDidMount() {
+    this._locateMe();
     this.updateDimensions();
+
+    const { uuid, editNew } = this.props;
+    if (!editNew) {
+      getGeojsonFromCacheOrRemote(uuid).then(post => {
+        this.onDataLoaded(post);
+      });
+    } else {
+      this.initializeForNew();
+    };
+
     window.addEventListener("resize", this.updateDimensions);
   }
 
@@ -179,92 +200,97 @@ class App extends React.Component<IAppProps, IAppState> {
     window.removeEventListener("resize", this.updateDimensions);
   }
 
+  shouldComponentUpdate(nextProps) {
+    return true;
+  }
+
+  // componentDidUpdate(prevProps: IAppProps) {
+  //   console.log("#Editor.componentDidUpdate() ", this.props);
+  //   const { layout, editNew } = this.props;
+  //   if ((layout !== prevProps.layout) && (layout === "map" || layout === "column")) {
+  //     //this.updateDimensions();
+  //   }
+
+  //   if (editNew && (this.props.layout !== prevProps.layout)) {
+  //     // this.initializeForNew();
+  //     //this.onDataLoaded(this.state.post);
+
+  //     // this.forceUpdate(() => {
+  //     //   console.log("#forceUpdate()")
+  //     // });
+  //   }
+  // }
+
+  // componentDidUpdate(prevProps: IAppProps, prevSta) {
+  //   console.log("#Editor.CDU() ", prevProps, this.props);
+
+  //   const prevUrlParams = new URLSearchParams(prevProps.location.search);
+  //   const prevLayout = parseLayout(prevUrlParams.get("layout"));
+
+  //   const urlParams = new URLSearchParams(this.props.location.search);
+  //   const layout = parseLayout(urlParams.get("layout"));
+
+
+  //   if (layout !== prevLayout) {
+  //     this.setState({ layout });
+  //     //this.props.updateLayout(layout);
+  //     const uuid = this.props.match.params["uuid"];
+
+  //     //this.getGeojsonFromCacheOrRemote(uuid, false, layout);
+
+  //   }
+  // }
+
   public render() {
-    const { classes } = this.props;
-    const { mode, post } = this.state;
+    const { classes, layout, urlKey, editable } = this.props;
+    const { mode, post, dataLoaded } = this.state;
     return (
-      <div className={classes.root}>
+      <div className={classes.root} key={this.props.urlKey}>
         <TopLevelAppBar
-          readonly={mode === "share"}
+          readonly={!editable}
+          layout={layout}
           isPublishable={this.state.publishable}
           onCreateNewClick={this.onNewButtonClick}
           onPublishClick={this.onPublishClick}
         />
-        <Grid spacing={0} container={true} alignContent="stretch">
-          <Grid item xs={12} md={6}>
-            <div id="text-pane-id" className={classes.textPane}>
-              <TextPane>
-                <SmartEditor
-                  uuid={post.uuid}
-                  content={post.content}
-                  readonly={mode === "share"}
-                  onLocationUpdate={this.onLocationUpdateHandler}
-                  onContentChange={this.onContentChange}
-                />
-              </TextPane>
-            </div>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <div
-              id="mapng"
-              style={{
-                padding: 0,
-                position: "relative"
-              }}
-            >
-              <MapNG
-                geojson={this.state.geojson}
-                viewstate={this.state.viewstate}
-                onViewStateChanged={this.onViewstateChanged}
-                mapStyle={this.state.mapStyle}
-                onHover={this.onHover}
-              />
-              <Popup data={this.state.hoveredFeature} />
-            </div>
-            <LocateMe onClick={this._locateMe} />
-            <ScrollToTop />
-            <Switcher
-              currentStyle={this.state.mapStyle}
-              onChange={this.onMapStyleChange}
-            />
 
-            <ShareScreen
-              post={this.state.post}
-              open={this.state.share_screen}
-              onClose={this.onShareScreenClose}
+        <LayoutManager layout={layout} {...this.props} editor={<TextPane key={this.props.urlKey}
+        >
+          <SmartEditor
+            //key={post.uuid+layout}
+            key={urlKey}
+            uuid={post.uuid}
+            content={post.content}
+            readonly={!editable}
+            layout={layout}
+            onLocationUpdate={this.onLocationUpdateHandler}
+            onContentChange={this.onContentChange}
+          />
+        </TextPane>
+        }
+          map={<>
+            <MapNG
+              geojson={this.state.geojson}
+              viewstate={this.state.viewstate}
+              onViewStateChanged={this.onViewstateChanged}
+              mapStyle={this.state.mapStyle}
+              onPointHover={this.onMarkerHover}
             />
-            <Switch>
-              <Route
-                path="/@:lat?/:lng?/:zoom?"
-                render={props => (
-                  <LatLngURLHandler
-                    {...props}
-                    onLatLngChanged={this.onViewstateChanged}
-                  />
-                )}
-              />
-              <Route
-                path="/p/:uuid/:edit?"
-                render={props => (
-                  <ShowPandaURLHandler
-                    key={props.location.key}
-                    {...props}
-                    onDataLoaded={this.onDataLoaded}
-                  />
-                )}
-              />
-              } />
-              <Route
-                render={props => (
-                  <DefaultURLHandler
-                    {...props}
-                    onInitialized={this.onInitialized}
-                  />
-                )}
-              />
-            </Switch>
-          </Grid>
-        </Grid>
+            <Popup {...this.state.hoveredData} />
+          </>}
+        />
+        {/* <LocateMe onClick={this._locateMe} /> */}
+        <ScrollToTop />
+        {/* <Switcher
+          currentStyle={this.state.mapStyle}
+          onChange={this.onMapStyleChange}
+        /> */}
+
+        <ShareScreen
+          post={this.state.post}
+          open={this.state.share_screen}
+          onClose={this.onShareScreenClose}
+        />
       </div>
     );
   }
@@ -274,7 +300,7 @@ class App extends React.Component<IAppProps, IAppState> {
     const { post } = this.state;
     restClient.createPost(post).then(uuid => {
       this.setState({ share_screen: true });
-      this.props.history.replace(uri);
+      //this.props.history.replace(uri);
     });
   };
 
@@ -296,15 +322,20 @@ class App extends React.Component<IAppProps, IAppState> {
     } else {
       const { width, height } = this.getMapDivDimensions();
       const bbox = GeoHelper.bboxFromGeoJson(geojson);
-      const newViewstate = Object.assign(
-        this.state.viewstate,
-        GeoHelper.bbox2Viewport(bbox, width, height)
-      );
-      this.setState({ geojson, viewstate: newViewstate });
+
+      //const { longitude, latitude, zoom } = GeoHelper.fitbound(this.state.viewstate, bbox);
+      //console.log("#viewstate", newViewstate)
+      this.setState({
+        geojson, viewstate: {
+          ...this.state.viewstate,
+          ...GeoHelper.bbox2Viewport(bbox, width, height)
+        }
+      });
     }
   };
 
   _locateMe = () => {
+
     GeoHelper.getLatLngFromIP().then(latlng => {
       this.setState({
         // myLocation: latlng,
@@ -313,9 +344,9 @@ class App extends React.Component<IAppProps, IAppState> {
     });
   };
 
-  onHover = _.debounce((evt: IActiveFeature | null) => {
-    this.setState({ hoveredFeature: evt });
-  }, 100);
+  onMarkerHover = _.debounce(data => {
+    this.setState({ hoveredData: data });
+  }, 350);
 
 
   updateDocTitle = (content) => {
@@ -328,8 +359,18 @@ class App extends React.Component<IAppProps, IAppState> {
     document.title = this.state.mode === "edit" ? "Draft - " : "" + title.substring(0, 80);
     return title;
   }
+
 }
 
+const getGeojsonFromCacheOrRemote = async (uuid: string) => {
+  const post = await restClient.get(uuid);
+  const slateContent = Value.fromJSON(post.content);
+  post.content = Value.isValue(slateContent) ? slateContent : initialValue;
+  return post;
+  //   if (editable) {
+  //     post.uuid = uuidv1();
+  //   }
+};
 
-const RRApp = withRouter(App);
-export default withStyles(styles)(RRApp);
+
+export default withStyles(styles)(withRouter(Editor));

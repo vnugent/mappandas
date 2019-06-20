@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import {FlyToInterpolator} from 'deck.gl';
 import bbox from "@turf/bbox";
 import { FeatureCollection, BBox } from "geojson";
 import { LatLng, Bbox0, IPanda } from "./types/CustomMapTypes";
@@ -11,6 +11,8 @@ const uuidv1 = require("uuid/v1");
 export const DEFAULT_LATLNG: LatLng = {
   latitude: 37.7577,
   longitude: -122.4376
+  // latitude: 49,
+  // longitude: -123
 };
 
 export const NEW_FC = (): FeatureCollection => ({
@@ -26,13 +28,14 @@ export const NEW_FC = (): FeatureCollection => ({
 // });
 
 export const INITIAL_VIEWSTATE = () => ({
-  altitude: 0,
   //   width: window.innerWidth,
   //   height: window.innerHeight,
-  width: 400,
-  height: 250,
+  width: 1,
+  height: 1,
+  bearing: 0,
   zoom: 12,
-  pitch: 40,
+  pitch: 30,
+  transitionDuration: 1000,
   ...DEFAULT_LATLNG
 });
 
@@ -90,6 +93,15 @@ export const parse = (s: string, options?: any): IPanda => {
     geojson: data.geojson
   };
 };
+
+export const fitbound = (viewport: any, bbox: Bbox0) => {
+  const vp = new ViewportUtils.WebMercatorViewport(viewport);
+  console.log("#vp", bbox, vp);
+  return vp.fitBounds([[bbox[0], bbox[1]], [bbox[2], bbox[3]]], {
+    padding: 40
+  });
+
+}
 
 export const bbox2Viewport = (bbox: BBox, width: number, height: number) => {
   return ViewportUtils.fitBounds({
