@@ -1,6 +1,5 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { Value } from "slate";
 const uuidv1 = require("uuid/v1");
 
 import { initialValue } from "./edit/slate-default";

@@ -58,11 +58,12 @@ export default class PandaGL extends CompositeLayer {
           mask: true
         }
       },
-      sizeScale: 12,
+      sizeScale: 8,
       getPosition: d => d.geometry.coordinates,
       getIcon: d => "marker",
-      getSize: 6,
-      getColor: d => [255, 128, 0]
+      getSize: 3,
+      getColor: d => [255, 128, 0],
+      onHover: info => console.log("#info", info)
     });
   }
 

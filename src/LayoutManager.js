@@ -64,7 +64,6 @@ class LayoutManager extends React.PureComponent {
             <Grid item xs={12} style={{ flexGrow: 1 }}>
                 <div id="mapng" style={{ width: "100vw", flexShrink: 0 }}>
                     {this.props.map}
-                    {/* {this.props.editor()} */}
                 </div>
             </Grid>
         </Grid>);
@@ -84,6 +83,9 @@ class LayoutManager extends React.PureComponent {
                 <div
                     id="mapng"
                     style={{
+                        width: "100%",
+                        height: "100%",
+                        flexShrink: 0,
                         padding: 0,
                         position: "relative",
                     }}

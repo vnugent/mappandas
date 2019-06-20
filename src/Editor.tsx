@@ -2,6 +2,8 @@ import * as React from "react";
 import { Grid, withStyles } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
 import { FeatureCollection } from "geojson";
+import { withRouter, RouteComponentProps } from "react-router-dom";
+
 
 import * as _ from "underscore";
 import { Value } from "slate";
@@ -9,9 +11,6 @@ import { Value } from "slate";
 import { IPost, LatLng, IActiveFeature } from "./types/CustomMapTypes";
 import { FeatureCollection2 } from "@mappandas/yelapa";
 
-import DefaultURLHandler from "./DefaultURLHandler";
-import LatLngURLHandler from "./LatLngURLHandler";
-import ShowPandaURLHandler from "./ShowPandaURLHandler";
 import * as GeoHelper from "./GeoHelper";
 import * as restClient from "./RestClient";
 //import LastN from "./Filters/LastN";
@@ -60,7 +59,7 @@ const NEW_POST = (): IPost => ({
   }
 });
 
-interface IAppProps {
+interface IAppProps extends RouteComponentProps {
   urlKey: string;
   classes: any;
   uuid: string;
@@ -77,8 +76,9 @@ interface IAppState {
   viewstate: any;
   mapStyle: string;
   myLocation: LatLng;
-  hoveredFeature: IActiveFeature | null;
+  hoveredData: any;
   publishable: boolean;
+  dataLoaded: boolean;
 }
 
 class Editor extends React.Component<IAppProps, IAppState> {
@@ -97,8 +97,9 @@ class Editor extends React.Component<IAppProps, IAppState> {
     viewstate: GeoHelper.INITIAL_VIEWSTATE(),
     mapStyle: "light-v9",
     myLocation: GeoHelper.DEFAULT_LATLNG,
-    hoveredFeature: null,
+    hoveredData: null,
     publishable: false,
+    dataLoaded: false
   });
 
   getStateNewEdit = () => ({
@@ -109,10 +110,13 @@ class Editor extends React.Component<IAppProps, IAppState> {
   });
 
   onNewButtonClick = () => {
-    document.title = "MapPandas - Draft";
-    this.setState(this.getStateNewEdit(), () => {
-      //this.props.history.push("/", { dontMoveMap: true });
-    });
+    //document.title = "MapPandas - Draft";
+    //_.delay(this._locateMe, 300);
+    // this.setState(this.getStateNewEdit(), () => {
+    //   //this.props.history.push("/", { dontMoveMap: true });
+    // });
+    this.initializeForNew();
+    this.props.history.push("/new?layout=" + this.props.layout, { dontMoveMap: true });
   };
 
   /**
@@ -122,14 +126,14 @@ class Editor extends React.Component<IAppProps, IAppState> {
     if (post.content && post.content.document) {
 
       const mode = this.props.editable ? "edit" : "share";
-      this.setState({ post, mode });
+      this.setState({ post, mode} );
       this.updateDocTitle(post.content);
       const geojson = documentToGeojson(post.content.document);
-      this.updateStateFromGeojson(geojson);
+      _.delay(() => this.updateStateFromGeojson(geojson), 1000);
     }
   };
 
-  onInitialized = (_viewstate: any) => {
+  initializeForNew = () => {
     this.updateDimensions();
     this.setState({
       ...this.getStateNewEdit()
@@ -138,15 +142,14 @@ class Editor extends React.Component<IAppProps, IAppState> {
         document.title = this.state.post.title;
       }
     );
-    this._locateMe();
+    _.delay(this._locateMe, 300);
+
   };
 
-  onViewstateChanged = _viewstate => {
-    const newVS = _viewstate.viewState
-      ? _viewstate.viewState
-      : { ...this.state.viewstate, ..._viewstate };
-    this.setState({ viewstate: newVS });
+  onViewstateChanged = ({ viewState }) => {
+    this.setState({ viewstate: viewState })
   };
+
   onShareScreenClose = event => {
     this.setState(
       { share_screen: false },
@@ -156,13 +159,13 @@ class Editor extends React.Component<IAppProps, IAppState> {
 
   onMapStyleChange = (style: string) => this.setState({ mapStyle: style });
 
-  updateDimensions = _.debounce(() => {
+  updateDimensions = () => {
     const { width, height } = this.getMapDivDimensions();
     const newViewport = Object.assign({}, this.state.viewstate);
     newViewport.width = width;
     newViewport.height = height;
     this.setState({ viewstate: newViewport });
-  }, 400);
+  };
 
   getMapDivDimensions = () => {
     const div = document.getElementById("mapng");
@@ -178,16 +181,18 @@ class Editor extends React.Component<IAppProps, IAppState> {
   };
 
   componentDidMount() {
+    this._locateMe();
+    this.updateDimensions();
+
     const { uuid, editNew } = this.props;
     if (!editNew) {
       getGeojsonFromCacheOrRemote(uuid).then(post => {
         this.onDataLoaded(post);
       });
     } else {
-      this.onNewButtonClick();
+      this.initializeForNew();
     };
 
-    this.updateDimensions();
     window.addEventListener("resize", this.updateDimensions);
   }
 
@@ -199,20 +204,22 @@ class Editor extends React.Component<IAppProps, IAppState> {
     return true;
   }
 
-  componentDidUpdate(prevProps: IAppProps) {
-    const {layout} = this.props;
-    if (layout === "map" || layout === "column") {
-      this.updateDimensions();
-    }
+  // componentDidUpdate(prevProps: IAppProps) {
+  //   console.log("#Editor.componentDidUpdate() ", this.props);
+  //   const { layout, editNew } = this.props;
+  //   if ((layout !== prevProps.layout) && (layout === "map" || layout === "column")) {
+  //     //this.updateDimensions();
+  //   }
 
-    if (this.props.layout !== prevProps.layout) {
-      //this.onDataLoaded(this.state.post);
+  //   if (editNew && (this.props.layout !== prevProps.layout)) {
+  //     // this.initializeForNew();
+  //     //this.onDataLoaded(this.state.post);
 
-      // this.forceUpdate(() => {
-      //   console.log("#forceUpdate()")
-      // });
-    }
-  }
+  //     // this.forceUpdate(() => {
+  //     //   console.log("#forceUpdate()")
+  //     // });
+  //   }
+  // }
 
   // componentDidUpdate(prevProps: IAppProps, prevSta) {
   //   console.log("#Editor.CDU() ", prevProps, this.props);
@@ -236,7 +243,7 @@ class Editor extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { classes, layout, urlKey, editable } = this.props;
-    const { mode, post } = this.state;
+    const { mode, post, dataLoaded } = this.state;
     return (
       <div className={classes.root} key={this.props.urlKey}>
         <TopLevelAppBar
@@ -261,16 +268,17 @@ class Editor extends React.Component<IAppProps, IAppState> {
           />
         </TextPane>
         }
-          map={
+          map={<>
             <MapNG
               geojson={this.state.geojson}
               viewstate={this.state.viewstate}
               onViewStateChanged={this.onViewstateChanged}
               mapStyle={this.state.mapStyle}
-              onHover={this.onHover}
-            />}
+              onPointHover={this.onMarkerHover}
+            />
+            <Popup {...this.state.hoveredData} />
+          </>}
         />
-        <Popup data={this.state.hoveredFeature} />
         {/* <LocateMe onClick={this._locateMe} /> */}
         <ScrollToTop />
         {/* <Switcher
@@ -314,15 +322,20 @@ class Editor extends React.Component<IAppProps, IAppState> {
     } else {
       const { width, height } = this.getMapDivDimensions();
       const bbox = GeoHelper.bboxFromGeoJson(geojson);
-      const newViewstate = Object.assign(
-        this.state.viewstate,
-        GeoHelper.bbox2Viewport(bbox, width, height)
-      );
-      this.setState({ geojson, viewstate: newViewstate });
+
+      //const { longitude, latitude, zoom } = GeoHelper.fitbound(this.state.viewstate, bbox);
+      //console.log("#viewstate", newViewstate)
+      this.setState({
+        geojson, viewstate: {
+          ...this.state.viewstate,
+          ...GeoHelper.bbox2Viewport(bbox, width, height)
+        }
+      });
     }
   };
 
   _locateMe = () => {
+
     GeoHelper.getLatLngFromIP().then(latlng => {
       this.setState({
         // myLocation: latlng,
@@ -331,9 +344,9 @@ class Editor extends React.Component<IAppProps, IAppState> {
     });
   };
 
-  onHover = _.debounce((evt: IActiveFeature | null) => {
-    this.setState({ hoveredFeature: evt });
-  }, 100);
+  onMarkerHover = _.debounce(data => {
+    this.setState({ hoveredData: data });
+  }, 350);
 
 
   updateDocTitle = (content) => {
@@ -360,4 +373,4 @@ const getGeojsonFromCacheOrRemote = async (uuid: string) => {
 };
 
 
-export default withStyles(styles)(Editor);
+export default withStyles(styles)(withRouter(Editor));

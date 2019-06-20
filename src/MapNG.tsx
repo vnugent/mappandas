@@ -1,8 +1,9 @@
 import * as React from "react";
-import DeckGL, { MapController, GeoJsonLayer } from "deck.gl";
+import DeckGL, { MapController, GeoJsonLayer, MapView } from "deck.gl";
 import { StaticMap } from "react-map-gl";
 import { Hidden, withWidth } from "@material-ui/core";
 
+import { makeIconLayer } from "./map/IconLayer";
 
 //import Geocoder from "@mappandas/react-map-gl-geocoder";
 import Geocoder from "react-map-gl-geocoder";
@@ -19,7 +20,8 @@ interface IProps {
   mapStyle: string;
   viewstate: any;
   onViewStateChanged: (any) => void;
-  onHover?: (data: IActiveFeature | null) => void;
+  //onHover?: (data: IActiveFeature | null) => void;
+  onPointHover?: Function;
 }
 
 interface IState {
@@ -53,59 +55,66 @@ class MapNG extends React.Component<IProps, IState> {
     });
   };
 
-  _onHover = (evt: any) => {
-    if (this.props.onHover) {
-      if (!evt) {
-        this.props.onHover(null);
-      } else {
-        const { x, y, index, object } = evt;
-        this.props.onHover({ x, y, index, object });
-      }
-    }
-  };
+  // _onHover = (evt: any) => {
+  //   if (this.props.onHover) {
+  //     if (!evt) {
+  //       this.props.onHover(null);
+  //     } else {
+  //       const { x, y, index, object } = evt;
+  //       this.props.onHover({ x, y, index, object });
+  //     }
+  //   }
+  // };
 
   render() {
-    const { geojson, mapStyle } = this.props;
+    const { geojson, mapStyle, onPointHover, viewstate } = this.props;
     const layers =
       geojson.features && geojson.features.length > 0
-        ? new PandaGL({ data: geojson.features })
+        ? [makeIconLayer(geojson.features, onPointHover)]
         : [];
     if (this.state.searchResultLayer) {
       //layers.push(this.state.searchResultLayer);
     }
 
     return (
-        <DeckGL
-          initialViewState={this.props.viewstate}
-          {...this.props.viewstate}
-          layers={layers}
-          controller={{
-            type: MapController,
-            dragRotate: false,
-            doubleClickZoom: true
-          }}
-          onViewStateChange={this.props.onViewStateChanged}
-          onLayerHover={this._onHover}
-        >
-          <ResponsiveGeocoder
-            className="geocoder-container"
-            mapRef={this.mapRef}
-            onResult={this.handleOnResult}
-            onViewportChange={this.props.onViewStateChanged}
-            mapboxApiAccessToken={Config.MAPBOX_TOKEN}
-            position="top-left"
-            divId="search-container"
-            flyTo={false}
-          />
+      <DeckGL
+        initialViewState={viewstate}
+        viewState={viewstate}
+        layers={layers}
+        controller={{
+          type: MapController,
+          dragRotate: false,
+          doubleClickZoom: true
+        }}
+        onViewStateChange={this.props.onViewStateChanged}
+      //onHover={this._onHover}
+      >
+        {/* <ResponsiveGeocoder
+          className="geocoder-container"
+          mapRef={this.mapRef}
+          onResult={this.handleOnResult}
+          onViewportChange={this.props.onViewStateChanged}
+          mapboxApiAccessToken={Config.MAPBOX_TOKEN}
+          position="top-left"
+          divId="search-container"
+          flyTo={false}
+        /> */}
+        <MapView id="map" width="100%" controller={true} >
+
           <StaticMap
-            reuseMaps
+            asyncRender={true}
+            //{...this.props.viewstate}
+            viewState={viewstate}
+            // width="100%"
+            // height="100%"
+            //reuseMaps
             mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
-            viewState={this.props.viewstate}
-            preventStyleDiffing={true}
+            //preventStyleDiffing={false}
             mapboxApiAccessToken={Config.MAPBOX_TOKEN}
-            ref={this.mapRef}
+          //ref={this.mapRef}
           />
-        </DeckGL>
+        </MapView>
+      </DeckGL>
     );
   }
 }

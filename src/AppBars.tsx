@@ -185,7 +185,8 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
               aria-label="More"
               aria-owns={open ? "long-menu" : undefined}
               aria-haspopup="true"
-              color="secondary"
+              color="default"
+              style={{ background: "#00acc1" }}
               onClick={this.handleClick}
             >
               <MoreVert fontSize="small" />
@@ -202,6 +203,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
               }}
             >
               <MenuItem
+                key="new"
                 className={classes.hamburgerMenuItem}
                 onClick={() => {
                   this.setState({ anchorEl: null });
@@ -215,6 +217,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
               <Divider />
 
               <MenuItem
+                key="about"
                 className={classes.hamburgerMenuItem}
                 onClick={this.handleClose}
                 component="a"
@@ -272,6 +275,7 @@ class TopLevelAppBar extends React.Component<IAppProps, IAppState> {
       { key: "classic", content: this.format(layout === "classic", "Classic layout"), icon: < ViewStream color="secondary" /> }
     ]
     return (menuItems.map(item => <MenuItem
+      key={item.key}
       className={classes.hamburgerMenuItem}
       onClick={() => this.handleLayout(item.key)}
     >{item.icon}&nbsp;{item.content}

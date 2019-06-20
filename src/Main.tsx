@@ -2,6 +2,7 @@ import * as React from "react";
 import {
   Route,
   Switch,
+  Redirect,
 } from "react-router-dom";
 
 import ShowPandaURLHandler from "./ShowPandaURLHandler";
@@ -30,6 +31,7 @@ class Main extends React.Component<IAppProps, IAppState> {
 
   public render() {
     return (<Switch>
+    <Redirect exact from="/" to="/new"/>
       <Route path="/new" render={(props) => <ShowPandaURLHandler editNew={true} {...props} />} />
       <Route path="/p/:uuid?/:edit?" render={(props) => <ShowPandaURLHandler editNew={false} {...props} />} />
     </Switch>);
