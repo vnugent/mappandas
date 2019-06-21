@@ -32,6 +32,7 @@ export interface IAppProps {
   content: any;
   readonly: boolean;
   layout: string;
+  onCardHover: (id: number, on: boolean) => void;
   onLocationUpdate: (location, editor) => void;
   onContentChange: (content) => void;
 }
@@ -183,7 +184,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   };
 
   componentDidMount() {
-    console.log("#SmartEditor.CDM()", this.props.layout);
     this.timer = setInterval(this.saveDraft, 12000);
   }
 
@@ -200,16 +200,6 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     clearInterval(this.timer);
   }
 
-  componentDidUpdate = (prevProps: IAppProps) => {
-
-    if (this.props.layout !== prevProps.layout) {
-      console.log(" -- layout has changed");
-
-//      _.delay(this.forceUpdate, 200);
-
-    }
-    //this.editorRef.setData({ uuid: this.props.uuid });
-  };
 
   public render() {
     const { content, layout } = this.props;
@@ -248,6 +238,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   };
 
   renderNode = (props, editor, next) => {
+    const { onCardHover } = this.props;
     const { attributes, children, node, isFocused } = props;
     const { readonly } = this.props;
     const sideToolbar = !readonly && (
@@ -290,10 +281,12 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
             handlers={this.toolbarHandler}
             editor={this.editorRef}
             readonly={this.props.readonly}
+            onMouseout={id => (onCardHover(id, false))}
+            onMouseover={id => (onCardHover(id, true))}
           />
         );
       case "location":
-        return <Location attributes={attributes} children={children} />;
+        return <Location attributes={attributes} isFocused={isFocused} children={children} />;
       case "image": {
         const url = node.data.get("url");
         const src = url ? url : node.data.get("src");

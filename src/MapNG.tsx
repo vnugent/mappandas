@@ -22,6 +22,8 @@ interface IProps {
   onViewStateChanged: (any) => void;
   //onHover?: (data: IActiveFeature | null) => void;
   onPointHover?: Function;
+  onPointClick?: Function;
+  selectedFeature: any;
 }
 
 interface IState {
@@ -67,10 +69,10 @@ class MapNG extends React.Component<IProps, IState> {
   // };
 
   render() {
-    const { geojson, mapStyle, onPointHover, viewstate } = this.props;
+    const { geojson, mapStyle, onPointHover, onPointClick, viewstate, selectedFeature } = this.props;
     const layers =
       geojson.features && geojson.features.length > 0
-        ? [makeIconLayer(geojson.features, onPointHover)]
+        ? [makeIconLayer(geojson.features, onPointHover, onPointClick, selectedFeature)]
         : [];
     if (this.state.searchResultLayer) {
       //layers.push(this.state.searchResultLayer);
@@ -102,14 +104,10 @@ class MapNG extends React.Component<IProps, IState> {
         <MapView id="map" width="100%" controller={true} >
 
           <StaticMap
-            asyncRender={true}
-            //{...this.props.viewstate}
             viewState={viewstate}
-            // width="100%"
-            // height="100%"
-            //reuseMaps
+            reuseMaps
             mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
-            //preventStyleDiffing={false}
+            preventStyleDiffing={false}
             mapboxApiAccessToken={Config.MAPBOX_TOKEN}
           //ref={this.mapRef}
           />

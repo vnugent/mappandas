@@ -1,6 +1,6 @@
 import { IconLayer } from '@deck.gl/layers';
 
-export const makeIconLayer = (features, onHoverFn) => {
+export const makeIconLayer = (features, onHoverFn, onClickFn, selection) => {
     const points = features.filter(
         f => f.geometry.type.toUpperCase() === "POINT"
     );
@@ -20,10 +20,18 @@ export const makeIconLayer = (features, onHoverFn) => {
             }
         },
         sizeScale: 3,
+        autoHighlight: true,
+        highlightColor: [139, 195, 74],
         getPosition: d => d.geometry.coordinates,
         getIcon: d => "marker",
-        getSize: 15,
-        getColor: d => [255, 128, 0],
-        onHover: onHoverFn ? onHoverFn : null
+        getSize: d => isSelected(d, selection) ? 24 : 15,
+        getColor: d => isSelected(d, selection) ? [139, 195, 74] : [255, 128, 0],
+        onHover: onHoverFn ? onHoverFn : null,
+        onClick: onClickFn ? onClickFn : null
     });
+}
+
+const isSelected = (feature, selection) => {
+    const id = feature.properties.dataId;
+    return id === selection.id && selection.on ? true : false
 }

@@ -27,6 +27,7 @@ import LayoutManager from "./LayoutManager";
 import { initialValue } from "./edit/slate-default";
 import { computeGeojson, documentToGeojson } from "./document2geojson";
 import SmartEditor from "./edit/SmartEditor";
+import { feature } from "@turf/helpers";
 const uuidv1 = require("uuid/v1");
 
 const styles = (theme: Theme) =>
@@ -71,6 +72,7 @@ interface IAppProps extends RouteComponentProps {
 interface IAppState {
   post: IPost;
   geojson: FeatureCollection;
+  selectedFeature: any;
   mode: string;
   share_screen: boolean;
   viewstate: any;
@@ -91,6 +93,10 @@ class Editor extends React.Component<IAppProps, IAppState> {
 
   getState0 = (): IAppState => ({
     post: NEW_POST(),
+    selectedFeature: {
+      id: -1,
+      on: false
+    },
     geojson: GeoHelper.NEW_FC(),
     mode: this.props.editable ? "edit" : "share",
     share_screen: false,
@@ -126,7 +132,7 @@ class Editor extends React.Component<IAppProps, IAppState> {
     if (post.content && post.content.document) {
 
       const mode = this.props.editable ? "edit" : "share";
-      this.setState({ post, mode} );
+      this.setState({ post, mode });
       this.updateDocTitle(post.content);
       const geojson = documentToGeojson(post.content.document);
       _.delay(() => this.updateStateFromGeojson(geojson), 1000);
@@ -265,16 +271,19 @@ class Editor extends React.Component<IAppProps, IAppState> {
             layout={layout}
             onLocationUpdate={this.onLocationUpdateHandler}
             onContentChange={this.onContentChange}
+            onCardHover={this.onCardHover}
           />
         </TextPane>
         }
           map={<>
             <MapNG
               geojson={this.state.geojson}
+              selectedFeature={this.state.selectedFeature}
               viewstate={this.state.viewstate}
               onViewStateChanged={this.onViewstateChanged}
               mapStyle={this.state.mapStyle}
               onPointHover={this.onMarkerHover}
+              onPointClick={this.onPointClick}
             />
             <Popup {...this.state.hoveredData} />
           </>}
@@ -347,6 +356,31 @@ class Editor extends React.Component<IAppProps, IAppState> {
   onMarkerHover = _.debounce(data => {
     this.setState({ hoveredData: data });
   }, 350);
+
+  onCardHover = (id: number, on: boolean) => {
+    if (!on) return;
+    this.setState({
+      selectedFeature: {
+        on: false
+      }
+    });
+    this.setState({
+      selectedFeature: {
+        id, on
+      }
+    });
+  }
+
+  onPointClick = ({object }) => {
+    const { properties } = object;
+    if (properties && properties.dataId) {
+      this.onCardHover(properties.dataId, true)
+      const anchor = document.querySelector(".anchor-" + properties.dataId);
+      anchor && anchor.scrollIntoView({
+       // behavior: 'smooth'
+      });
+    }
+  }
 
 
   updateDocTitle = (content) => {
