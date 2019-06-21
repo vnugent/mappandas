@@ -12,9 +12,10 @@ const styles = (theme: Theme) =>
 export interface IAppProps {
   classes?: any;
   attributes: any;
+  isFocused: boolean;
 }
 
-export interface IAppState {}
+export interface IAppState { }
 
 class Location extends React.Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
@@ -24,7 +25,7 @@ class Location extends React.Component<IAppProps, IAppState> {
   }
 
   public render() {
-    const { attributes, children, classes } = this.props;
+    const { attributes, children, classes, isFocused } = this.props;
     return (
       <div className={classes.root} {...attributes}>
         <Typography

@@ -51,6 +51,8 @@ export interface IAppProps {
   readonly: boolean;
   attributes: any;
   editor: any;
+  onMouseover: Function;
+  onMouseout: Function;
   handlers: {
     onDelete: (key: number) => void;
     onAdd: (key: number) => void;
@@ -84,9 +86,9 @@ class Entry extends React.Component<IAppProps, IAppState> {
 
     if (!editor.value) {
       return null;
-    }    const { value } = editor;
+    } const { value } = editor;
 
-   
+
     const emptyLocationText = node.text === "";
 
     return (
@@ -95,7 +97,8 @@ class Entry extends React.Component<IAppProps, IAppState> {
         className={classnames(
           classes.root,
           hoverClass,
-          isFocused ? classes.active : ""
+          isFocused ? classes.active : "",
+          "anchor-" + attributes["data-key"]
         )}
         onMouseOver={this.mouseOver}
         onMouseLeave={this.mouseLeave}
@@ -109,7 +112,7 @@ class Entry extends React.Component<IAppProps, IAppState> {
           <Toolbar className={classes.toolbar} contentEditable={false}>
             <Tooltip
               title="Delete this location"
-              aria-label="Delete thiS location"
+              aria-label="Delete this location"
             >
               <IconButton
                 className={classes.menuButton}
@@ -126,10 +129,15 @@ class Entry extends React.Component<IAppProps, IAppState> {
     );
   }
 
-  mouseOver = (event: any) =>
+  mouseOver = (event: any) => {
     this.setState({ hoverClass: this.props.classes.hover });
+    this.props.onMouseover(this.props.attributes['data-key'])
+  }
 
-  mouseLeave = (event: any) => this.setState({ hoverClass: undefined });
+  mouseLeave = (event: any) => {
+    this.setState({ hoverClass: undefined });
+    this.props.onMouseout(this.props.attributes['data-key'])
+  }
 
   onAdd = (event: any) => {
     const key = this.props.attributes["data-key"];

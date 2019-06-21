@@ -53,10 +53,10 @@ const listToFeatures = (cards): Feature[] => {
     .map(entry => {
       const data = entry.nodes.first().data;
       const feature = JSON.parse(data.get("feature"));
-
       feature.properties = {
         name: data.get("text"),
-        description: ""
+        description: "",
+        dataId: entry.key
       };
       return feature;
     })

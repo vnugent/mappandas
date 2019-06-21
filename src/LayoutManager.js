@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Grid, withStyles, Fade } from "@material-ui/core";
+import { Grid, withStyles } from "@material-ui/core";
 
 const styles = (theme) =>
     ({
