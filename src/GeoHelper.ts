@@ -28,8 +28,6 @@ export const NEW_FC = (): FeatureCollection => ({
 // });
 
 export const INITIAL_VIEWSTATE = () => ({
-  //   width: window.innerWidth,
-  //   height: window.innerHeight,
   width: 1,
   height: 1,
   bearing: 0,

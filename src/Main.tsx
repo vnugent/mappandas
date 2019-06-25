@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import ShowPandaURLHandler from "./ShowPandaURLHandler";
+import Explorer from "./Explorer";
 
 export interface IAppProps {
 }
@@ -31,7 +32,8 @@ class Main extends React.Component<IAppProps, IAppState> {
 
   public render() {
     return (<Switch>
-    <Redirect exact from="/" to="/new"/>
+    <Redirect exact from="/" to="/explore"/>
+    <Route path="/explore" component={Explorer} /> 
       <Route path="/new" render={(props) => <ShowPandaURLHandler editNew={true} {...props} />} />
       <Route path="/p/:uuid?/:edit?" render={(props) => <ShowPandaURLHandler editNew={false} {...props} />} />
     </Switch>);

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Grid, withStyles } from "@material-ui/core";
+import { withStyles } from "@material-ui/core";
 import { createStyles, Theme } from "@material-ui/core/styles";
 import { FeatureCollection } from "geojson";
 import { withRouter, RouteComponentProps } from "react-router-dom";
@@ -27,7 +27,7 @@ import LayoutManager from "./LayoutManager";
 import { initialValue } from "./edit/slate-default";
 import { computeGeojson, documentToGeojson } from "./document2geojson";
 import SmartEditor from "./edit/SmartEditor";
-import { feature } from "@turf/helpers";
+
 const uuidv1 = require("uuid/v1");
 
 const styles = (theme: Theme) =>
@@ -182,7 +182,6 @@ class Editor extends React.Component<IAppProps, IAppState> {
       //height = div.clientHeight;
     }
     const height = window.innerHeight;
-    //console.log("#mapDivDimensions", width, height);
     return { width, height };
   };
 
@@ -249,7 +248,7 @@ class Editor extends React.Component<IAppProps, IAppState> {
 
   public render() {
     const { classes, layout, urlKey, editable } = this.props;
-    const { mode, post, dataLoaded } = this.state;
+    const { post } = this.state;
     return (
       <div className={classes.root} key={this.props.urlKey}>
         <TopLevelAppBar

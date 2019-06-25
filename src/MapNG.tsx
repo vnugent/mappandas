@@ -16,14 +16,15 @@ import { IActiveFeature } from "./types/CustomMapTypes";
 import { FeatureCollection } from "geojson";
 
 interface IProps {
-  geojson: FeatureCollection;
-  mapStyle: string;
+  geojson?: FeatureCollection;
+  mapStyle?: string;
   viewstate: any;
   onViewStateChanged: (any) => void;
   //onHover?: (data: IActiveFeature | null) => void;
   onPointHover?: Function;
   onPointClick?: Function;
-  selectedFeature: any;
+  selectedFeature?: any;
+  supportingLayers?: any;
 }
 
 interface IState {
@@ -69,11 +70,14 @@ class MapNG extends React.Component<IProps, IState> {
   // };
 
   render() {
-    const { geojson, mapStyle, onPointHover, onPointClick, viewstate, selectedFeature } = this.props;
+    const { geojson, mapStyle, onPointHover, onPointClick, viewstate, selectedFeature, supportingLayers } = this.props;
     const layers =
-      geojson.features && geojson.features.length > 0
+      geojson && geojson.features && geojson.features.length > 0
         ? [makeIconLayer(geojson.features, onPointHover, onPointClick, selectedFeature)]
         : [];
+    if (supportingLayers) {
+      layers.push(supportingLayers);
+    }
     if (this.state.searchResultLayer) {
       //layers.push(this.state.searchResultLayer);
     }
@@ -106,7 +110,7 @@ class MapNG extends React.Component<IProps, IState> {
           <StaticMap
             viewState={viewstate}
             reuseMaps
-            mapStyle={`mapbox://styles/mapbox/${mapStyle}`}
+            mapStyle={`mapbox://styles/mapbox/${mapStyle ? mapStyle : "light-v9"}`}
             preventStyleDiffing={false}
             mapboxApiAccessToken={Config.MAPBOX_TOKEN}
           //ref={this.mapRef}

@@ -24,8 +24,8 @@ export const makeIconLayer = (features, onHoverFn, onClickFn, selection) => {
         highlightColor: [139, 195, 74],
         getPosition: d => d.geometry.coordinates,
         getIcon: d => "marker",
-        getSize: d => isSelected(d, selection) ? 24 : 15,
-        getColor: d => isSelected(d, selection) ? [139, 195, 74] : [255, 128, 0],
+        getSize: d => selection && isSelected(d, selection) ? 24 : 15,
+        getColor: d => selection && isSelected(d, selection) ? [139, 195, 74] : [255, 128, 0],
         onHover: onHoverFn ? onHoverFn : null,
         onClick: onClickFn ? onClickFn : null
     });
