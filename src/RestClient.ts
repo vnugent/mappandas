@@ -40,7 +40,8 @@ export const getTextFile = async (name: string): Promise<string> => {
   const response = await client.get<string>(name, {
     baseURL: undefined
   });
-  return response ? response.data : "";
+  if (response.status === 200) return response.data;
+  return Promise.reject("error loading file");
 };
 
 export const sendMail = (uuid: string, email: string) => {

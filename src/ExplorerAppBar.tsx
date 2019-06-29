@@ -28,7 +28,7 @@ const styles = (theme: Theme) =>
       boxShadow: "none",
       backgroundColor: "#fafafa",
       left: 0,
-      zIndex: 1000,
+      zIndex: 2000,
       width: "100%"
     },
     root: {
@@ -61,21 +61,19 @@ class ExplorerAppBar extends React.Component<IAppProps, IAppState> {
       classes,
       supportingData
     } = this.props;
-    return <AppBar color="inherit" >
+    return <AppBar className={classes.appBar} color="inherit" >
       <div>{this.makeOptions(supportingData, classes)}</div>
     </AppBar>;
   }
 
   makeOptions = (supportingData, classes) => {
     const results = Array();
-    console.log("#makeoption ", supportingData)
     supportingData.forEach((value, key) => {
-      console.log(key)
       const uuid = key;
       const entry = value;
       const { layer_attributes, visible } = entry.props;
       const visibleIcon = visible ? <Done /> : <CheckBoxOutlineBlank />
-      results.push(<Chip key={uuid} label={layer_attributes.label}  color={visible ? "secondary" : "inherit"} className={classes.chip} onClick={() => this.props.onToggleLayer(uuid)} />);
+      results.push(<Chip key={uuid} label={layer_attributes.label}  color={visible ? "secondary" : "default"} className={classes.chip} onClick={() => this.props.onToggleLayer(uuid)} />);
     });
     return results;
 

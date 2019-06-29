@@ -30,11 +30,11 @@ import {
 export interface IAppProps {
   uuid: string;
   content: any;
-  readonly: boolean;
+  readonly?: boolean;
   layout: string;
   onCardHover: (id: number, on: boolean) => void;
-  onLocationUpdate: (location, editor) => void;
-  onContentChange: (content) => void;
+  onLocationUpdate?: (location, editor) => void;
+  onContentChange?: (content) => void;
 }
 
 export interface IAppState {
@@ -55,7 +55,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
     super(props);
 
     const locationPlugin = LocationPlugin({
-      handler: this.props.onLocationUpdate
+      handler: this.props.onLocationUpdate ? this.props.onLocationUpdate : () => null
     });
     const headerPlugin = HtmlMetaPlugin({
       handler: this.props.onLocationUpdate
@@ -110,7 +110,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
 
     this.toolbarHandler = ToolbarHandler.create(
       this.props.uuid,
-      this.props.onLocationUpdate,
+      this.props.onLocationUpdate ? this.props.onLocationUpdate : () => null,
       this.editorRef
     );
   };
@@ -149,7 +149,8 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
   };
 
   onChange = ({ value }) => {
-    if (this.props.readonly) return;
+    const {readonly} = this.props;
+    if (!readonly || !this.props.onContentChange || readonly && true) return;
 
     if (this.props.content !== value) {
       this.props.onContentChange(value);
@@ -280,7 +281,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
             children={children}
             handlers={this.toolbarHandler}
             editor={this.editorRef}
-            readonly={this.props.readonly}
+            readonly={readonly ? readonly : false}
             onMouseout={id => (onCardHover(id, false))}
             onMouseover={id => (onCardHover(id, true))}
           />
@@ -296,7 +297,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
             isSelected={isFocused}
             attributes={attributes}
             children={children}
-            readonly={this.props.readonly}
+            readonly={readonly ? readonly : false}
           />
         );
       }
@@ -313,7 +314,7 @@ class SmartEditor extends React.Component<IAppProps, IAppState> {
             attributes={attributes}
             children={children}
             node={node}
-            readonly={this.props.readonly}
+            readonly={readonly ? readonly : false}
           />
         );
       case "canonical":

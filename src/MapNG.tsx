@@ -11,8 +11,6 @@ import Geocoder from "react-map-gl-geocoder";
 import * as _ from "underscore";
 
 import * as Config from "./Config";
-import PandaGL from "./PandaGL";
-import { IActiveFeature } from "./types/CustomMapTypes";
 import { FeatureCollection } from "geojson";
 
 interface IProps {
@@ -20,9 +18,9 @@ interface IProps {
   mapStyle?: string;
   viewstate: any;
   onViewStateChanged: (any) => void;
-  //onHover?: (data: IActiveFeature | null) => void;
+  hoverHandler?: Function;
   onPointHover?: Function;
-  onPointClick?: Function;
+  onclickHandler?: Function;
   selectedFeature?: any;
   supportingLayers?: any;
 }
@@ -70,10 +68,10 @@ class MapNG extends React.Component<IProps, IState> {
   // };
 
   render() {
-    const { geojson, mapStyle, onPointHover, onPointClick, viewstate, selectedFeature, supportingLayers } = this.props;
+    const { geojson, mapStyle, onPointHover, onclickHandler, viewstate, selectedFeature, supportingLayers } = this.props;
     const layers =
       geojson && geojson.features && geojson.features.length > 0
-        ? [makeIconLayer(geojson.features, onPointHover, onPointClick, selectedFeature)]
+        ? [makeIconLayer(geojson.features, onPointHover, onclickHandler, selectedFeature)]
         : [];
     if (supportingLayers) {
       layers.push(supportingLayers);
@@ -93,6 +91,8 @@ class MapNG extends React.Component<IProps, IState> {
           doubleClickZoom: true
         }}
         onViewStateChange={this.props.onViewStateChanged}
+        onHover={this.onHover}
+        onClick={(e) => onclickHandler && onclickHandler(e)}
       //onHover={this._onHover}
       >
         {/* <ResponsiveGeocoder
@@ -119,6 +119,8 @@ class MapNG extends React.Component<IProps, IState> {
       </DeckGL>
     );
   }
+
+  onHover = (info) => this.props.hoverHandler && this.props.hoverHandler(info);
 }
 
 const ResponsiveGeocoder = withWidth()((props: any) => (

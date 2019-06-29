@@ -1,10 +1,14 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router-dom";
+import * as _ from "underscore";
 
 import ExplorerAppBar from "./ExplorerAppBar"
 import * as GeoHelper from "./GeoHelper";
 import LayoutManager from "./LayoutManager";
 import MapNG from "./MapNG";
+import Popup from "./map/Popup";
+import Sidebar from "./map/Sidebar";
+import RORichContent from "./RORichContent";
 import * as DataLoader from "./mashup/DataLoader"
 const uuidv1 = require("uuid/v1");
 
@@ -18,6 +22,9 @@ interface IExplorerProps extends RouteComponentProps {
 interface IExplorerState {
     viewState: any;
     supportingData: Map<string, string>;
+    hoverData: any;
+    sidebarOn: boolean;
+    richContent: any;
 }
 
 
@@ -29,25 +36,30 @@ export default class Explorer extends React.Component<
         super(props);
         this.state = {
             viewState: { ...GeoHelper.INITIAL_VIEWSTATE(), latitude: 45.52345, longitude: -122.67621 },
-            supportingData: new Map()
+            supportingData: new Map(),
+            hoverData: null,
+            sidebarOn: false,
+            richContent: null
         };
     }
 
     componentDidMount() {
         //const data = DataLoader.loadAll();
         //this.setState({ data });
-        this.setState({ supportingData: DataLoader.loadAll() });
+        //const supportingData = DataLoader.loadAll();
+
+
+        DataLoader.loadGeojson().then(data => this.setState({ supportingData:data }))
 
     }
 
 
     render() {
-        const { viewState, supportingData } = this.state;
-        console.log("#state", supportingData);
+        const { viewState, supportingData, sidebarOn, richContent } = this.state;
         const layers = Array.from(supportingData.values())
         return <div>
             <ExplorerAppBar supportingData={supportingData} onToggleLayer={this.toggleLayer} />
-            <LayoutManager layout="map" map={
+            <LayoutManager layout="map" map={<>
                 <MapNG
                     //geojson={school}
                     //selectedFeature={this.state.selectedFeature}
@@ -55,19 +67,42 @@ export default class Explorer extends React.Component<
                     viewstate={viewState}
                     onViewStateChanged={this.onViewstateChanged}
                     onPointHover={this.onMarkerHover}
-                    onPointClick={this.onPointClick}
+                    onclickHandler={this.onclickHandler}
+                    hoverHandler={this.hoverHandler}
                 />
+                <Popup {...this.state.hoverData} />
+                <Sidebar shouldOpen={sidebarOn} onClose={() => this.setState({ sidebarOn: false })} >
+                    <RORichContent content={richContent} />
+                </Sidebar>
+            </>
             } />
         </div>
     }
 
     toggleLayer = uuid => {
-        const {supportingData} = this.state;
+        const { supportingData } = this.state;
         this.setState({ supportingData: DataLoader.toggleLayer(uuid, supportingData) });
     }
 
     onViewstateChanged = ({ viewState }) => this.setState({ viewState })
     onMarkerHover = () => { }
     onPointClick = () => { }
+
+    hoverHandler = _.debounce((info) => {
+        this.setState({ hoverData: info.layer ? info : null })
+    }, 180)
+
+    onclickHandler = _.debounce((info) => {
+        console.log(info);
+        // const content = info && info.layer && info.layer.props && info.layer.props.layer_attributes  null;
+        this.setState({
+            sidebarOn: info && info.layer ? true : false,
+            hoverData: info && info.layer ? info : null
+        });
+        _.delay(() => this.setState({
+            sidebarOn: info && info.layer ? true : false,
+            richContent: info && info.layer && info.layer.props.layer_attributes.content || null
+        }), 500);
+    }, 100, true)
 }
 

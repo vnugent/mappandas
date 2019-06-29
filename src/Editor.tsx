@@ -282,7 +282,7 @@ class Editor extends React.Component<IAppProps, IAppState> {
               onViewStateChanged={this.onViewstateChanged}
               mapStyle={this.state.mapStyle}
               onPointHover={this.onMarkerHover}
-              onPointClick={this.onPointClick}
+              onclickHandler={this.onPointClick}
             />
             <Popup {...this.state.hoveredData} />
           </>}
