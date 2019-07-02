@@ -37,7 +37,8 @@ const Popup = ({ classes, x, y, index, object, picked, layer }) => {
       //className="tooltip interactive"
       style={{ left: x + 10, top: y - 40 }}
     >
-      {displayName}
+      <p>{displayName}</p>
+      {layer_attributes.category === "Home" && "Details"}
     </div>
   );
 

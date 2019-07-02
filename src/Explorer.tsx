@@ -8,7 +8,7 @@ import LayoutManager from "./LayoutManager";
 import MapNG from "./MapNG";
 import Popup from "./map/Popup";
 import Sidebar from "./map/Sidebar";
-import RORichContent from "./RORichContent";
+import Report from "./report/Report";
 import * as DataLoader from "./mashup/DataLoader"
 const uuidv1 = require("uuid/v1");
 
@@ -24,7 +24,7 @@ interface IExplorerState {
     supportingData: Map<string, string>;
     hoverData: any;
     sidebarOn: boolean;
-    richContent: any;
+    address: any;
 }
 
 
@@ -39,23 +39,17 @@ export default class Explorer extends React.Component<
             supportingData: new Map(),
             hoverData: null,
             sidebarOn: false,
-            richContent: null
+            address: null
         };
     }
 
     componentDidMount() {
-        //const data = DataLoader.loadAll();
-        //this.setState({ data });
-        //const supportingData = DataLoader.loadAll();
-
-
-        DataLoader.loadGeojson().then(data => this.setState({ supportingData:data }))
-
+       DataLoader.loadGeojson().then(data => this.setState({ supportingData: data }))
     }
 
 
     render() {
-        const { viewState, supportingData, sidebarOn, richContent } = this.state;
+        const { viewState, supportingData, sidebarOn, address } = this.state;
         const layers = Array.from(supportingData.values())
         return <div>
             <ExplorerAppBar supportingData={supportingData} onToggleLayer={this.toggleLayer} />
@@ -72,7 +66,7 @@ export default class Explorer extends React.Component<
                 />
                 <Popup {...this.state.hoverData} />
                 <Sidebar shouldOpen={sidebarOn} onClose={() => this.setState({ sidebarOn: false })} >
-                    <RORichContent content={richContent} />
+                    <Report address={address} />
                 </Sidebar>
             </>
             } />
@@ -101,7 +95,7 @@ export default class Explorer extends React.Component<
         });
         _.delay(() => this.setState({
             sidebarOn: info && info.layer ? true : false,
-            richContent: info && info.layer && info.layer.props.layer_attributes.content || null
+            address: info && info.layer && info.layer.props.layer_attributes.category === "Home" ? info.object.properties.name : null
         }), 500);
     }, 100, true)
 }

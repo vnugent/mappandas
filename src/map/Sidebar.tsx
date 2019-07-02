@@ -4,6 +4,10 @@ import { Drawer, withStyles, createStyles, Theme } from "@material-ui/core";
 const styles = (theme: Theme) =>
     createStyles({
         root: {
+        },
+        content: {
+            paddingTop: "50px"
+
         }
     });
 
@@ -29,7 +33,8 @@ class Sidebar extends React.Component<IAppProps, IAppState> {
                 <Drawer open={shouldOpen} variant="permanent" onClose={onClose} ModalProps={
                     { disableAutoFocus: true }
                 }>
-                    {children}
+                    <div className={classes.content}>
+                        {children}</div>
                 </Drawer>
             </div>
         );

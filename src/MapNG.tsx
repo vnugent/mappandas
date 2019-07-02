@@ -1,5 +1,5 @@
 import * as React from "react";
-import DeckGL, { MapController, GeoJsonLayer, MapView } from "deck.gl";
+import DeckGL, { MapController, GeoJsonLayer, MapView, AmbientLight, PointLight, LightingEffect } from "deck.gl";
 import { StaticMap } from "react-map-gl";
 import { Hidden, withWidth } from "@material-ui/core";
 
@@ -12,6 +12,27 @@ import * as _ from "underscore";
 
 import * as Config from "./Config";
 import { FeatureCollection } from "geojson";
+
+
+const ambientLight = new AmbientLight({
+    color: [255, 255, 255],
+    intensity: 1.0
+  });
+  
+  const pointLight1 = new PointLight({
+    color: [255, 255, 255],
+    intensity: 0.8,
+    position: [-0.144528, 49.739968, 80000]
+  });
+  
+  const pointLight2 = new PointLight({
+    color: [255, 255, 255],
+    intensity: 0.8,
+    position: [-3.807751, 54.104682, 8000]
+  });
+
+const lightingEffect = new LightingEffect({ambientLight, pointLight1, pointLight2});
+
 
 interface IProps {
   geojson?: FeatureCollection;
@@ -90,6 +111,8 @@ class MapNG extends React.Component<IProps, IState> {
           dragRotate: false,
           doubleClickZoom: true
         }}
+                effects={[lightingEffect]}
+
         onViewStateChange={this.props.onViewStateChanged}
         onHover={this.onHover}
         onClick={(e) => onclickHandler && onclickHandler(e)}

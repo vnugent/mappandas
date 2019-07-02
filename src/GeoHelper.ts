@@ -32,7 +32,7 @@ export const INITIAL_VIEWSTATE = () => ({
   height: 1,
   bearing: 0,
   zoom: 12,
-  pitch: 30,
+  pitch: 38,
   transitionDuration: 1000,
   ...DEFAULT_LATLNG
 });
